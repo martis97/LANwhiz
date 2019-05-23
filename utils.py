@@ -20,6 +20,14 @@ class Utilities():
         return self.config[hostname]
 
     def cidr_to_subnet_mask(self, cidr):
+        """ Convert CIDR to Subnet Mask
+        
+        Args:
+            cidr: CIDR to be converted
+
+        Returns:
+            Converted Subnet Mask
+        """
         assert cidr in range(8, 31), "Invalid value for CIDR!"
         octets = []
         possible_octets = ["128","192","224","240","248","252","254"]
@@ -35,6 +43,14 @@ class Utilities():
         return ".".join(octets)
 
     def cidr_to_wildcard_mask(self, cidr):
+        """ Convert CIDR to Wildcard Mask
+        
+        Args:
+            cidr: CIDR to be converted
+
+        Returns:
+            Converted Wildcard Mask
+        """
         assert cidr in range(8, 31), "Invalid value for CIDR!"
         octets = []
         for octet in self.cidr_to_subnet_mask(cidr).split("."):
