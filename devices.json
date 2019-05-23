@@ -1,0 +1,105 @@
+{
+    "r1": {
+        "superuser": {
+            "username": "admin",
+            "password": "r1admin",
+            "privilege": 15
+        },
+        "interfaces": {
+            "GigabitEthernet0/0": {
+                "ipv4": "192.168.5.1/24",
+                "ipv6": "2008:ACAB:B323:AADF:1:1/64",
+                "description": "Connection to LAN",
+                "acl" : {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "inside"
+            },
+            "GigabitEthernet0/1": {
+                "ipv4": "192.168.5.2/24",
+                "ipv6": "",
+                "description": "",
+                "acl" : {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "inside"
+            },
+            "GigabitEthernet0/2": {
+                "ipv4": "192.168.1.1/24",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [
+                        "permit-dns-for-internal"
+                    ],
+                    "inbound": []
+                },
+                "nat": "inside"
+            },
+            "Serial0/0/0": {
+                "ipv4": "192.168.100.1/30",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "inbound": [
+                        "permit-established-tcp"
+                    ],
+                    "outbound": []
+                },
+                "nat": "outside"
+            }
+        },
+
+        "routing": {
+            "static": {
+                "destination_network": "0.0.0.0",
+                "destination_subnetmask": "0.0.0.0",
+                "forward_interface": "Serial0/0/0"
+            },
+            "ospf": {
+                "instance_id" : 10,
+                "redistribute_static" : true,
+                "ospf_interfaces": [
+                    "GigabitEthernet0/0",
+                    "GigabitEthernet0/1"
+                ],
+                "passive_interfaces": [
+                    "GigabitEthernet0/2"
+                ]
+            }
+        },
+
+        "acl": {
+            "standard": {
+                "nat": {
+                    "action" : "permit",
+                    "source_network": "192.168.0.0/16",
+                    "overload": "True"
+                }
+            },
+            "extended": {
+                    "permit-established-tcp": {
+                        "action" : "permit",
+                        "source_network": "any",
+                        "destination_network": "any",
+                        "protocol": "tcp established"
+                    },
+                    "permit-dns-for-internal": {
+                        "action": "permit",
+                        "protocol": "udp",
+                        "source": "192.168.5.0/24",
+                        "destination": "host 192.168.1.3",
+                        "port": "eq 53"
+                    },
+                    "permit-remaining-protocols": {
+                        "action": "permit",
+                        "protocol": "ip",
+                        "source": "any",
+                        "destination": "any"
+                    }
+                }
+            }
+        }   
+    }
