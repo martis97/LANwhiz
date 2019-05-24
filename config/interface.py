@@ -9,15 +9,21 @@ class Interface():
     def ipv4(self, ip):
         """ Sends command to configure IPv4 address """
         ipv4 = ip.split("/")[0]
-        cidr = ip.split("/")[1]
-        subnet_mask = self.utils.cidr_to_subnet_mask(cidr)
+        subnet_mask = self.utils.cidr_to_subnet_mask(ip.split("/")[1])
         ipv4_command = f"ip address {ipv4} {subnet_mask}"
-        self.connection.send_command(ipv4_command)
+        self.connection.send_command(ipv4_command, expect_string="")
 
     def ipv6(self, ip):
         """ Sends commmand to configure IPv6 address """
         ipv6_command = f"ipv6 address {ip}"
-        self.connection.send_command(ipv6_command)
+        self.connection.send_command(ipv6_command, expect_string="")
+    
+    def description(self, description):
+        """ Sends command to configure interface description """
+        self.connection.send_command(
+            f"description {description}",
+            expect_string=""
+        )
 
     def acl(self, interface, *, inbound, outbound):
         """ Sends commands to configure ACLs on interfaces """
@@ -30,9 +36,9 @@ class Interface():
             if "vty" in interface:
                 for replacement in (("ip ", ""), ("group", "class")):
                     command = command.replace(*replacement)
-            self.connection.send_command(command)
+            self.connection.send_command(command, expect_string="")
 
     def nat(self, direction):
         """ Sends command to configure NAT on the interface """
         nat_command = f"ip nat {direction}"
-        self.connection.send_command(nat_command)
+        self.connection.send_command(nat_command, expect_string="")

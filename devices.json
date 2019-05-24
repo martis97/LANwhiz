@@ -51,7 +51,6 @@
                 "nat": "outside"
             }
         },
-
         "routing": {
             "static": {
                 "destination_network": "0.0.0.0",
@@ -70,7 +69,6 @@
                 ]
             }
         },
-
         "acl": {
             "standard": {
                 "nat": {

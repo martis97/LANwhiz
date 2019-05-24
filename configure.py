@@ -29,6 +29,10 @@ class Configure(object):
                 self.configure_interface.ipv4(int_config["ipv4"])
             if int_config["ipv6"]:
                 self.configure_interface.ipv6(int_config["ipv6"])
+            if int_config["description"]:
+                self.configure_interface.description(
+                    int_config["description"]
+                )
             if int_config["acl"]:
                 self.configure_interface.acl(
                     interface,

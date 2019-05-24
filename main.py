@@ -24,4 +24,3 @@ class AutoConf(object):
         config_device = Configure(device_config=config, connection=connection)
         config_device.interfaces()
 
-
