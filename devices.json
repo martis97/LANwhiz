@@ -1,5 +1,5 @@
 {
-    "r1": {
+    "R1": {
         "superuser": {
             "username": "admin",
             "password": "r1admin",
@@ -60,7 +60,7 @@
             "ospf": {
                 "instance_id" : 10,
                 "redistribute_static" : true,
-                "ospf_interfaces": [
+                "interfaces": [
                     "GigabitEthernet0/0",
                     "GigabitEthernet0/1"
                 ],

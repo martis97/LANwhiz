@@ -8,7 +8,7 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities()
-        self.configure_interface = Interface(self.connection)
+        self.configure_interface = Interface()
 
     def superuser(self):
         details = self.config["superuser"]
