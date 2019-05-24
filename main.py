@@ -24,13 +24,8 @@ class AutoConf(object):
     ):
         """ Adds and configures a Cisco Device """
         config = Utilities().read_config(hostname)
-        for telnet_port in (23, 5000):
-            if port == telnet_port:
-                telnet = True
-                break
-            else:
-                telnet = False
-
+        telnet = port in (23, 5000)
+        
         connection = self.connect_to.cisco_device(
             mgmt_ip, port, username, password, telnet=telnet
         )
