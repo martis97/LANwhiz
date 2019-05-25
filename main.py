@@ -13,6 +13,7 @@ from net_auto_config.configure import Configure
 class AutoConf(object):
     def __init__(self):
         self.connect_to = Connect()
+        self.util = Utilities()
 
     def configure_cisco_device(
         self,
@@ -23,7 +24,7 @@ class AutoConf(object):
         password
     ):
         """ Adds and configures a Cisco Device """
-        config = Utilities().read_config(hostname)
+        config = self.util.read_config(hostname)
         telnet = port == 23 or port <= 5000
         
         connection = self.connect_to.cisco_device(

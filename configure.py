@@ -8,7 +8,6 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities()
-        self.configure_interface = Interface()
 
     def superuser(self):
         details = self.config["superuser"]
@@ -23,6 +22,7 @@ class Configure(object):
         """ Pass configuration information to class methods for interface
         configuration.
         """
+        self.configure_interface = Interface()
         for interface, int_config in self.config["interfaces"].items():
             self.connection.send_command(f"interface {interface}")
             if int_config["ipv4"]:

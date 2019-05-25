@@ -1,10 +1,8 @@
 from net_auto_config.configure import Configure
-from net_auto_config.utils import Utilities
 
 class Interface(Configure):
     def __init__(self):
         super().__init__()
-        self.utils = Utilities()
 
     def ipv4(self, ip):
         """ Sends command to configure IPv4 address """
