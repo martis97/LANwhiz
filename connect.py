@@ -15,8 +15,8 @@ class Connect():
         
     def cisco_device(
         self,
+        mgmt_ip,
         port,
-        ip_address,
         username,
         password,
         telnet=False
@@ -24,7 +24,7 @@ class Connect():
         """ Establishes a connection to a Cisco devices
 
         Args:
-            ip_address: Management IP address used to connect to the 
+            mgmt_ip: Management IP address used to connect to the 
                 device.
             username: Privileged user's username 
             password: Privileged user's password
@@ -33,7 +33,7 @@ class Connect():
             Netmiko connection object
         """
         cisco_device = {
-            "ip": ip_address,
+            "ip": mgmt_ip,
             "port": port,
             "username": username,
             "password": password,
@@ -44,4 +44,9 @@ class Connect():
             cisco_device["device_type"] += "_telnet"
 
         self.active_connections += 1
-        return Netmiko(**cisco_device)
+        print("Connecting to Cisco Device..")
+        connection = Netmiko(**cisco_device)
+        print("Connected")
+
+        return connection 
+        

@@ -1,5 +1,5 @@
 from net_auto_config.utils import Utilities
-from net_auto_config.config.interface import Interface
+from .interface import Interface
 from net_auto_config.connect import Connect
 
 
@@ -8,23 +8,27 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities()
+        self.connection.send_command("configure terminal", expect_string="")
+        self.connection.send_command("ipv6 unicast-routing", expect_string="")
 
     def superuser(self):
         details = self.config["superuser"]
         command = (
-            f"username {details['username']} " 
-            f"password {details['pass']} " 
+            f"username {details['username']} "
+            f"password {details['pass']} "
             f"privilege {details['privilege']}"
         )
-        self.connection.send_command(command)
+        self.connection.send_command(command, expect_string="")
 
     def interfaces(self):
         """ Pass configuration information to class methods for interface
         configuration.
         """
-        self.configure_interface = Interface()
+        self.configure_interface = Interface(self.connection)
         for interface, int_config in self.config["interfaces"].items():
-            self.connection.send_command(f"interface {interface}")
+            self.connection.send_command(
+                f"interface {interface}", expect_string=""
+            )
             if int_config["ipv4"]:
                 self.configure_interface.ipv4(int_config["ipv4"])
             if int_config["ipv6"]:
@@ -36,8 +40,8 @@ class Configure(object):
             if int_config["acl"]:
                 self.configure_interface.acl(
                     interface,
-                    inbound=int_config.get("inbound"),
-                    outbound=int_config.get("outbound")
+                    inbound=int_config["acl"].get("inbound"),
+                    outbound=int_config["acl"].get("outbound")
                 )
             if int_config["nat"]:
                 self.configure_interface.nat(int_config["nat"])

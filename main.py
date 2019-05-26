@@ -7,7 +7,7 @@ Main Module
 
 from net_auto_config.connect import Connect
 from net_auto_config.utils import Utilities
-from net_auto_config.configure import Configure
+from net_auto_config.config.configure import Configure
 
 
 class AutoConf(object):

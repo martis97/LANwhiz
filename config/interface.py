@@ -1,13 +1,16 @@
-from net_auto_config.configure import Configure
+from net_auto_config.utils import Utilities
 
-class Interface(Configure):
-    def __init__(self):
+
+class Interface(object):
+    def __init__(self, connection):
         super().__init__()
+        self.connection = connection
+        self.utils = Utilities()
 
     def ipv4(self, ip):
         """ Sends command to configure IPv4 address """
         ipv4 = ip.split("/")[0]
-        subnet_mask = self.utils.cidr_to_subnet_mask(ip.split("/")[1])
+        subnet_mask = self.utils.cidr_to_subnet_mask(int(ip.split("/")[1]))
         ipv4_command = f"ip address {ipv4} {subnet_mask}"
         self.connection.send_command(ipv4_command, expect_string="")
 

@@ -11,22 +11,21 @@
                 "ipv6": "2008:ACAB:B323:AADF:1:1/64",
                 "description": "Connection to LAN",
                 "acl" : {
-                    "outbound": [],
+                    "outbound": [
+                        "permit-dns-for-internal"
+                    ],
                     "inbound": []
                 },
                 "nat": "inside"
             },
-            "GigabitEthernet0/1": {
+            "GigabitEthernet1/0": {
                 "ipv4": "",
                 "ipv6": "",
                 "description": "",
-                "acl" : {
-                    "outbound": [],
-                    "inbound": []
-                },
+                "acl" : {},
                 "nat": ""
             },
-            "GigabitEthernet0/2": {
+            "GigabitEthernet2/0": {
                 "ipv4": "192.168.1.1/24",
                 "ipv6": "",
                 "description": "",
@@ -37,18 +36,6 @@
                     "inbound": []
                 },
                 "nat": "inside"
-            },
-            "Serial0/0/0": {
-                "ipv4": "192.168.100.1/30",
-                "ipv6": "",
-                "description": "",
-                "acl": {
-                    "inbound": [
-                        "permit-established-tcp"
-                    ],
-                    "outbound": []
-                },
-                "nat": "outside"
             }
         },
         "routing": {
