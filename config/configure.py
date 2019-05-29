@@ -1,5 +1,5 @@
 from net_auto_config.utils import Utilities
-from .interface import Interface
+from net_auto_config.config.interface import Interface
 from net_auto_config.connect import Connect
 
 
