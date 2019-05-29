@@ -4,7 +4,7 @@ from getpass import getpass
 """
 AutoConf: Connection Module
 
-- Sets up SSH connections and handles them
+- Sets up SSH/Telnet connections and handles them
 - Authenticates to devices with adequate credentials
 
 """
@@ -26,8 +26,11 @@ class Connect():
         Args:
             mgmt_ip: Management IP address used to connect to the 
                 device.
+            port: Port number the device is listening to
             username: Privileged user's username 
             password: Privileged user's password
+            telnet: (Default: False) Boolean value to specify whether 
+                the connection will be established using Telnet. 
 
         Returns:
             Netmiko connection object
