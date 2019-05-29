@@ -25,7 +25,7 @@ class Interface(object):
             expect_string=""
         )
 
-    def acl(self, interface, *, inbound, outbound):
+    def acl(self, interface, *, inbound=[], outbound=[]):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
         for rule in outbound:
