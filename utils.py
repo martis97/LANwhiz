@@ -13,8 +13,7 @@ class Utilities():
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        json_path = f"{os.getcwd()}\\devices.json".replace("\\", "/")
-        with open(json_path, "r") as config_file:
+        with open("devices.json", "r") as config_file:
             self.config = json.loads(config_file.read())
         
         return self.config[hostname]
@@ -58,3 +57,6 @@ class Utilities():
             octets.append(str(octet))
 
         return ".".join(octets)
+
+
+print(Utilities().read_config(hostname="R1"))
