@@ -1,4 +1,4 @@
-from net_auto_config.configure import Configure
+from net_auto_config.config.configure import Configure
 
 class Routing(Configure):
     def __init__(self):
