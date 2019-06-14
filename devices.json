@@ -31,6 +31,14 @@
                 "nat": "inside"
             }
         },
+        "lines": {
+            "console": {
+                "acl": {
+                    "outbound": [],
+                    "inbound": ["permit-mgmt-remote-access"]
+                }
+            }
+        },
         "routing": {
             "static": {
                 "destination_network": "0.0.0.0",
