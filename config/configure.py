@@ -26,8 +26,13 @@ class Configure(object):
         """
         self.configure_interface = Interface(self.connection)
         for interface, int_config in self.config["interfaces"].items():
+            access_interface = f"interface {interface}"
+            line_interfaces = ("vty","console","aux")
+            for int_type in line_interfaces:
+                if int_type in interface:
+                    access_interface = f"line {interface}"
             self.connection.send_command(
-                f"interface {interface}", expect_string=""
+                access_interface, expect_string=""
             )
             if int_config["ipv4"]:
                 self.configure_interface.ipv4(int_config["ipv4"])

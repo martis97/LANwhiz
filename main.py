@@ -38,7 +38,7 @@ class AutoConf(object):
 if __name__ == "__main__":
     AutoConf().configure_cisco_device(
         hostname="R1",
-        mgmt_ip="127.0.0.1",
+        mgmt_ip="10.0.75.1",
         port=5000,
         username="admin",
         password="admin"

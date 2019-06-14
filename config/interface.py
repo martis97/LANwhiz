@@ -42,3 +42,7 @@ class Interface(object):
         """ Sends command to configure NAT on the interface """
         nat_command = f"ip nat {direction}"
         self.connection.send_command(nat_command, expect_string="")
+
+class Line(Interface):
+    def __init__(self, connection):
+        super().__init__()

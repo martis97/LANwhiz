@@ -13,7 +13,7 @@ class Utilities():
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        with open("devices.json", "r") as config_file:
+        with open("C:/Users/martynasm/Documents/net_auto_config/devices.json", "r") as config_file:
             self.config = json.loads(config_file.read())
         
         return self.config[hostname]
@@ -57,6 +57,3 @@ class Utilities():
             octets.append(str(octet))
 
         return ".".join(octets)
-
-
-print(Utilities().read_config(hostname="R1"))

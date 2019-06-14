@@ -8,7 +8,7 @@ AutoConf: Connection Module
 - Authenticates to devices with adequate credentials
 
 """
-class Connect():
+class Connect:
 
     def __init__(self):
         self.active_connections = 0
