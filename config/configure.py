@@ -10,6 +10,7 @@ class Configure(object):
         self.utils = Utilities()
         self.connection.send_command("configure terminal", expect_string="")
         self.connection.send_command("ipv6 unicast-routing", expect_string="")
+        self.connection.send_command("no ip domain-lookup", expect_string="")
 
     def superuser(self):
         details = self.config["superuser"]
@@ -50,3 +51,8 @@ class Configure(object):
                 )
             if int_config["nat"]:
                 self.configure_interface.nat(int_config["nat"])
+
+    def lines(self):
+        """ Pass configuration information to class methods for line
+        configuration.
+        """
