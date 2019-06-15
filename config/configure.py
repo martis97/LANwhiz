@@ -8,9 +8,11 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities()
-        self.connection.send_command("configure terminal", expect_string="")
-        self.connection.send_command("ipv6 unicast-routing", expect_string="")
-        self.connection.send_command("no ip domain-lookup", expect_string="")
+        
+        
+    def default_commands(self):
+        for cmd in self.config["default"]:
+            self.connection.send_command(cmd, expect_string="")
 
     def superuser(self):
         details = self.config["superuser"]

@@ -4,7 +4,7 @@ import os
 class Utilities():
 
     def read_config(self, hostname):
-        """ Provide config information given device's hostname
+        """ Provide config information given device's hostname 
         
         Args:
             hostname: Hostname of device to get configuration for
@@ -13,7 +13,7 @@ class Utilities():
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        with open("C:/Users/martynasm/Documents/net_auto_config/devices.json", "r") as config_file:
+        with open("devices.json", "r") as config_file:
             self.config = json.loads(config_file.read())
         
         return self.config[hostname]

@@ -32,13 +32,14 @@ class AutoConf(object):
         )
 
         config_device = Configure(device_config=config, connection=connection)
+        config_device.default_commands()
         config_device.interfaces()
 
 
 if __name__ == "__main__":
     AutoConf().configure_cisco_device(
         hostname="R1",
-        mgmt_ip="10.0.75.1",
+        mgmt_ip="127.0.0.1",
         port=5000,
         username="admin",
         password="admin"
