@@ -1,4 +1,5 @@
 *.pyc
+.gitignore
 *.vscode
 *.git
 config/__pycache__/
