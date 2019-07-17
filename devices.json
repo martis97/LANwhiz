@@ -3,7 +3,8 @@
         "default": [
             "configure terminal",
             "ipv6 unicast-routing",
-            "no ip domain-lookup"
+            "no ip domain-lookup",
+            "service password-encryption"
         ],
         "superuser": {
             "username": "admin",
@@ -11,7 +12,7 @@
             "privilege": 15
         },
         "interfaces": {
-            "FastEthernet0/0": {
+            "GigabitEthernet0/0": {
                 "ipv4": "192.168.5.1/24",
                 "ipv6": "2008:ACAB:B323:AADF::1:1/64",
                 "description": "Connection to LAN",
@@ -38,6 +39,7 @@
         },
         "lines": {
             "console": {
+                "password": "netautoconfig",
                 "acl": {
                     "outbound": [],
                     "inbound": ["permit-mgmt-remote-access"]

@@ -1,3 +1,4 @@
+import re
 from net_auto_config.utils import Utilities
 
 
@@ -33,7 +34,7 @@ class Interface(object):
         for rule in inbound:
             acl_commands.append(f"ip access-group {rule} in")
         for command in acl_commands:
-            if "vty" in interface:
+            if re.match(r"(console|vty)", interface):
                 for replacement in (("ip ", ""), ("group", "class")):
                     command = command.replace(*replacement)
             self.connection.send_command(command, expect_string="")
