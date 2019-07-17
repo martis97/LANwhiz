@@ -1,6 +1,6 @@
 from net_auto_config.utils import Utilities
 from net_auto_config.config.interface import Interface, Line
-from net_auto_config.connect import Connect
+from net_auto_config.config.routing import Static, OSPF
 
 
 class Configure(object):
@@ -8,7 +8,6 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities()
-        
         
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
@@ -34,6 +33,7 @@ class Configure(object):
             self.connection.send_command(
                 access_interface, expect_string=""
             )
+            self.connection.send_command("no shutdown", expect_string="")
             if int_config["ipv4"]:
                 self.configure_interface.ipv4(int_config["ipv4"])
             if int_config["ipv6"]:
@@ -70,3 +70,9 @@ class Configure(object):
                 self.configure_line.acl(**line_config["acl"])
             if line_config["synchronous_logging"]:
                 self.configure_line.synchronous_logging()
+    
+    def routing(self):
+        """ Pass config information to class methods for routing """
+        self.static_routing = Static()
+        for static_info in self.config["routing"]["static"]:
+            self.static_routing.send_static_route_command(**static_info)

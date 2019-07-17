@@ -56,17 +56,18 @@
             }
         },
         "routing": {
-            "static": {
-                "destination_network": "0.0.0.0",
-                "destination_subnetmask": "0.0.0.0",
-                "forward_interface": "Serial0/0/0"
-            },
+            "static": [{
+                "network": "0.0.0.0",
+                "subnetmask": "0.0.0.0",
+                "forward_to": "Serial0/0/0"
+            }],
             "ospf": {
                 "instance_id" : 10,
-                "redistribute_static" : true,
-                "interfaces": [
-                    "GigabitEthernet0/0",
-                    "GigabitEthernet0/1"
+                "router_id": "1.1.1.1",
+                "advertise_static" : true,
+                "advertise_networks": [
+                    "192.168.5.1/24",
+                    "192.168.1.1/24"
                 ],
                 "passive_interfaces": [
                     "GigabitEthernet0/2"
