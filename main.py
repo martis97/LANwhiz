@@ -32,9 +32,24 @@ class AutoConf(object):
         )
 
         config_device = Configure(device_config=config, connection=connection)
+        
+        print(f"Device under automated configuration: {hostname}")
+        print("Executing default configuration...", end="")
         config_device.default_commands()
-        config_device.interfaces()
+        print(" Done!")
 
+        print("Configuring interfaces...", end="")
+        config_device.interfaces()
+        print(" Done!")
+
+        print("Configuring lines...", end="")
+        config_device.lines()
+        print(" Done!")
+
+        print("Configuration Complete!")
+
+        connection.send_command("end", expect_string="")
+        connection.disconnect()
 
 if __name__ == "__main__":
     AutoConf().configure_cisco_device(
@@ -42,6 +57,6 @@ if __name__ == "__main__":
         mgmt_ip="127.0.0.1",
         port=5000,
         username="admin",
-        password="admin"
+        password="netautoconfig"
         
     )

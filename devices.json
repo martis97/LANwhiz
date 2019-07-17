@@ -41,9 +41,18 @@
             "console": {
                 "password": "netautoconfig",
                 "acl": {
-                    "outbound": [],
-                    "inbound": ["permit-mgmt-remote-access"]
-                }
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": true
+            },
+            "vty": {
+                "password": "netautoconfig",
+                "acl": {
+                    "inbound": ["permit-mgmt-remote-access"],
+                    "outbound": []
+                },
+                "synchronous_logging": true
             }
         },
         "routing": {

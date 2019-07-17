@@ -34,9 +34,6 @@ class Interface(object):
         for rule in inbound:
             acl_commands.append(f"ip access-group {rule} in")
         for command in acl_commands:
-            if re.match(r"(console|vty)", interface):
-                for replacement in (("ip ", ""), ("group", "class")):
-                    command = command.replace(*replacement)
             self.connection.send_command(command, expect_string="")
 
     def nat(self, direction):
@@ -44,3 +41,31 @@ class Interface(object):
         nat_command = f"ip nat {direction}"
         self.connection.send_command(nat_command, expect_string="")
 
+
+class Line(object):
+    def __init__(self, connection):
+        self.connection = connection
+        self.utils = Utilities()
+
+    def synchronous_logging(self):
+        """ Enables Synchronous Logging on a line interface """
+        self.connection.send_command("logging synchronous", expect_string="")
+
+    def acl(self, *, inbound=[], outbound=[]):
+        """ Sends commands to configure ACLs on line interfaces """
+        if inbound or outbound:
+            acl_commands = []
+            for rule in outbound:
+                acl_commands.append(f"access-class {rule} out")
+            for rule in inbound:
+                acl_commands.append(f"access-class {rule} in")
+            for command in acl_commands:
+                self.connection.send_command(command, expect_string="")
+    
+    def password(self, password):
+        """ Configures a line interface with a password """
+        self.connection.send_command(
+            f"password {password}",
+            expect_string=""
+        )
+        self.connection.send_command("login", expect_string="")

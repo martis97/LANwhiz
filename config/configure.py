@@ -1,5 +1,5 @@
 from net_auto_config.utils import Utilities
-from net_auto_config.config.interface import Interface
+from net_auto_config.config.interface import Interface, Line
 from net_auto_config.connect import Connect
 
 
@@ -11,6 +11,7 @@ class Configure(object):
         
         
     def default_commands(self):
+        """ Sends pre-defined default commands to the console. """
         for cmd in self.config["default"]:
             self.connection.send_command(cmd, expect_string="")
 
@@ -30,10 +31,6 @@ class Configure(object):
         self.configure_interface = Interface(self.connection)
         for interface, int_config in self.config["interfaces"].items():
             access_interface = f"interface {interface}"
-            line_interfaces = ("vty","console","aux")
-            for int_type in line_interfaces:
-                if int_type in interface:
-                    access_interface = f"line {interface}"
             self.connection.send_command(
                 access_interface, expect_string=""
             )
@@ -58,3 +55,18 @@ class Configure(object):
         """ Pass configuration information to class methods for line
         configuration.
         """
+        self.configure_line = Line(self.connection)
+        for line, line_config in self.config["lines"].items():
+            access_line = f"line {line}"
+            if line == "console":
+                access_line += " 0"
+            elif line == "vty":
+                access_line += " 0 4"
+            self.connection.send_command(access_line, expect_string="")
+            if line_config["password"]:
+                self.configure_line.password(line_config["password"])
+            if line_config["acl"]["inbound"] \
+                or line_config["acl"]["outbound"]:
+                self.configure_line.acl(**line_config["acl"])
+            if line_config["synchronous_logging"]:
+                self.configure_line.synchronous_logging()
