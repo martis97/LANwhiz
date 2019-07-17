@@ -1,0 +1,4 @@
+
+
+class InvalidCommandException(Exception):
+    pass

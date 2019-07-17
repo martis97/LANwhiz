@@ -23,7 +23,7 @@ class AutoConf(object):
         username,
         password
     ):
-        """ Adds and configures a Cisco Device """
+        """ Connects to and configures a Cisco device """
         config = self.util.read_config(hostname)
         telnet = port == 23 or port <= 5000
         
@@ -32,24 +32,21 @@ class AutoConf(object):
         )
 
         config_device = Configure(device_config=config, connection=connection)
-        
-        print(f"Device under automated configuration: {hostname}")
-        print("Executing default configuration...", end="")
-        config_device.default_commands()
-        print(" Done!")
+        methods = [method for method in dir(Configure) \
+            if not method.startswith("_")
+        ]
 
-        print("Configuring interfaces...", end="")
-        config_device.interfaces()
-        print(" Done!")
+        print(f"Currently being configured: {hostname}")
 
-        print("Configuring lines...", end="")
-        config_device.lines()
-        print(" Done!")
+        for config_area in methods:
+            print(f"Executing {config_area.replace('_', ' ').capitalize()}...")
+            getattr(config_device, config_area)()
+            print("    Done!\n")
 
         print("Configuration Complete!")
 
-        connection.send_command("end", expect_string="")
-        connection.disconnect()
+        for goodbye in ("end", "exit"):
+            connection.send_command(goodbye, expect_string="")
 
 if __name__ == "__main__":
     AutoConf().configure_cisco_device(

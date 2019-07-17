@@ -59,7 +59,7 @@
             "static": [{
                 "network": "0.0.0.0",
                 "subnetmask": "0.0.0.0",
-                "forward_to": "Serial0/0/0"
+                "forward_to": "GigabitEthernet0/0"
             }],
             "ospf": {
                 "instance_id" : 10,

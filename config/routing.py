@@ -1,14 +1,14 @@
 from net_auto_config.utils import Utilities
+import re
 
-class Routing(object):
+class Static(object):
     def __init__(self, connection):
         self.connection = connection
         self.utils = Utilities()
-    
-
-class Static(Routing):
-    def __init__(self):
-        super().__init__()
+        self.connection.config_mode()
+        if "config-" in self.connection.find_prompt():
+            self.connection.send_command("end", expect_string="")
+            self.connection.send_command("conf t", expect_string="")
     
     def send_static_route_command(self, network, subnetmask, forward_to):
         """ Configures a static route on a device """
@@ -18,9 +18,10 @@ class Static(Routing):
         )
 
 
-class OSPF(Routing):
-    def __init__(self, ospf_data):
-        super().__init__()
+class OSPF(object):
+    def __init__(self , connection, ospf_data):
+        self.connection = connection
+        self.utils = Utilities()
         self.ospf_data = ospf_data
         self.connection.send_command(
             f"router ospf {self.ospf_data['instance_id']}",
