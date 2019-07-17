@@ -66,11 +66,11 @@
                 "router_id": "1.1.1.1",
                 "advertise_static" : true,
                 "advertise_networks": [
-                    "192.168.5.1/24",
-                    "192.168.1.1/24"
+                    "192.168.5.1/24/area 0",
+                    "192.168.1.1/24/area 0"
                 ],
                 "passive_interfaces": [
-                    "GigabitEthernet0/2"
+                    "GigabitEthernet0/0"
                 ]
             }
         },

@@ -39,7 +39,9 @@ class AutoConf(object):
         print(f"Currently being configured: {hostname}")
 
         for config_area in methods:
-            print(f"Executing {config_area.replace('_', ' ').capitalize()}...")
+            print("Configuring "
+                f"{config_area.replace('_', ' ').capitalize()}..."
+            )
             getattr(config_device, config_area)()
             print("    Done!\n")
 

@@ -28,7 +28,7 @@ class Utilities():
         Returns:
             Converted Subnet Mask
         """
-        assert cidr in range(8, 31), "Invalid value for CIDR!"
+        assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
         octets = []
         possible_octets = ["128","192","224","240","248","252","254"]
         full_octets = cidr // 8
@@ -51,7 +51,7 @@ class Utilities():
         Returns:
             Converted Wildcard Mask
         """
-        assert cidr in range(8, 31), "Invalid value for CIDR!"
+        assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
         octets = []
         for octet in self.cidr_to_subnet_mask(cidr).split("."):
             octet = 255 - int(octet)
