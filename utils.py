@@ -35,7 +35,7 @@ class Utilities():
             octets.append("255")
         leftover_bits = cidr - (full_octets * 8)
         if leftover_bits:
-            octets.append(f"{possible_octets[leftover_bits-1]}")
+            octets.append(possible_octets[leftover_bits-1])
         while not len(octets) == 4:
             octets.append("0")
 
