@@ -37,7 +37,7 @@ class AutoConf(object):
                 "default_commands" == method
         ]
 
-        print(f"Currently being configured: {hostname}")
+        print(f"Currently configuring: {hostname}")
 
         print("Initialising configuration...")
         config_device.default_commands()
