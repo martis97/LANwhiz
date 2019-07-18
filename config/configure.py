@@ -29,6 +29,7 @@ class Configure(object):
         """
         configure_interface = Interface(self.connection)
         for interface, int_config in self.config["interfaces"].items():
+            self.utils.ensure_global_config_mode(self.connection)
             access_interface = f"interface {interface}"
             self.connection.send_command(
                 access_interface, expect_string=""
@@ -57,6 +58,7 @@ class Configure(object):
         """
         configure_line = Line(self.connection)
         for line, line_config in self.config["lines"].items():
+            self.utils.ensure_global_config_mode(self.connection)
             access_line = f"line {line}"
             if line == "console":
                 access_line += " 0"
@@ -75,6 +77,7 @@ class Configure(object):
         """ Pass config information to class methods for routing """
         static_routing = Static(self.connection)
         for static_info in self.config["routing"]["static"]:
+            self.utils.ensure_global_config_mode(self.connection)
             static_routing.send_static_route_command(**static_info)
         if self.config["routing"]["ospf"]:
             ospf_routing = OSPF(

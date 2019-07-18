@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from net_auto_config.exceptions import InvalidCommandException
 
 class Utilities():
@@ -58,3 +59,14 @@ class Utilities():
             octets.append(str(octet))
 
         return ".".join(octets)
+
+    @staticmethod
+    def ensure_global_config_mode(connection):
+        """ Ensures the configuration level is set to global config mode.
+
+        Args: 
+            connection: Netmiko connection object
+        """
+        if re.match(r"^.+\(config.+\)#$", connection.find_prompt()):
+            connection.send_command("end", expect_string="")
+            connection.send_command("conf t", expect_string="")

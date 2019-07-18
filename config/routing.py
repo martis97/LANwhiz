@@ -1,20 +1,13 @@
 from net_auto_config.utils import Utilities
 import re
 
-class Routing(object):
 
-    def ensure_global_config_mode(self, connection):
-        if "config-" in connection.find_prompt():
-            connection.send_command("end", expect_string="")
-            connection.send_command("conf t", expect_string="")
-
-
-class Static(Routing):
+class Static(object):
     def __init__(self, connection):
         self.connection = connection
         self.utils = Utilities()
-        super().ensure_global_config_mode(connection)
-    
+        self.utils.ensure_global_config_mode(connection)
+
     def send_static_route_command(self, network, subnetmask, forward_to):
         """ Configures a static route on a device """
         self.connection.send_command(
@@ -28,7 +21,7 @@ class OSPF(object):
         self.connection = connection
         self.utils = Utilities()
         self.ospf_data = ospf_data
-        
+        self.utils.ensure_global_config_mode(connection)
         self.connection.send_command(
             f"router ospf {self.ospf_data['instance_id']}",
             expect_string=""
