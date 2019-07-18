@@ -33,14 +33,19 @@ class AutoConf(object):
 
         config_device = Configure(device_config=config, connection=connection)
         methods = [method for method in dir(Configure) \
-            if not method.startswith("_")
+            if not method.startswith("_") and not \
+                "default_commands" == method
         ]
 
         print(f"Currently being configured: {hostname}")
 
+        print("Initialising configuration...")
+        config_device.default_commands()
+        print("     Done!\n")
+
         for config_area in methods:
             print("Configuring "
-                f"{config_area.replace('_', ' ').capitalize()}..."
+                f"{config_area.replace('_', ' ').title()}..."
             )
             getattr(config_device, config_area)()
             print("    Done!\n")

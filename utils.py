@@ -70,3 +70,5 @@ class Utilities():
         if re.match(r"^.+\(config.+\)#$", connection.find_prompt()):
             connection.send_command("end", expect_string="")
             connection.send_command("conf t", expect_string="")
+        elif re.match(r"^[A-Za-z0-9\-]+\#$", connection.find_prompt()):
+            connection.send_command("conf t", expect_string="")

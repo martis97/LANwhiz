@@ -9,6 +9,7 @@ class AccessControlLists(object):
         self.utils = Utilities()
         self.standard_acls = acl_config["standard"]
         self.extended_acls = acl_config["extended"]
+        self.utils.ensure_global_config_mode(self.connection)
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """
@@ -20,9 +21,9 @@ class AccessControlLists(object):
             self.utils.ensure_global_config_mode(self.connection)
             # if it contains CIDR, create command with wildcard mask
             if re.match(contains_cidr, config_data["source"]):
-                ip = config_data["source"].split("/")[1]
-                cidr = config_data["source"].split("/")[2]
-                wildcard = self.utils.cidr_to_wildcard_mask(cidr)
+                ip = config_data["source"].split("/")[0]
+                cidr = config_data["source"].split("/")[1]
+                wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
                 std_acl = f"{ip} {wildcard}"
             # if not, assume it's one host
             else:
@@ -34,8 +35,9 @@ class AccessControlLists(object):
                 ]
                 for cmd in named_acl_cmds:
                     self.connection.send_command(cmd, expect_string="")
+                return
             elif identifier.isnumeric():
                 self.connection.send.command(
                     f"access-list {identifier} {config_data['action']}"
                 )
-            self.connection.send_command(std_acl, expect_string="")
+                return

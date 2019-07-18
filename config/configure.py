@@ -1,6 +1,7 @@
 from net_auto_config.utils import Utilities
 from net_auto_config.config.interface import Interface, Line
 from net_auto_config.config.routing import Static, OSPF
+from net_auto_config.config.acl import AccessControlLists
 
 
 class Configure(object):
@@ -88,3 +89,8 @@ class Configure(object):
             ospf_routing.advertise_static_routes()
             ospf_routing.advertise_networks()
             ospf_routing.passive_interfaces()
+    
+    def access_control_lists(self):
+        """ Configure ACLs on the device """
+        config_acl = AccessControlLists(self.connection, self.config["acl"])
+        config_acl.standard()
