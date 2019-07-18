@@ -52,7 +52,7 @@
                     "inbound": ["permit-mgmt-remote-access"],
                     "outbound": []
                 },
-                "synchronous_logging": true
+                "synchronous_logging": false
             }
         },
         "routing": {
