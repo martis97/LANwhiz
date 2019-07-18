@@ -55,6 +55,7 @@ class AutoConf(object):
         for goodbye in ("end", "exit"):
             connection.send_command(goodbye, expect_string="")
 
+
 if __name__ == "__main__":
     AutoConf().configure_cisco_device(
         hostname="R1",

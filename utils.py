@@ -1,7 +1,5 @@
 import json
-import os
 import re
-from net_auto_config.exceptions import InvalidCommandException
 
 class Utilities():
 
