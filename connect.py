@@ -8,7 +8,7 @@ AutoConf: Connection Module
 - Authenticates to devices with adequate credentials
 
 """
-class Connect:
+class Connect(object):
 
     def __init__(self):
         self.active_connections = 0
@@ -49,7 +49,7 @@ class Connect:
         print("Connecting to Cisco Device..")
         connection = Netmiko(**cisco_device)
         print("Connected")
-        
+
         self.active_connections += 1
 
         return connection 

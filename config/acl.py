@@ -13,21 +13,8 @@ class AccessControlLists(object):
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """
-        contains_cidr = re.compile(
-            r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\/\d{1,2}"
-        )
-
         for identifier, config_data in self.standard_acls.items():
-            self.utils.ensure_global_config_mode(self.connection)
-            # if it contains CIDR, create command with wildcard mask
-            if re.match(contains_cidr, config_data["source"]):
-                ip = config_data["source"].split("/")[0]
-                cidr = config_data["source"].split("/")[1]
-                wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
-                std_acl = f"{ip} {wildcard}"
-            # if not, assume it's one host
-            else:
-                std_acl = f"host {config_data['source']}"
+            std_acl = self.format_acl_cmd_target(config_data["source"])
             if identifier.isalpha():
                 named_acl_cmds = [
                     f"ip access-list standard {identifier}",
@@ -39,3 +26,19 @@ class AccessControlLists(object):
                 self.connection.send.command(
                     f"access-list {identifier} {config_data['action']}"
                 )
+    
+    def format_acl_cmd_target(self, target):
+        contains_cidr = re.compile(
+            r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\/\d{1,2}"
+        )
+        # if it contains CIDR, create command with wildcard mask
+        if re.match(contains_cidr, target):
+            ip = target.split("/")[0]
+            cidr = target.split("/")[1]
+            wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
+            acl_target = f"{ip} {wildcard}"
+        # if not, assume it's one host
+        else:
+            acl_target = f"host {target}"
+        
+        return acl_target
