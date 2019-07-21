@@ -30,12 +30,11 @@ class Utilities():
         assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
         octets = []
         possible_octets = ["128","192","224","240","248","252","254"]
-        full_octets = cidr // 8
-        for _ in range(full_octets):
+        for _ in range(cidr // 8):
             octets.append("255")
-        leftover_bits = cidr - (full_octets * 8)
-        if leftover_bits:
-            octets.append(possible_octets[leftover_bits-1])
+        bits_left = cidr % 8
+        if bits_left:
+            octets.append(possible_octets[bits_left - 1])
         while not len(octets) == 4:
             octets.append("0")
 
@@ -61,6 +60,17 @@ class Utilities():
     @staticmethod
     def ensure_global_config_mode(connection):
         """ Ensures the configuration level is set to global config mode.
+        Will exit down to privileged exec mode, then escalate to global 
+        config. 
+
+        E.g. if the prompt is:
+                R1(config-if)#
+            It will send commands 'end' (CTRL+Z) and 'conf t'.
+
+        or,
+            If the prompt is:
+                R1#
+            It will send a command 'conf t' only.
 
         Args: 
             connection: Netmiko connection object

@@ -8,6 +8,7 @@ Main Module
 from net_auto_config.connect import Connect
 from net_auto_config.utils import Utilities
 from net_auto_config.config.configure import Configure
+import threading
 
 
 class AutoConf(object):
@@ -25,16 +26,16 @@ class AutoConf(object):
     ):
         """ Connects to and configures a Cisco device """
         config = self.util.read_config(hostname)
-        telnet = port == 23 or port <= 5000
+        telnet = port == 23 or port >= 5000
         
         connection = self.connect_to.cisco_device(
             mgmt_ip, port, username, password, telnet=telnet
         )
 
         config_device = Configure(device_config=config, connection=connection)
-        methods = [method for method in dir(Configure) \
-            if not method.startswith("_") and not \
-                "default_commands" == method
+        methods = [
+            method for method in dir(Configure) if not method.startswith("_") \
+            and not "default_commands" == method
         ]
 
         print(f"Currently configuring: {hostname}")
@@ -56,11 +57,25 @@ class AutoConf(object):
             connection.send_command(goodbye, expect_string="")
 
 
+cisco_devices = [
+{
+    "hostname" : "R1",
+    "mgmt_ip" : "127.0.0.1",
+    "port" : 5000,
+    "username" : "admin",
+    "password" : "netautoconfig"
+},
+{
+    "hostname" : "R1",
+    "mgmt_ip" : "127.0.0.1",
+    "port" : 5001,
+    "username" : "admin",
+    "password" : "netautoconfig"
+}]
+
+ac = AutoConf()
+
 if __name__ == "__main__":
-    AutoConf().configure_cisco_device(
-        hostname="R1",
-        mgmt_ip="127.0.0.1",
-        port=5000,
-        username="admin",
-        password="netautoconfig"
-    )
+    for device in cisco_devices:
+        thread = threading.Thread(target=ac.configure_cisco_device, kwargs=device)
+        thread.start()
