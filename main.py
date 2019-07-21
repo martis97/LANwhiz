@@ -73,9 +73,9 @@ cisco_devices = [
     "password" : "netautoconfig"
 }]
 
-ac = AutoConf()
 
 if __name__ == "__main__":
+    ac = AutoConf()
     for device in cisco_devices:
         thread = threading.Thread(target=ac.configure_cisco_device, kwargs=device)
         thread.start()
