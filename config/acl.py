@@ -28,6 +28,9 @@ class AccessControlLists(object):
                 )
     
     def format_acl_cmd_target(self, target):
+        """ Forms a command subset where the source or destination 
+        needs to be defined. 
+        """
         contains_cidr = re.compile(
             r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\/\d{1,2}"
         )
