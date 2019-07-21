@@ -24,7 +24,8 @@ class AccessControlLists(object):
                     self.connection.send_command(cmd, expect_string="")
             elif identifier.isnumeric():
                 self.connection.send.command(
-                    f"access-list {identifier} {config_data['action']}"
+                    f"access-list {identifier} " 
+                    f"{config_data['action']} {std_acl}"
                 )
     
     def format_acl_cmd_target(self, target):
