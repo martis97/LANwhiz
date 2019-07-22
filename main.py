@@ -75,4 +75,9 @@ if __name__ == "__main__":
     ac = AutoConf()
     for device in cisco_devices:
         thread = threading.Thread(target=ac.configure_cisco_device, kwargs=device)
-        thread.start()
+        try:
+            thread.start()
+        except Exception as e:
+            print(f"ERROR: Exception occured on {device['hostname']}")
+            print(f"{device['hostname']} says: {e.args}")
+            print(f"Terminating configuration for {device['hostname']}")

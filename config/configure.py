@@ -94,3 +94,4 @@ class Configure(object):
         """ Configure ACLs on the device """
         config_acl = AccessControlLists(self.connection, self.config["acl"])
         config_acl.standard()
+        config_acl.extended()
