@@ -31,6 +31,16 @@ class AccessControlLists(object):
     def format_acl_cmd_target(self, target):
         """ Forms a command subset where the source or destination 
         needs to be defined. 
+        
+        Example:
+            If target passed in is 192.168.1.0/24, then it will 
+            return '192.168.1.0 0.0.0.255'
+            
+            or,
+            
+            If target passed in is 192.168.1.15, it will assume
+            the ACL is for a single host and will return
+            "host 192.168.1.15"
         """
         contains_cidr = re.compile(
             r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\/\d{1,2}"
