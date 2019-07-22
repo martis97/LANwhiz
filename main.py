@@ -27,6 +27,8 @@ class AutoConf(object):
         """ Connects to and configures a Cisco device """
         config = self.util.read_config(hostname)
         telnet = port == 23 or port >= 5000
+
+        # Only configure what's been defined in JSON config file
         methods = [
             method for method in config if not "default_commands" == method
         ]
@@ -37,6 +39,7 @@ class AutoConf(object):
 
         print(f"Currently configuring: {hostname}")
 
+        # Ensuring this runs before all
         print("Initialising configuration...")
         config_device.default_commands()
         print("     Done!\n")
@@ -48,7 +51,7 @@ class AutoConf(object):
             getattr(config_device, config_area)()
             print("    Done!\n")
 
-        print("Configuration Complete!")
+        print(f"{hostname}: Configuration Complete!")
 
         for goodbye in ("end", "exit"):
             connection.send_command(goodbye, expect_string="")
