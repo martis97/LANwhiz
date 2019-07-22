@@ -12,7 +12,7 @@ class Configure(object):
         
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
-        for cmd in self.config["default"]:
+        for cmd in self.config["default_commands"]:
             self.connection.send_command(cmd, expect_string="")
 
     # def superuser(self):
@@ -90,7 +90,7 @@ class Configure(object):
             ospf_routing.advertise_networks()
             ospf_routing.passive_interfaces()
     
-    def access_control_lists(self):
+    def acl(self):
         """ Configure ACLs on the device """
         config_acl = AccessControlLists(self.connection, self.config["acl"])
         config_acl.standard()

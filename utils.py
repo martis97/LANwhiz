@@ -63,7 +63,8 @@ class Utilities():
         Will exit down to privileged exec mode, then escalate to global 
         config. 
 
-        E.g. if the prompt is:
+        E.g.
+            If the prompt is:
                 R1(config-if)#
             It will send commands 'end' (CTRL+Z) and 'conf t'.
 

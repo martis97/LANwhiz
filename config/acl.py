@@ -3,7 +3,6 @@ import re
 
 
 class AccessControlLists(object):
-
     def __init__(self, connection, acl_config):
         self.connection = connection
         self.utils = Utilities()
@@ -14,18 +13,42 @@ class AccessControlLists(object):
     def standard(self):
         """ Configures standard Access Control Lists on the device """
         for identifier, config_data in self.standard_acls.items():
-            std_acl = self.format_acl_cmd_target(config_data["source"])
+            std_source = self.format_acl_cmd_target(config_data["source"])
+            # Named ACL
             if identifier.isalpha():
                 named_acl_cmds = [
                     f"ip access-list standard {identifier}",
-                    f"{config_data['action']} {std_acl}"
+                    f"{config_data['action']} {std_source}"
                 ]
                 for cmd in named_acl_cmds:
                     self.connection.send_command(cmd, expect_string="")
+            # Numbered ACL
             elif identifier.isnumeric():
-                self.connection.send.command(
+                self.connection.send_command(
                     f"access-list {identifier} " 
-                    f"{config_data['action']} {std_acl}"
+                    f"{config_data['action']} {std_source}"
+                )
+    
+    def extended(self):
+        """ Configures extended Access Control Lists on the device """
+        for identifier, config_data in self.extended_acls.items():
+            ext_source = self.format_acl_cmd_target(config_data["source"])
+            ext_dest = self.format_acl_cmd_target(config_data["destination"])
+            # Named ACL
+            if identifier.isalpha():
+                named_acl_cmds = [
+                    f"ip access-list standard {identifier}",
+                    f"{config_data['action']} {config_data['protocol']} "
+                    f"{ext_source} {ext_dest} {config_data['port']}"
+                ]
+                for cmd in named_acl_cmds:
+                    self.connection.send_command(cmd, expect_string="")
+            # Numbered ACL
+            elif identifier.isnumeric():
+                self.connection.send_command(
+                    f"access-list {identifier} " 
+                    f"{config_data['action']} {config_data['protocol']} "
+                    f"{ext_source} {ext_dest} {config_data['port']}"
                 )
     
     def format_acl_cmd_target(self, target):

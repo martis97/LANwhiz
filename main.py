@@ -27,16 +27,13 @@ class AutoConf(object):
         """ Connects to and configures a Cisco device """
         config = self.util.read_config(hostname)
         telnet = port == 23 or port >= 5000
-        
+        methods = [
+            method for method in config if not "default_commands" == method
+        ]
         connection = self.connect_to.cisco_device(
             mgmt_ip, port, username, password, telnet=telnet
         )
-
         config_device = Configure(device_config=config, connection=connection)
-        methods = [
-            method for method in dir(Configure) if not method.startswith("_") \
-            and not "default_commands" == method
-        ]
 
         print(f"Currently configuring: {hostname}")
 
@@ -66,7 +63,7 @@ cisco_devices = [
     "password" : "netautoconfig"
 },
 {
-    "hostname" : "R1",
+    "hostname" : "R2",
     "mgmt_ip" : "127.0.0.1",
     "port" : 5001,
     "username" : "admin",
