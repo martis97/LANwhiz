@@ -24,6 +24,8 @@ class AccessControlLists(object):
                 self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
+                assert 0 < int(identifier) and int(identifier) <= 100, \
+                    f"Standard ACL '{identifier}' out of range"
                 self.connection.send_command(
                     f"access-list {identifier} " 
                     f"{config_data['action']} {std_source}"
@@ -44,6 +46,8 @@ class AccessControlLists(object):
                 self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
+                assert 100 < int(identifier) and int(identifier) <= 199, \
+                    f"Extended ACL '{identifier}' out of range"
                 self.connection.send_command(
                     f"access-list {identifier} " 
                     f"{config_data['action']} {config_data['protocol']} "
