@@ -28,16 +28,21 @@ class AutoConf(object):
         config = self.util.read_config(hostname)
         telnet = port == 23 or port >= 5000
 
+        print(f"Starting configuration: {hostname}")
+
         # Only configure what's been defined in JSON config file
         methods = [
             method for method in config if not "default_commands" == method
         ]
+
+        # Get SSH/Telnet channel
+        print(f"{hostname}: Connecting to Cisco Device..")
         connection = self.connect_to.cisco_device(
             mgmt_ip, port, username, password, telnet=telnet
         )
-        config_device = Configure(device_config=config, connection=connection)
+        print(f"{hostname}: Successfully connected")
 
-        print(f"Currently configuring: {hostname}")
+        config_device = Configure(device_config=config, connection=connection)
 
         # Ensuring this runs before all
         print("Initialising configuration...")

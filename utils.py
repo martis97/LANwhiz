@@ -1,7 +1,7 @@
 import json
 import re
 
-class Utilities():
+class Utilities(object):
 
     def read_config(self, hostname):
         """ Provide config information given device's hostname 

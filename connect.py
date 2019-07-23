@@ -46,9 +46,7 @@ class Connect(object):
         if telnet:
             cisco_device["device_type"] += "_telnet"
 
-        print("Connecting to Cisco Device..")
         connection = Netmiko(**cisco_device)
-        print("Connected")
 
         self.active_connections += 1
 
