@@ -57,9 +57,8 @@ class AutoConf(object):
             print("    Done!\n")
 
         print(f"{hostname}: Configuration Complete!")
-
-        for goodbye in ("end", "exit"):
-            connection.send_command(goodbye, expect_string="")
+        print(f"{hostname}: Closing session..")
+        connection.cleanup()
 
 
 cisco_devices = [

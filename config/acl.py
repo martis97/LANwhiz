@@ -21,8 +21,7 @@ class AccessControlLists(object):
                     f"ip access-list standard {identifier}",
                     f"{config_data['action']} {std_source}"
                 ]
-                for cmd in named_acl_cmds:
-                    self.connection.send_command(cmd, expect_string="")
+                self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
                 self.connection.send_command(
@@ -42,8 +41,7 @@ class AccessControlLists(object):
                     f"{config_data['action']} {config_data['protocol']} "
                     f"{ext_source} {ext_dest} {config_data['port']}"
                 ]
-                for cmd in named_acl_cmds:
-                    self.connection.send_command(cmd, expect_string="")
+                self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
                 self.connection.send_command(
