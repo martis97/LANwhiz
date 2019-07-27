@@ -8,7 +8,7 @@ Main Module
 from net_auto_config.connect import Connect
 from net_auto_config.utils import Utilities
 from net_auto_config.config.configure import Configure
-import threading
+from threading import Thread
 
 
 class AutoConf(object):
@@ -81,7 +81,7 @@ cisco_devices = [
 if __name__ == "__main__":
     ac = AutoConf()
     for device in cisco_devices:
-        thread = threading.Thread(target=ac.configure_cisco_device, kwargs=device)
+        thread = Thread(target=ac.configure_cisco_device, kwargs=device)
         try:
             thread.start()
         except Exception as e:

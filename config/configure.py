@@ -78,7 +78,6 @@ class Configure(object):
         """ Pass config information to class methods for routing """
         static_routing = Static(self.connection)
         for static_info in self.config["routing"]["static"]:
-            self.utils.ensure_global_config_mode(self.connection)
             static_routing.send_static_route_command(**static_info)
         if self.config["routing"]["ospf"]:
             ospf_routing = OSPF(
