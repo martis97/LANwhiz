@@ -5,7 +5,7 @@ from net_auto_config.utils import Utilities
 class Interface(object):
     def __init__(self, connection):
         self.connection = connection
-        self.utils = Utilities()
+        self.utils = Utilities(self.connection)
 
     def ipv4(self, ip):
         """ Sends command to configure IPv4 address """
@@ -45,7 +45,7 @@ class Interface(object):
 class Line(object):
     def __init__(self, connection):
         self.connection = connection
-        self.utils = Utilities()
+        self.utils = Utilities(self.connection)
 
     def synchronous_logging(self):
         """ Enables Synchronous Logging on a line interface """

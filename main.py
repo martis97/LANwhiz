@@ -14,7 +14,6 @@ from threading import Thread
 class AutoConf(object):
     def __init__(self):
         self.connect_to = Connect()
-        self.util = Utilities()
 
     def configure_cisco_device(
         self,
@@ -25,15 +24,9 @@ class AutoConf(object):
         password
     ):
         """ Connects to and configures a Cisco device """
-        config = self.util.read_config(hostname)
         telnet = port == 23 or port >= 5000
 
         print(f"Starting configuration: {hostname}")
-
-        # Only configure what's been defined in JSON config file
-        methods = [
-            method for method in config if not "default_commands" == method
-        ]
 
         # Get SSH/Telnet channel
         print(f"{hostname}: Connecting to Cisco Device..")
@@ -41,6 +34,15 @@ class AutoConf(object):
             mgmt_ip, port, username, password, telnet=telnet
         )
         print(f"{hostname}: Successfully connected")
+
+        self.util = Utilities(connection)
+        config = self.util.read_config(hostname)
+        print(self.util.get_interfaces())
+
+        # Only configure what's been defined in JSON config file
+        methods = [
+            method for method in config if not "default_commands" == method
+        ]
 
         config_device = Configure(device_config=config, connection=connection)
 

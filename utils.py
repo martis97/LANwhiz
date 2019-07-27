@@ -1,7 +1,23 @@
 import json
 import re
+from napalm import get_network_driver
 
 class Utilities(object):
+    def __init__(self, connection):
+        self.connection = connection
+
+    def _get_napalm_connection(self):
+        """ Gets a Napalm connection object """
+        ios_driver = get_network_driver("ios")
+        
+        # Getting a Napalm instance with no connection needed
+        napalm_connection = ios_driver(
+            hostname=None, username=None, password=None
+        )
+        # ... and re-using our existing connection object!
+        napalm_connection.device = self.connection
+
+        return napalm_connection
 
     def read_config(self, hostname):
         """ Provide config information given device's hostname 
@@ -57,8 +73,14 @@ class Utilities(object):
 
         return ".".join(octets)
 
-    @staticmethod
-    def ensure_global_config_mode(connection):
+    def get_interfaces(self):
+        """ Returns a list of interfaces using Napalm """
+        napalm_connection = self._get_napalm_connection()
+        interfaces = napalm_connection.get_interfaces()
+        
+        return [interface for interface in interfaces.keys()]
+
+    def ensure_global_config_mode(self):
         """ Ensures the configuration level is set to global config mode.
         Will exit down to privileged exec mode, then escalate to global 
         config. 
@@ -72,12 +94,9 @@ class Utilities(object):
             If the prompt is:
                 R1#
             It will send a command 'conf t' only.
-
-        Args: 
-            connection: Netmiko connection object
         """
-        if re.match(r"^.+\(config.+\)#$", connection.find_prompt()):
-            connection.send_command("end", expect_string="")
-            connection.send_command("conf t", expect_string="")
-        elif re.match(r"^[A-Za-z0-9\-]+\#$", connection.find_prompt()):
-            connection.send_command("conf t", expect_string="")
+        if re.match(r"^.+\(config.+\)#$", self.connection.find_prompt()):
+            self.connection.send_command("end", expect_string="")
+            self.connection.send_command("conf t", expect_string="")
+        elif re.match(r"^[A-Za-z0-9\-]+\#$", self.connection.find_prompt()):
+            self.connection.send_command("conf t", expect_string="")

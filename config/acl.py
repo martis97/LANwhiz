@@ -6,10 +6,10 @@ import re
 class AccessControlLists(object):
     def __init__(self, connection, acl_config):
         self.connection = connection
-        self.utils = Utilities()
+        self.utils = Utilities(self.connection)
         self.standard_acls = acl_config["standard"]
         self.extended_acls = acl_config["extended"]
-        self.utils.ensure_global_config_mode(self.connection)
+        self.utils.ensure_global_config_mode()
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """

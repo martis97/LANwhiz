@@ -8,7 +8,7 @@ class Configure(object):
     def __init__(self, *, device_config, connection):
         self.config = device_config
         self.connection = connection
-        self.utils = Utilities()
+        self.utils = Utilities(connection)
         
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
@@ -30,7 +30,7 @@ class Configure(object):
         """
         configure_interface = Interface(self.connection)
         for interface, int_config in self.config["interfaces"].items():
-            self.utils.ensure_global_config_mode(self.connection)
+            self.utils.ensure_global_config_mode()
             access_interface = f"interface {interface}"
             self.connection.send_command(
                 access_interface, expect_string=""
@@ -59,7 +59,7 @@ class Configure(object):
         """
         configure_line = Line(self.connection)
         for line, line_config in self.config["lines"].items():
-            self.utils.ensure_global_config_mode(self.connection)
+            self.utils.ensure_global_config_mode()
             access_line = f"line {line}"
             if line == "console":
                 access_line += " 0"

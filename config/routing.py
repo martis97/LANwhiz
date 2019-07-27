@@ -5,8 +5,8 @@ import re
 class Static(object):
     def __init__(self, connection):
         self.connection = connection
-        self.utils = Utilities()
-        self.utils.ensure_global_config_mode(connection)
+        self.utils = Utilities(self.connection)
+        self.utils.ensure_global_config_mode()
 
     def send_static_route_command(self, network, subnetmask, forward_to):
         """ Configures a static route on a device """
@@ -19,9 +19,9 @@ class Static(object):
 class OSPF(object):
     def __init__(self , connection, ospf_data):
         self.connection = connection
-        self.utils = Utilities()
+        self.utils = Utilities(self.connection)
         self.ospf_data = ospf_data
-        self.utils.ensure_global_config_mode(connection)
+        self.utils.ensure_global_config_mode()
         self.connection.send_command(
             f"router ospf {self.ospf_data['instance_id']}",
             expect_string=""
