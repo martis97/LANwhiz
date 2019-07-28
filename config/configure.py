@@ -15,14 +15,14 @@ class Configure(object):
         for cmd in self.config["default_commands"]:
             self.connection.send_command(cmd, expect_string="")
 
-    # def superuser(self):
-    #     details = self.config["superuser"]
-    #     command = (
-    #         f"username {details['username']} "
-    #         f"password {details['pass']} "
-    #         f"privilege {details['privilege']}"
-    #     )
-    #     self.connection.send_command(command, expect_string="")
+    def superuser(self):
+        details = self.config["superuser"]
+        command = (
+            f"username {details['username']} "
+            f"password {details['pass']} "
+            f"privilege {details['privilege']}"
+        )
+        self.connection.send_command(command, expect_string="")
 
     def interfaces(self):
         """ Pass configuration information to class methods for interface

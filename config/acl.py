@@ -46,7 +46,7 @@ class AccessControlLists(object):
                 self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
-                assert 100 < int(identifier) and int(identifier) <= 199, \
+                assert 100 < int(identifier) and int(identifier) <= 200, \
                     f"Extended ACL '{identifier}' out of range"
                 self.connection.send_command(
                     f"access-list {identifier} " 
@@ -65,7 +65,7 @@ class AccessControlLists(object):
         needs to be defined. 
         
         Example:
-            If target passed in is 192.168.1.0/24, then it will 
+            If target passed in is '192.168.1.0/24', then it will 
             return '192.168.1.0 0.0.0.255'
             
             or,
