@@ -29,12 +29,13 @@ class Interface(object):
     def acl(self, interface, *, inbound=[], outbound=[]):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
-        for rule in outbound:
-            acl_commands.append(f"ip access-group {rule} out")
-        for rule in inbound:
-            acl_commands.append(f"ip access-group {rule} in")
-        for command in acl_commands:
-            self.connection.send_command(command, expect_string="")
+        if inbound or outbound:
+            for rule in outbound:
+                acl_commands.append(f"ip access-group {rule} out")
+            for rule in inbound:
+                acl_commands.append(f"ip access-group {rule} in")
+            for command in acl_commands:
+                self.connection.send_command(command, expect_string="")
 
     def nat(self, direction):
         """ Sends command to configure NAT on the interface """
