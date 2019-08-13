@@ -2,6 +2,7 @@ from net_auto_config.utils import Utilities
 from net_auto_config.config.interface import Interface, Line
 from net_auto_config.config.routing import Static, OSPF
 from net_auto_config.config.acl import AccessControlLists
+from net_auto_config.config.dhcp import DHCPPool
 
 
 class Configure(object):
@@ -94,3 +95,13 @@ class Configure(object):
         config_acl = AccessControlLists(self.connection, self.config["acl"])
         config_acl.standard()
         config_acl.extended()
+
+    def dhcp(self):
+        """ Configures DHCP on the device """
+        for pool in self.config["dhcp"]:
+            dhcp_pool = DHCPPool(self.connection, config=pool)            
+            methods = [
+                method for method in dir(DHCPPool) if method[0] != "_"
+            ]
+            for method in methods:
+                getattr(dhcp_pool, method)()
