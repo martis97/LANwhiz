@@ -82,19 +82,17 @@ class AccessControlLists(object):
         just_ip = re.compile(
             r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
         )
-        
+
         if target == "any":
             return target
         # if it contains CIDR, create command with wildcard mask
         elif re.match(contains_cidr, target):
-            ip = target.split("/")[0]
-            cidr = target.split("/")[1]
+            ip, cidr = target.split("/")
             wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
             acl_target = f"{ip} {wildcard}"
         # if only IP is provided, it's one host
         elif re.match(just_ip, target):
             acl_target = f"host {target}"
-        # probably 'any'
         else:
             raise InvalidInputException(
                 f"Target {target} not recognised."

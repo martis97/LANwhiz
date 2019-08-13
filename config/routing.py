@@ -44,11 +44,8 @@ class OSPF(object):
     def advertise_networks(self):
         """ Advertises OSPF networks """
         for network in self.ospf_data["advertise_networks"]:
-            ip = network.split("/")[0]
-            wildcard = self.utils.cidr_to_wildcard_mask(
-                int(network.split("/")[1])
-            )
-            area = network.split("/")[2]
+            ip, cidr, area = network.split("/")
+            wildcard = self.utils.cidr_to_wildcard_mask(cidr)
             self.connection.send_command(
                 f"network {ip} {wildcard} {area}",
                 expect_string=""

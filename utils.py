@@ -5,6 +5,8 @@ from napalm import get_network_driver
 class Utilities(object):
     def __init__(self, connection):
         self.connection = connection
+        self.napalm_conn = self._get_napalm_connection()
+
 
     def _get_napalm_connection(self):
         """ Gets a Napalm connection object """
@@ -14,7 +16,7 @@ class Utilities(object):
         napalm_connection = ios_driver(
             hostname=None, username=None, password=None
         )
-        # ... and re-using our existing connection object!
+        # ... and re-using our existing Netmiko connection object!
         napalm_connection.device = self.connection
 
         return napalm_connection
@@ -34,7 +36,7 @@ class Utilities(object):
         
         return self.config[hostname]
 
-    def cidr_to_subnet_mask(self, cidr):
+    def cidr_to_subnet_mask(self, cidr, int_list=False):
         """ Convert CIDR to Subnet Mask
         
         Args:
@@ -43,7 +45,7 @@ class Utilities(object):
         Returns:
             Converted Subnet Mask
         """
-        assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
+        assert cidr in range(8, 31), f"Invalid CIDR value: {cidr}!"
         octets = []
         possible_octets = ["128","192","224","240","248","252","254"]
         for _ in range(cidr // 8):
@@ -53,6 +55,8 @@ class Utilities(object):
             octets.append(possible_octets[bits_left - 1])
         while not len(octets) == 4:
             octets.append("0")
+        if int_list:
+            return [int(octet) for octet in octets]
 
         return ".".join(octets)
 
@@ -66,17 +70,13 @@ class Utilities(object):
             Converted Wildcard Mask
         """
         assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
-        octets = []
-        for octet in self.cidr_to_subnet_mask(cidr).split("."):
-            octet = 255 - int(octet)
-            octets.append(str(octet))
+        subnetmask = self.cidr_to_subnet_mask(cidr, int_list=True)
 
-        return ".".join(octets)
+        return ".".join([str(255 - octet) for octet in subnetmask])
 
     def get_interfaces(self):
         """ Returns a list of interfaces using Napalm """
-        napalm_connection = self._get_napalm_connection()
-        interfaces = napalm_connection.get_interfaces()
+        interfaces = self.napalm_conn.get_interfaces()
         
         return [interface for interface in interfaces.keys()]
 
@@ -95,8 +95,9 @@ class Utilities(object):
                 R1#
             It will send a command 'conf t' only.
         """
-        if re.match(r"^.+\(config.+\)#$", self.connection.find_prompt()):
+        prompt = self.connection.find_prompt()
+        if re.match(r"^.+\(config.+\)\#$", prompt):
             self.connection.send_command("end", expect_string="")
             self.connection.send_command("conf t", expect_string="")
-        elif re.match(r"^[A-Za-z0-9\-]+\#$", self.connection.find_prompt()):
+        elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.connection.send_command("conf t", expect_string="")
