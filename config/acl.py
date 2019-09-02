@@ -24,7 +24,7 @@ class AccessControlLists(object):
                 self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
-                assert 0 < int(identifier) and int(identifier) <= 100, \
+                assert 0 < int(identifier) <= 100, \
                     f"Standard ACL '{identifier}' out of range"
                 self.connection.send_command(
                     f"access-list {identifier} " 
@@ -46,7 +46,7 @@ class AccessControlLists(object):
                 self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
             elif identifier.isnumeric():
-                assert 100 < int(identifier) and int(identifier) <= 200, \
+                assert 100 < int(identifier) <= 200, \
                     f"Extended ACL '{identifier}' out of range"
                 self.connection.send_command(
                     f"access-list {identifier} " 
@@ -86,12 +86,12 @@ class AccessControlLists(object):
         if target == "any":
             return target
         # if it contains CIDR, create command with wildcard mask
-        elif re.match(contains_cidr, target):
+        elif contains_cidr.match(target):
             ip, cidr = target.split("/")
             wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
             acl_target = f"{ip} {wildcard}"
         # if only IP is provided, it's one host
-        elif re.match(just_ip, target):
+        elif just_ip.match(target):
             acl_target = f"host {target}"
         else:
             raise InvalidInputException(

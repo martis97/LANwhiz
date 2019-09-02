@@ -3,10 +3,11 @@ import re
 from napalm import get_network_driver
 
 class Utilities(object):
+    """ Utilities class """
     def __init__(self, connection):
         self.connection = connection
         self.napalm_conn = self._get_napalm_connection()
-
+        self.json_path = "C:/Users/User/Desktop/The vicious Snake/net_auto_config/devices.json"
 
     def _get_napalm_connection(self):
         """ Gets a Napalm connection object """
@@ -31,10 +32,20 @@ class Utilities(object):
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        with open("C:/Users/User/Desktop/The vicious Snake/net_auto_config/devices.json", "r") as config_file:
+        with open(self.json_path, "r") as config_file:
             self.config = json.loads(config_file.read())
         
         return self.config[hostname]
+    
+    def write_config(self, hostname, new_config):
+        """ Write config given device's hostname.
+
+        Args:
+            hostname: Hostname of device (Root key dict value)
+        """
+        self.config[hostname] = new_config
+        with open(self.json_path, "w") as config_file:
+            self.config = json.dumps(config_file.read())
 
     def cidr_to_subnet_mask(self, cidr, int_list=False):
         """ Convert CIDR to Subnet Mask
@@ -59,6 +70,54 @@ class Utilities(object):
             return [int(octet) for octet in octets]
 
         return ".".join(octets)
+
+# 'bgp_time_conversion',
+# 'cli',
+# 'close',
+# 'commit_config',
+# 'compare_config',
+# 'compliance_report',
+# 'connection_tests',
+# 'dest_file_system',
+# 'device',
+# 'discard_config',
+# 'get_arp_table',
+# 'get_bgp_config',
+# 'get_bgp_neighbors',
+# 'get_bgp_neighbors_detail',
+# 'get_config',
+# 'get_environment',
+# 'get_facts',
+# 'get_firewall_policies',
+# 'get_interfaces',
+# 'get_interfaces_counters',
+# 'get_interfaces_ip',
+# 'get_ipv6_neighbors_table',
+# 'get_lldp_neighbors',
+# 'get_lldp_neighbors_detail',
+# 'get_mac_address_table',
+# 'get_network_instances',
+# 'get_ntp_peers',
+# 'get_ntp_servers',
+# 'get_ntp_stats',
+# 'get_optics',
+# 'get_probes_config',
+# 'get_probes_results',
+# 'get_route_to',
+# 'get_snmp_information',
+# 'get_users',
+# 'is_alive',
+# 'load_merge_candidate',
+# 'load_replace_candidate',
+# 'load_template',
+# 'open',
+# 'parse_uptime',
+# 'ping',
+# 'post_connection_tests',
+# 'pre_connection_tests',
+# 'rollback',
+# 'traceroute'
+
 
     def cidr_to_wildcard_mask(self, cidr):
         """ Convert CIDR to Wildcard Mask
@@ -88,7 +147,7 @@ class Utilities(object):
         E.g.
             If the prompt is:
                 R1(config-if)#
-            It will send commands 'end' (CTRL+Z) and 'conf t'.
+            It will send commands 'end' and 'conf t' consequently.
 
         or,
             If the prompt is:

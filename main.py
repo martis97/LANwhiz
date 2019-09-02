@@ -64,20 +64,21 @@ class AutoConf(object):
 
 
 cisco_devices = [
-{
-    "hostname" : "R1",
-    "mgmt_ip" : "127.0.0.1",
-    "port" : 5000,
-    "username" : "admin",
-    "password" : "netautoconfig"
-},
-{
-    "hostname" : "R2",
-    "mgmt_ip" : "127.0.0.1",
-    "port" : 5001,
-    "username" : "admin",
-    "password" : "netautoconfig"
-}]
+    {
+        "hostname" : "R1",
+        "mgmt_ip" : "127.0.0.1",
+        "port" : 5000,
+        "username" : "admin",
+        "password" : "netautoconfig"
+    } # ,
+    # {
+    #     "hostname" : "R2",
+    #     "mgmt_ip" : "127.0.0.1",
+    #     "port" : 5001,
+    #     "username" : "admin",
+    #     "password" : "netautoconfig"
+    # }
+]
 
 
 if __name__ == "__main__":
@@ -89,4 +90,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"ERROR: Exception occured on {device['hostname']}")
             print(f"{device['hostname']} says: {e.args}")
-            print(f"Terminating configuration for {device['hostname']}")
+            print(f"Terminating configuration process for {device['hostname']}")
