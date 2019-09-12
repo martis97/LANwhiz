@@ -2,6 +2,12 @@ from net_auto_config.utils import Utilities
 
 
 class DHCPPool(object):
+    """ Class for DHCP Pool configuration.
+    
+    Args:
+        connection - Netmiko connection object
+        config - DHCP Pool configuration
+    """
     def __init__(self, connection, config):
         self.connection = connection
         self.dhcp_config = config

@@ -4,7 +4,7 @@ from net_auto_config.utils import Utilities
 
 class Interface(object):
     def __init__(self, connection):
-        self.connection = connectionq
+        self.connection = connection
         self.utils = Utilities(self.connection)
 
     def ipv4(self, ip):

@@ -6,14 +6,13 @@ import re
 class AccessControlLists(object):
     def __init__(self, connection, acl_config):
         self.connection = connection
+        self.acl_config = acl_config
         self.utils = Utilities(self.connection)
-        self.standard_acls = acl_config["standard"]
-        self.extended_acls = acl_config["extended"]
         self.utils.ensure_global_config_mode()
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """
-        for identifier, config_data in self.standard_acls.items():
+        for identifier, config_data in self.acl_config["standard"].items():
             std_source = self.format_acl_cmd_target(config_data["source"])
             # Named ACL
             if identifier.isalpha():
@@ -33,7 +32,7 @@ class AccessControlLists(object):
     
     def extended(self):
         """ Configures extended Access Control Lists on the device """
-        for identifier, config_data in self.extended_acls.items():
+        for identifier, config_data in self.acl_config["extended"].items():
             ext_source = self.format_acl_cmd_target(config_data["source"])
             ext_dest = self.format_acl_cmd_target(config_data["destination"])
             # Named ACL
@@ -95,7 +94,7 @@ class AccessControlLists(object):
             acl_target = f"host {target}"
         else:
             raise InvalidInputException(
-                f"Target {target} not recognised."
+                f"Target IP/Subnet '{target}' not recognised."
                 " Should be xxx.xxx.xxx.xxx/xx for subnet"
                 ", xxx.xxx.xxx.xxx for a single host"
                 " and 'any' for any src/dest."
