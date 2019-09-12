@@ -1,5 +1,5 @@
-from net_auto_config.utils import Utilities
-from net_auto_config.exceptions import InvalidInputException
+from LANwhiz.utils import Utilities
+from LANwhiz.exceptions import InvalidInputException
 import re
 
 
@@ -25,7 +25,7 @@ class AccessControlLists(object):
             elif identifier.isnumeric():
                 assert 0 < int(identifier) <= 100, \
                     f"Standard ACL '{identifier}' out of range"
-                self.connection.send_command(
+                self.utils.send_command(
                     f"access-list {identifier} " 
                     f"{config_data['action']} {std_source}"
                 )
@@ -47,7 +47,7 @@ class AccessControlLists(object):
             elif identifier.isnumeric():
                 assert 100 < int(identifier) <= 200, \
                     f"Extended ACL '{identifier}' out of range"
-                self.connection.send_command(
+                self.utils.send_command(
                     f"access-list {identifier} " 
                     f"{config_data['action']} {config_data['protocol']} "
                     f"{ext_source} {ext_dest} {config_data['port']}"

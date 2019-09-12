@@ -9,6 +9,10 @@ class Utilities(object):
         self.napalm_conn = self._get_napalm_connection()
         self.json_path = "C:/Users/User/Desktop/The vicious Snake/net_auto_config/devices.json"
 
+    def send_command(self, command):
+        """ Helper function to send a command to device """
+        self.connection.send_command(command, expect_string="")
+
     def _get_napalm_connection(self):
         """ Gets a Napalm connection object """
         ios_driver = get_network_driver("ios")
@@ -156,7 +160,7 @@ class Utilities(object):
         """
         prompt = self.connection.find_prompt()
         if re.match(r"^.+\(config.+\)\#$", prompt):
-            self.connection.send_command("end", expect_string="")
-            self.connection.send_command("conf t", expect_string="")
+            self.send_command("end")
+            self.send_command("conf t")
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
-            self.connection.send_command("conf t", expect_string="")
+            self.send_command("conf t")
