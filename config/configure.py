@@ -1,8 +1,8 @@
-from net_auto_config.utils import Utilities
-from net_auto_config.config.interface import Interface, Line
-from net_auto_config.config.routing import Static, OSPF
-from net_auto_config.config.acl import AccessControlLists
-from net_auto_config.config.dhcp import DHCPPool
+from LANwhiz.utils import Utilities
+from LANwhiz.config.interface import Interface, Line
+from LANwhiz.config.routing import Static, OSPF
+from LANwhiz.config.acl import AccessControlLists
+from LANwhiz.config.dhcp import DHCPPool
 
 
 class Configure(object):
@@ -14,7 +14,7 @@ class Configure(object):
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
         for cmd in self.config["default_commands"]:
-            self.connection.send_command(cmd, expect_string="")
+            self.utils.send_command(cmd)
 
     def superuser(self):
         details = self.config["superuser"]
@@ -23,7 +23,7 @@ class Configure(object):
             f"password {details['pass']} "
             f"privilege {details['privilege']}"
         )
-        self.connection.send_command(command, expect_string="")
+        self.utils.send_command(command)
 
     def interfaces(self):
         """ Pass configuration information to class methods for interface
@@ -33,25 +33,23 @@ class Configure(object):
         for interface, int_config in self.config["interfaces"].items():
             self.utils.ensure_global_config_mode()
             access_interface = f"interface {interface}"
-            self.connection.send_command(
-                access_interface, expect_string=""
-            )
-            self.connection.send_command("no shutdown", expect_string="")
-            if int_config["ipv4"]:
+            self.utils.send_command(access_interface)
+            self.utils.send_command("no shutdown")
+            if int_config.get("ipv4"):
                 configure_interface.ipv4(int_config["ipv4"])
-            if int_config["ipv6"]:
+            if int_config.get("ipv6"):
                 configure_interface.ipv6(int_config["ipv6"])
-            if int_config["description"]:
+            if int_config.get("description"):
                 configure_interface.description(
                     int_config["description"]
                 )
-            if int_config["acl"]:
+            if int_config.get("acl"):
                 configure_interface.acl(
                     interface,
                     inbound=int_config["acl"].get("inbound"),
                     outbound=int_config["acl"].get("outbound")
                 )
-            if int_config["nat"]:
+            if int_config.get("nat"):
                 configure_interface.nat(int_config["nat"])
 
     def lines(self):
@@ -66,21 +64,21 @@ class Configure(object):
                 access_line += " 0"
             elif line == "vty":
                 access_line += " 0 4"
-            self.connection.send_command(access_line, expect_string="")
-            if line_config["password"]:
+            self.utils.send_command(access_line)
+            if line_config.get("password"):
                 configure_line.password(line_config["password"])
             if line_config["acl"]["inbound"] \
                 or line_config["acl"]["outbound"]:
                 configure_line.acl(**line_config["acl"])
-            if line_config["synchronous_logging"]:
+            if line_config.get("synchronous_logging"):
                 configure_line.synchronous_logging()
     
     def routing(self):
         """ Pass config information to class methods for routing """
         static_routing = Static(self.connection)
-        for static_info in self.config["routing"]["static"]:
+        for static_info in self.config["routing"].get("static"):
             static_routing.send_static_route_command(**static_info)
-        if self.config["routing"]["ospf"]:
+        if self.config["routing"].get("ospf"):
             ospf_routing = OSPF(
                 self.connection,
                 self.config["routing"]["ospf"]

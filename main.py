@@ -5,13 +5,13 @@ AutoConf Network Device Configuration Automation Platform
 Main Module
 """
 
-from net_auto_config.connect import Connect
-from net_auto_config.utils import Utilities
-from net_auto_config.config.configure import Configure
+from LANwhiz.connect import Connect
+from LANwhiz.utils import Utilities
+from LANwhiz.config.configure import Configure
 from threading import Thread
 
 
-class AutoConf(object):
+class LANwhizMain(object):
     def __init__(self):
         self.connect_to = Connect()
 
@@ -37,7 +37,6 @@ class AutoConf(object):
 
         self.util = Utilities(connection)
         config = self.util.read_config(hostname)
-        print(self.util.get_interfaces())
 
         # Only configure what's been defined in JSON config file
         methods = [
@@ -82,9 +81,9 @@ cisco_devices = [
 
 
 if __name__ == "__main__":
-    ac = AutoConf()
+    lw = LANwhizMain()
     for device in cisco_devices:
-        thread = Thread(target=ac.configure_cisco_device, kwargs=device)
+        thread = Thread(target=lw.configure_cisco_device, kwargs=device)
         try:
             thread.start()
         except Exception as e:
