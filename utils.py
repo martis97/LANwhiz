@@ -7,7 +7,7 @@ class Utilities(object):
     def __init__(self, connection):
         self.connection = connection
         self.napalm_conn = self._get_napalm_connection()
-        self.json_path = "C:/Users/User/Desktop/The vicious Snake/net_auto_config/devices.json"
+        self.json_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices.json"
 
     def send_command(self, command):
         """ Helper function to send a command to device """

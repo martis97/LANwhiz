@@ -39,7 +39,7 @@ class OSPF(object):
         """ Advertises OSPF networks """
         for network in self.ospf_data["advertise_networks"]:
             ip, cidr, area = network.split("/")
-            wildcard = self.utils.cidr_to_wildcard_mask(cidr)
+            wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
             self.utils.send_command(f"network {ip} {wildcard} {area}")
     
     def passive_interfaces(self):
