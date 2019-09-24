@@ -5,3 +5,6 @@ class InvalidCommandException(Exception):
 
 class InvalidInputException(Exception):
     pass
+
+class DeviceNotFoundException(Exception):
+    pass

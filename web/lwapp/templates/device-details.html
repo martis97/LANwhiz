@@ -1,0 +1,20 @@
+{% extends 'backbone.html' %}
+
+{% block content %}
+
+<h3>Device - {{hostname}}</h3>
+
+<p>Management IP:</p>
+<input id="ip" type="text" name="name" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required></td>
+
+<p>Port:</p>
+<input type="text" name="port" value="{{mgmt_port}}" placeholder="Port Number" required>
+
+<p>Username:</p>
+<input type="text" name="username" value="{{username}}" placeholder="Management Username" required>
+
+<p>Password:</p>
+<input type="password" name="password" value="{{password}}" placeholder="Password" required>
+
+
+{% endblock content %}

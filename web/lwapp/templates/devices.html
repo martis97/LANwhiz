@@ -1,0 +1,36 @@
+{% extends 'backbone.html' %}
+
+{% block content %}
+
+<h3>Devices</h3>
+
+<a href="/devices/add/">
+    <button id="addDevice" class="button1">
+        Add Device
+    </button>
+</a>
+
+<div class="all-devices">
+    <div class="routers">
+        <h4>Routers</h4>
+        {% for router in routers %}
+            <a href="?hostname={{router}}">
+                <div class="device-card">
+                    {{router}}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <div class="switches">
+        <h4>Switches</h4>
+        {% for switch in switches %}
+        <a href="/devices/{{switch}}">
+            <div class="device-card">
+                {{switch}}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

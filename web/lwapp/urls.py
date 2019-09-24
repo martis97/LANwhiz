@@ -18,6 +18,9 @@ from django.urls import path
 from . import views 
 
 urlpatterns = [
-    path("/", views.index, name="Index"),
-    path('admin/', admin.site.urls)
+    path('', views.index, name='LANwhiz - Home'),
+    path('devices/', views.devices, name='LANwhiz - Devices'),
+    path('devices/add/', views.add_device, name='LANwhiz - Add Device'),
+    path('devices/add#connect', views.connect_to_device),
+    path('admin', admin.site.urls)
 ]

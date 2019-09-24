@@ -1,0 +1,25 @@
+{% load static %}
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+        <title>LANwhiz</title>
+    </head>
+    <body>
+        <div class="header">
+            <img src="{% static 'logo.jpg' %}">
+        </div>
+        <div class="content">
+            <div class="navigation">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/devices">Devices</a></li>
+                </ul>
+            </div>
+            <div class="main-content">
+                {% block content %} 
+                <!-- Main content to be extended --> 
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

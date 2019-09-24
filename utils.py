@@ -1,13 +1,16 @@
 import json
 import re
+import os
 from napalm import get_network_driver
+from LANwhiz.exceptions import DeviceNotFoundException
 
 class Utilities(object):
     """ Utilities class """
+    devices_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices"
+
     def __init__(self, connection):
         self.connection = connection
         self.napalm_conn = self._get_napalm_connection()
-        self.json_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices.json"
 
     def send_command(self, command):
         """ Helper function to send a command to device """
@@ -26,7 +29,8 @@ class Utilities(object):
 
         return napalm_connection
 
-    def read_config(self, hostname):
+    @staticmethod
+    def read_config(hostname):
         """ Provide config information given device's hostname 
         
         Args:
@@ -36,20 +40,31 @@ class Utilities(object):
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        with open(self.json_path, "r") as config_file:
-            self.config = json.loads(config_file.read())
-        
-        return self.config[hostname]
+        path = Utilities.devices_path
+        hostname = hostname + ".json"
+        if hostname in os.listdir(f"{path}/routers"):
+            devices_path = path + "/routers"
+        elif hostname in os.listdir(f"{path}/switches"):
+            devices_path = path + "/switches"
+        else:
+            raise DeviceNotFoundException(
+                f"Config for '{hostname}' "
+                "does not exist"
+            )            
+        with open(f"{devices_path}/{hostname}", "r") as config_file:
+                config = json.loads(config_file.read())
+                
+        return config
     
-    def write_config(self, hostname, new_config):
-        """ Write config given device's hostname.
+    # def write_config(self, hostname, new_config):
+    #     """ Write config given device's hostname.
 
-        Args:
-            hostname: Hostname of device (Root key dict value)
-        """
-        self.config[hostname] = new_config
-        with open(self.json_path, "w") as config_file:
-            self.config = json.dumps(config_file.read())
+    #     Args:
+    #         hostname: Hostname of device (Root key dict value)
+    #     """
+    #     self.config[hostname] = new_config
+    #     with open(self.devices_path, "w") as config_file:
+    #         self.config = json.dumps(config_file.read())
 
     def cidr_to_subnet_mask(self, cidr, int_list=False):
         """ Convert CIDR to Subnet Mask
@@ -164,3 +179,22 @@ class Utilities(object):
             self.send_command("conf t")
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.send_command("conf t")
+
+
+    @staticmethod 
+    def get_all_devices():
+        """ Gets all device records from ./devices """
+        path = Utilities.devices_path
+
+        routers = os.listdir(path + "/routers")
+        routers = [router.replace(".json", "") for router in routers]
+
+        switches = os.listdir(path + "/switches")
+        switches = [switch.replace(".json", "") for switch in switches]
+        
+        devices = {
+            "routers": routers,
+            "switches": switches
+        }
+
+        return devices

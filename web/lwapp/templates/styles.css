@@ -1,0 +1,124 @@
+body {
+    background-color: #1f2830;
+    padding-left: 7%;
+    padding-right: 7%;
+    font-family: monospace;
+}
+
+
+
+.header {
+    height: 120px;
+    font-size: 20px;
+}
+
+.header img {
+    position: absolute;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+
+
+
+.navigation {
+    min-height: 100px;
+    width: 100%;
+    background-color: #445463;
+    float: left;
+    border-radius: 10px;
+
+}
+
+.navigation ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navigation ul li {
+    display: inline-block;
+    transition: background-color 0.3s ease;
+
+}
+
+.navigation ul a:hover {
+    background-color: #073ca6
+}
+
+.navigation a {
+    display: block;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border: 3px solid white;
+    text-decoration: none;
+    color: white;
+    font-size: 25px;
+    text-align: center;
+    line-height: 115px;
+    margin: 5%;
+}
+
+
+
+
+.main-content {
+    background-color: #073ca6;
+    width: 100%;
+    min-height: 500px;
+    margin-top: 10px;
+    float: left;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 100px;
+}
+
+.main-content * {
+    margin: 10px;
+}
+
+.main-content h3 {
+    font-size: 25px;
+    width: 50%;
+}
+
+.button1 {
+    border-radius: 30px;
+    background-color: transparent;
+    color: white;
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#addDevice {
+    height: 50px;
+}
+
+.all-devices  {
+    margin: 0;
+}
+
+
+h4 {
+    font-size: 20px;
+}
+
+.device-card {
+    border: 3px solid white;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: solid;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10 0;
+}
+
+.device-card:hover {
+    background: white;
+    color: #073ca6;
+}
