@@ -23,6 +23,10 @@ def devices(request):
     return render(request, 'devices.html', context=context)
 
 def add_device(request):
+    locals().update(request.GET)
+    print(locals())
+    # if request.GET.get("ip") and request.GET.get("port") \
+        
 
     return render(request, 'add-device.html', context=context)
 

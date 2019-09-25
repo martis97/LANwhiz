@@ -21,6 +21,6 @@ urlpatterns = [
     path('', views.index, name='LANwhiz - Home'),
     path('devices/', views.devices, name='LANwhiz - Devices'),
     path('devices/add/', views.add_device, name='LANwhiz - Add Device'),
-    path('devices/add#connect', views.connect_to_device),
+    path(r'devices/add/\?host=.+&port=[\d]+&username=.*&password=.*$', views.connect_to_device),
     path('admin', admin.site.urls)
 ]

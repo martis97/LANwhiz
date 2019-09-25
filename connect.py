@@ -17,8 +17,8 @@ class Connect(object):
         self,
         mgmt_ip,
         port,
-        username,
-        password,
+        username=None,
+        password=None,
         telnet=False
     ):
         """ Establishes a connection to a Cisco devices

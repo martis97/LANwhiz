@@ -83,6 +83,21 @@ body {
     width: 50%;
 }
 
+.input-field {
+    display: block;
+}
+
+.input-label {
+    width: 100px;
+    float: left;
+}
+
+.input-field input {
+    width: 200px;
+    font-size: 20px;
+}
+
+
 .button1 {
     border-radius: 30px;
     background-color: transparent;
@@ -120,4 +135,11 @@ h4 {
 .device-card:hover {
     background: white;
     color: #073ca6;
+}
+
+#resposeField {
+    height: 100px;
+    font-size: 20px;
+    color: red;
+    font-style: oblique;
 }
