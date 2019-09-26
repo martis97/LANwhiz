@@ -10,7 +10,7 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities(connection)
-        
+
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
         for cmd in self.config["default_commands"]:
