@@ -6,7 +6,7 @@ from LANwhiz.exceptions import DeviceNotFoundException
 
 class Utilities(object):
     """ Utilities class """
-    devices_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices"
+    devices_path = os.getcwd().replace("\\", "/")
 
     def __init__(self, connection):
         self.connection = connection
@@ -132,17 +132,17 @@ class Utilities(object):
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.send_command("conf t")
 
-    @staticmethod 
+    @staticmethod
     def get_all_devices():
         """ Gets all device records from ./devices """
-        path = Utilities.devices_path
-
-        routers = os.listdir(path + "/routers")
-        routers = [router.replace(".json", "") for router in routers]
-
-        switches = os.listdir(path + "/switches")
-        switches = [switch.replace(".json", "") for switch in switches]
-        
+        for device_type in ("routers", "switches"):
+            devices_dir = os.listdir(f"devices/{device_type}")
+            hostnames = []
+            for device in devices_dir:
+                with open(f"devices/{device_type}/{device}", "r") as device_json:
+                    content = json.loads(device_json.read())
+                    hostnames.append(content["hostname"])
+            globals()[device_type] = hostnames         
         devices = {
             "routers": routers,
             "switches": switches
