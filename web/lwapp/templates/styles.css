@@ -92,7 +92,7 @@ body {
     float: left;
 }
 
-.input-field input {
+input {
     width: 200px;
     font-size: 20px;
 }
