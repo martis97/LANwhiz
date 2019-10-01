@@ -24,11 +24,11 @@
     <div class="switches">
         <h4>Switches</h4>
         {% for switch in switches %}
-        <a href="/devices/{{switch}}">
-            <div class="device-card">
-                {{switch}}
-            </div>
-        </a>
+            <a href="?hostname={{switch}}">
+                <div class="device-card">
+                    {{switch}}
+                </div>
+            </a>
         {% endfor %}
     </div>
 </div>

@@ -6,7 +6,7 @@ from LANwhiz.exceptions import DeviceNotFoundException
 
 class Utilities(object):
     """ Utilities class """
-    devices_path = os.getcwd().replace("\\", "/")
+    home_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices/"
 
     def __init__(self, connection):
         self.connection = connection
@@ -40,17 +40,17 @@ class Utilities(object):
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        path = Utilities.devices_path
+        path = Utilities.home_path
         hostname = hostname + ".json"
-        if hostname in os.listdir(f"{path}/routers"):
-            devices_path = path + "/routers"
-        elif hostname in os.listdir(f"{path}/switches"):
-            devices_path = path + "/switches"
+        if hostname in os.listdir(f"{path}routers"):
+            devices_path = path + "routers"
+        elif hostname in os.listdir(f"{path}switches"):
+            devices_path = path + "switches"
         else:
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
-            )            
+            )
         with open(f"{devices_path}/{hostname}", "r") as config_file:
                 config = json.loads(config_file.read())
                 
@@ -135,17 +135,34 @@ class Utilities(object):
     @staticmethod
     def get_all_devices():
         """ Gets all device records from ./devices """
-        for device_type in ("routers", "switches"):
-            devices_dir = os.listdir(f"devices/{device_type}")
+        home_path = Utilities.home_path
+        supported_device_types = ("routers", "switches")
+        for device_type in supported_device_types:
+            devices_dir = os.listdir(f"{home_path}{device_type}")
             hostnames = []
             for device in devices_dir:
-                with open(f"devices/{device_type}/{device}", "r") as device_json:
+                with open(
+                    f"{home_path}/{device_type}/{device}", "r"
+                ) as device_json:
                     content = json.loads(device_json.read())
                     hostnames.append(content["hostname"])
-            globals()[device_type] = hostnames         
+            globals()[device_type] = hostnames
+
         devices = {
             "routers": routers,
             "switches": switches
         }
 
         return devices
+    
+    def map_file_to_host_names(self):
+        """ Maps JSON file names to the host name defined within the 
+        file.
+        
+        Returns:
+            host_to_file_name_map - Dictionary object containing all 
+                names of config files maped with their device hostnames.
+        """
+        router_files = os.listdir(f"{self.home_path}/routers")
+
+
