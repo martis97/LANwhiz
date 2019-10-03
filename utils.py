@@ -7,10 +7,12 @@ from LANwhiz.exceptions import DeviceNotFoundException
 class Utilities(object):
     """ Utilities class """
     home_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices/"
+    supported_device_types = ("routers", "switches")
+
 
     def __init__(self, connection):
         self.connection = connection
-        self.napalm_conn = self._get_napalm_connection()
+        self.napalm_connection = self._get_napalm_connection()
 
     def send_command(self, command):
         """ Helper function to send a command to device """
@@ -106,7 +108,7 @@ class Utilities(object):
 
     def get_interfaces(self):
         """ Returns a list of interfaces using Napalm """
-        interfaces = self.napalm_conn.get_interfaces()
+        interfaces = self.napalm_connection .get_interfaces()
         
         return [interface for interface in interfaces.keys()]
 
@@ -136,33 +138,15 @@ class Utilities(object):
     def get_all_devices():
         """ Gets all device records from ./devices """
         home_path = Utilities.home_path
-        supported_device_types = ("routers", "switches")
-        for device_type in supported_device_types:
-            devices_dir = os.listdir(f"{home_path}{device_type}")
-            hostnames = []
-            for device in devices_dir:
-                with open(
-                    f"{home_path}/{device_type}/{device}", "r"
-                ) as device_json:
-                    content = json.loads(device_json.read())
-                    hostnames.append(content["hostname"])
-            globals()[device_type] = hostnames
-
         devices = {
-            "routers": routers,
-            "switches": switches
+            "routers": None,
+            "switches": None
         }
 
+        for device_type in Utilities.supported_device_types:
+            devices_dir = os.listdir(f"{home_path}{device_type}")
+            devices[device_type] = [
+                device.rstrip(".json") for device in devices_dir
+            ]
+
         return devices
-    
-    def map_file_to_host_names(self):
-        """ Maps JSON file names to the host name defined within the 
-        file.
-        
-        Returns:
-            host_to_file_name_map - Dictionary object containing all 
-                names of config files maped with their device hostnames.
-        """
-        router_files = os.listdir(f"{self.home_path}/routers")
-
-

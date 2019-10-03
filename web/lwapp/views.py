@@ -15,7 +15,6 @@ def index(request):
 
 def devices(request):
     """ All Devices page """
-    print(dir(request))
     if request.GET.get("hostname"):
         hostname = request.GET.get("hostname")
         context.update(Utilities.read_config(hostname))
@@ -27,9 +26,9 @@ def devices(request):
 
 def add_device(request):
     print("home")
-    print(bool(request.GET))
     if request.GET:
         connect_to_device(request)
+        return redirect("/devices/")
     else:
         return render(request, 'add-device.html', context=context)
 
@@ -40,9 +39,9 @@ def connect_to_device(request):
     port = request.GET.get("port")
     username = request.GET.get("username")
     password = request.GET.get("password")
+   
+    params = [host, port]
 
-    if host and port:    
-        params = [host, port]
     if username and password:
         params += [username, password]
 
@@ -50,7 +49,6 @@ def connect_to_device(request):
     try:
         print("connecting..")
         connection = connect_to.cisco_device(*params, telnet=True)
-        # return redirect("devices/")
     except Exception as e:
         print("Connection failed.")
         print(f"Message: {e.args[0]}")

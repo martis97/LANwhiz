@@ -1,3 +1,5 @@
+/* BODY */
+
 body {
     background-color: #1f2830;
     padding-left: 7%;
@@ -6,6 +8,7 @@ body {
 }
 
 
+/* LOGO */
 
 .header {
     height: 120px;
@@ -20,7 +23,7 @@ body {
 
 
 
-
+ /* NAVIGATION BAR */
 .navigation {
     min-height: 100px;
     width: 100%;
@@ -61,7 +64,7 @@ body {
 }
 
 
-
+/* MAIN CONTENT */
 
 .main-content {
     background-color: #073ca6;
@@ -88,7 +91,7 @@ body {
 }
 
 .input-label {
-    width: 100px;
+    width: 140px;
     float: left;
 }
 
@@ -106,6 +109,15 @@ input {
     text-align: center;
     text-decoration: none;
     cursor: pointer;
+}
+
+.button1:hover {
+    background-color: white;
+    color: #073ca6;
+}
+
+button.button1.back {
+    float: left;
 }
 
 #addDevice {
@@ -130,6 +142,7 @@ h4 {
     font-size: 16px;
     cursor: pointer;
     margin: 10 0;
+    border-radius: 20px;
 }
 
 .device-card:hover {

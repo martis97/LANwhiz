@@ -4,17 +4,40 @@
 
 <h3>Device - {{hostname}}</h3>
 
-<p>Management IP:</p>
-<input id="ip" type="text" name="name" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required></td>
 
-<p>Port:</p>
-<input type="text" name="port" value="{{mgmt_port}}" placeholder="Port Number" required>
+<div class="input-field">
+    <div class="input-label">
+        <label for="ip"> Management IP:</label>
+    </div>
+    <input id="ip" type="text" name="name" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
+</div>
 
-<p>Username:</p>
-<input type="text" name="username" value="{{username}}" placeholder="Management Username" required>
+<div class="input-field">
+    <div class="input-label">
+        <label for="port">Port:</label>
+    </div>
+    <input id="port" type="number" name="port" value="{{mgmt_port}}" placeholder="Port Number" required>
+</div>
 
-<p>Password:</p>
-<input type="password" name="password" value="{{password}}" placeholder="Password" required>
+<div class="input-field">
+    <div class="input-label">
+        <label for="username">Username:</label>
+    </div>
+    <input id="username" type="text" name="Username" value="{{username}}" placeholder="Username">
+</div>
+
+<div class="input-field">
+    <div class="input-label">
+        <label for="password">Password:</label>
+    </div>
+    <input id="password" type="password" name="Password" value="{{password}}" placeholder="Password">
+</div>
+
+<a href="/devices">
+    <button class="button1 back">
+        Back to Devices
+    </button>
+</a>
 
 
 {% endblock content %}
