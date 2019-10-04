@@ -138,11 +138,7 @@ class Utilities(object):
     def get_all_devices():
         """ Gets all device records from ./devices """
         home_path = Utilities.home_path
-        devices = {
-            "routers": None,
-            "switches": None
-        }
-
+        devices = {}
         for device_type in Utilities.supported_device_types:
             devices_dir = os.listdir(f"{home_path}{device_type}")
             devices[device_type] = [
