@@ -30,7 +30,6 @@ body {
     background-color: #445463;
     float: left;
     border-radius: 10px;
-
 }
 
 .navigation ul {
@@ -42,7 +41,6 @@ body {
 .navigation ul li {
     display: inline-block;
     transition: background-color 0.3s ease;
-
 }
 
 .navigation ul a:hover {
@@ -77,6 +75,34 @@ body {
     margin-bottom: 100px;
 }
 
+.sub-navigation {
+    text-align: center; 
+}
+
+.sub-navigation ul {
+    max-width: 670px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-size: 20px;
+    display: inline-block; 
+    background-color: #445463;
+    border-radius: 10px;
+}
+
+.sub-navigation ul li {
+    margin: 0;
+    padding: 10;
+    display: inline-block;
+}
+
+
+.sub-navigation ul li:hover{
+    background-color: #768da2;
+    cursor: pointer;
+}
+
 .main-content * {
     margin: 10px;
 }
@@ -99,11 +125,13 @@ body {
     width: 140px;
     float: left;
     margin: 10 0;
+    font-size: 15px;
 }
 
-input {
+.input-field input {
     width: 200px;
     font-size: 18px;
+    margin: 10 0;
 }
 
 

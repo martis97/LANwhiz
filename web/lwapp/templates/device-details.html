@@ -2,10 +2,40 @@
 
 {% block content %}
 
-<div class="content-title">
+<script type="text/javascript">
+
+    function displaySection(sectionClass) {
+        var configInputs = document.getElementsByClassName("config-inputs");
+        for (i in configInputs) {
+            configInputs[i].style.display = "none";
+            if (configInputs[i].className.includes(sectionClass)) {
+                configInputs[i].style.display = "block";    
+            }
+        }        
+    }
+    
+    window.onload = function() {
+        displaySection("access");
+    }
+
+</script>
+
+<div class="content-title" onload="displaySection('access');">
 <h3>Device - {{hostname}}</h3>
 
-<div class="config-inputs">
+<div class="sub-navigation">  
+    <ul>
+        <li onclick="displaySection('access')">Access</li>
+        <li onclick="displaySection('default-commands')">Default</li>
+        <li onclick="displaySection('interfaces')">Interfaces</li>
+        <li onclick="displaySection('lines')">Lines</li>
+        <li onclick="displaySection('routing')">Routing</li>
+        <li onclick="displaySection('acl')">ACL</li>
+        <li onclick="displaySection('dhcp')">DHCP</li>
+    </ul>
+</div>
+
+<div class="config-inputs access">
     <h4>Access</h4>
     <div class="input-field">
         <div class="input-label">
@@ -35,6 +65,31 @@
         <input id="password" type="password" name="Password" value="{{password}}" placeholder="Password">
     </div>
 </div>
+
+<div class="config-inputs default-commands">
+    <h4>Default Commands</h4>
+</div>
+
+<div class="config-inputs interfaces">
+    <h4>Interfaces</h4>
+</div>
+
+<div class="config-inputs lines">
+    <h4>Lines</h4>
+</div>
+
+<div class="config-inputs routing">
+    <h4>Routing</h4>
+</div>
+
+<div class="config-inputs acl">
+    <h4>Access Control Lists</h4>
+</div>
+
+<div class="config-inputs dhcp">
+    <h4>DHCP</h4>
+</div>
+
 
 <a href="/devices">
     <button class="button1 back">
