@@ -20,7 +20,7 @@
 
 </script>
 
-<div class="content-title" onload="displaySection('access');">
+<div class="content-title">
 <h3>Device - {{hostname}}</h3>
 
 <div class="sub-navigation">  
@@ -68,10 +68,17 @@
 
 <div class="config-inputs default-commands">
     <h4>Default Commands</h4>
+    {% for command in default_commands %}
+    <p>{{command}}</p>
+    {% endfor %}
 </div>
 
 <div class="config-inputs interfaces">
     <h4>Interfaces</h4>
+    {% for interface, interface_config in intefaces.items %}
+        <p>{{interface}}</p>
+        <p>{{interface_config}}</p>
+    {% endfor %}
 </div>
 
 <div class="config-inputs lines">

@@ -118,7 +118,7 @@ body {
 
 .input-field {
     display: inline-block;
-    width: 380px;
+    width: 340px;
 }
 
 .input-label {
@@ -132,6 +132,7 @@ body {
     width: 200px;
     font-size: 18px;
     margin: 10 0;
+    border-radius: 5px;
 }
 
 

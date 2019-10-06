@@ -18,7 +18,15 @@ def devices(request):
     """ All Devices page """
     if request.GET.get("hostname"):
         hostname = request.GET.get("hostname")
-        context.update(Utilities.read_config(hostname))
+        device_config = Utilities.read_config(hostname)
+        context.update({
+            "hostname": device_config["hostname"],
+            "mgmt_ip": device_config["mgmt_ip"],
+            "mgmt_port": device_config["mgmt_port"],
+            "username": device_config["username"],
+            "password": device_config["password"]
+        })
+        context.update(device_config["config"])
         return render(request, 'device-details.html', context=context)
         
     context.update(Utilities.get_all_devices())
