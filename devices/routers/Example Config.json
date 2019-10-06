@@ -1,28 +1,39 @@
-{
-    "hostname": "R2",
+ {
+    "hostname": "R1",
     "mgmt_ip": "127.0.0.1",
-    "mgmt_port": 5001,
+    "mgmt_port": 5000,
     "username": "admin",
     "password": "netautoconfig",
     "config": {
         "default_commands": [
-            "configure terminal",
             "ipv6 unicast-routing",
             "no ip domain-lookup",
             "service password-encryption"
         ],
         "interfaces": {
-            "FastEthernet0/0": {
+            "GigabitEthernet0/0": {
                 "ipv4": "192.168.5.1/24",
                 "ipv6": "2008:ACAB:B323:AADF::1:1/64",
                 "description": "Connection to LAN",
                 "acl": {
                     "outbound": [
-                        "1"
+                        "permit-dns-for-internal"
                     ],
                     "inbound": []
                 },
-                "nat": "outside"
+                "nat": "inside"
+            },
+            "GigabitEthernet2/0": {
+                "ipv4": "192.168.1.1/24",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [
+                        "permit-dns-for-internal"
+                    ],
+                    "inbound": []
+                },
+                "nat": "inside"
             }
         },
         "lines": {
@@ -38,7 +49,7 @@
                 "password": "netautoconfig",
                 "acl": {
                     "inbound": [
-                        "105"
+                        "permit-mgmt-remote-access"
                     ],
                     "outbound": []
                 },
@@ -50,7 +61,7 @@
                 {
                     "network": "0.0.0.0",
                     "subnetmask": "0.0.0.0",
-                    "forward_to": "FastEthernet0/0"
+                    "forward_to": "GigabitEthernet0/0"
                 }
             ],
             "ospf": {
@@ -62,26 +73,26 @@
                     "192.168.1.1/24/area 0"
                 ],
                 "passive_interfaces": [
-                    "FastEthernet0/0"
+                    "GigabitEthernet0/0"
                 ]
             }
         },
         "acl": {
             "standard": {
-                "1": {
+                "nat": {
                     "action": "permit",
                     "source": "192.168.0.0/16"
                 }
             },
             "extended": {
-                "105": {
+                "permit-established-tcp": {
                     "action": "permit",
                     "protocol": "tcp",
                     "source": "any",
                     "destination": "any",
                     "port": "established"
                 },
-                "permit-dns-for-internal12": {
+                "permit-dns-for-internal": {
                     "action": "permit",
                     "protocol": "udp",
                     "source": "192.168.5.0/24",
@@ -90,53 +101,20 @@
                 },
                 "permit-remaining-protocols": {
                     "action": "permit",
-                    "protocol": "ip",
+                    "protocol": "ip", 
                     "source": "any",
                     "destination": "any",
                     "port": ""
                 }
             }
         },
-        "S1": {
-            "default_commands": [
-                "configure terminal",
-                "no ip domain-lookup",
-                "service password-encryption"
-            ],
-            "interfaces": {
-                "FastEthernet0/0": {
-                    "ipv4": "192.168.5.1/24",
-                    "ipv6": "2008:ACAB:B323:AADF::1:1/64",
-                    "description": "Connection to LAN",
-                    "acl": {
-                        "outbound": [
-                            "1"
-                        ],
-                        "inbound": []
-                    },
-                    "nat": "outside"
-                }
-            },
-            "lines": {
-                "console": {
-                    "password": "netautoconfig",
-                    "acl": {
-                        "inbound": [],
-                        "outbound": []
-                    },
-                    "synchronous_logging": true
-                },
-                "vty": {
-                    "password": "netautoconfig",
-                    "acl": {
-                        "inbound": [
-                            "105"
-                        ],
-                        "outbound": []
-                    },
-                    "synchronous_logging": false
-                }
+        "dhcp": [
+            {
+                "pool_name": "LANhiz_pool",
+                "network": "192.168.5.0/24",
+                "default_gateway": "192.168.5.1",
+                "dns": "192.168.1.3"
             }
-        }
+        ]
     }
 }

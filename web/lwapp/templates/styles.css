@@ -86,18 +86,24 @@ body {
     width: 50%;
 }
 
+.config-inputs {
+    margin: 10 0;
+}
+
 .input-field {
-    display: block;
+    display: inline-block;
+    width: 380px;
 }
 
 .input-label {
     width: 140px;
     float: left;
+    margin: 10 0;
 }
 
 input {
     width: 200px;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 

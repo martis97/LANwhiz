@@ -45,15 +45,15 @@ class Utilities(object):
         path = Utilities.home_path
         hostname = hostname + ".json"
         if hostname in os.listdir(f"{path}routers"):
-            devices_path = path + "routers"
+            devices_path = path + "routers/"
         elif hostname in os.listdir(f"{path}switches"):
-            devices_path = path + "switches"
+            devices_path = path + "switches/"
         else:
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
             )
-        with open(f"{devices_path}/{hostname}", "r") as config_file:
+        with open(f"{devices_path}{hostname}", "r") as config_file:
                 config = json.loads(config_file.read())
                 
         return config
@@ -133,6 +133,41 @@ class Utilities(object):
             self.send_command("conf t")
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.send_command("conf t")
+
+    def build_initial_config_template(self):
+        """ Creates an initial 'config' section for config param file """
+        interfaces = self.get_interfaces()
+        config = {
+            "default_commands": [
+                "no ip domain-lookup",
+                "service password-encryption"
+            ],
+            "interfaces": {},
+            "lines": {},
+            "routing": {
+                "static": [],
+                "ospf": {}
+            },
+            "acl": {
+                "standard": {},
+                "extended": {}
+            },
+            "dhcp": []
+        }
+
+        for interface in interfaces:
+            config["interfaces"][interface] = {
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": ""
+            }
+
+        return config 
 
     @staticmethod
     def get_all_devices():

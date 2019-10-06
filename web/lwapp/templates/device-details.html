@@ -2,35 +2,38 @@
 
 {% block content %}
 
+<div class="content-title">
 <h3>Device - {{hostname}}</h3>
 
-
-<div class="input-field">
-    <div class="input-label">
-        <label for="ip"> Management IP:</label>
+<div class="config-inputs">
+    <h4>Access</h4>
+    <div class="input-field">
+        <div class="input-label">
+            <label for="ip"> Management IP:</label>
+        </div>
+        <input id="ip" type="text" name="name" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
     </div>
-    <input id="ip" type="text" name="name" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
-</div>
 
-<div class="input-field">
-    <div class="input-label">
-        <label for="port">Port:</label>
+    <div class="input-field">
+        <div class="input-label">
+            <label for="port">Port:</label>
+        </div>
+        <input id="port" type="number" name="port" value="{{mgmt_port}}" placeholder="Port Number" required>
     </div>
-    <input id="port" type="number" name="port" value="{{mgmt_port}}" placeholder="Port Number" required>
-</div>
 
-<div class="input-field">
-    <div class="input-label">
-        <label for="username">Username:</label>
+    <div class="input-field">
+        <div class="input-label">
+            <label for="username">Username:</label>
+        </div>
+        <input id="username" type="text" name="Username" value="{{username}}" placeholder="Username">
     </div>
-    <input id="username" type="text" name="Username" value="{{username}}" placeholder="Username">
-</div>
 
-<div class="input-field">
-    <div class="input-label">
-        <label for="password">Password:</label>
+    <div class="input-field">
+        <div class="input-label">
+            <label for="password">Password:</label>
+        </div>
+        <input id="password" type="password" name="Password" value="{{password}}" placeholder="Password">
     </div>
-    <input id="password" type="password" name="Password" value="{{password}}" placeholder="Password">
 </div>
 
 <a href="/devices">

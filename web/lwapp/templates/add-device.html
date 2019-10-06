@@ -9,21 +9,21 @@ function connect() {
     var port = document.getElementById("port").value;
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    var responseField = document.getElementById("responseField")
+    var responseField = document.getElementById("responseField");
 
     if (!ip || !port) {
         responseField.innerHTML = "Target and Port required";
         return
     }
     if (!username || !password) {
-        var url = `?host=${ip}&port=${port}`
+        var url = `?host=${ip}&port=${port}`;
     } else {
-        var url = `?host=${ip}&port=${port}&username=${username}&password=${password}`
-}
+        var url = `?host=${ip}&port=${port}&username=${username}&password=${password}`;
+    }
     // console.log(`/devices/add/?host=${ip}&port=${port}`)
 
-    window.location = url
-    responseField.innerHTML = `Connecting to ${ip}:${port}...`
+    window.location = url;
+    responseField.innerHTML = `Connecting to ${ip}:${port}...`;
 }
 
 </script>

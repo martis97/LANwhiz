@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from LANwhiz.utils import Utilities
 from LANwhiz.connect import Connect
+import json
 
 
 context = {
@@ -25,15 +26,15 @@ def devices(request):
 
 
 def add_device(request):
-    print("home")
+    """ Add Device page """    
     if request.GET:
-        connect_to_device(request)
-        return redirect("/devices/")
+        new_device = add_new_device(request)
+        return redirect(f"/devices/?hostname={new_device['hostname']}")
     else:
         return render(request, 'add-device.html', context=context)
 
 
-def connect_to_device(request):
+def add_new_device(request):
     """ Connect to device and create a JSON record of it """
     host = request.GET.get("host")
     port = request.GET.get("port")
@@ -46,10 +47,29 @@ def connect_to_device(request):
         params += [username, password]
 
     connect_to = Connect()
+    
     try:
-        print("connecting..")
+        print("Connecting..")
         connection = connect_to.cisco_device(*params, telnet=True)
     except Exception as e:
-        print("Connection failed.")
-        print(f"Message: {e.args[0]}")
- 
+            print("Connection failed.")
+            print(f"Message: {e.args[0]}")
+
+    utils = Utilities(connection)
+    hostname = connection.find_prompt().rstrip("#")
+
+    new_config = {
+        "hostname": hostname,
+        "mgmt_ip": host,
+        "mgmt_port": port,
+        "username": username if username else "",
+        "password": password if password else "",    # Use Salting/Hashing/Secure Storage
+        "config": utils.build_initial_config_template()
+    }
+
+    with open(
+        f"{utils.home_path}routers/{hostname}.json", "w"
+    ) as config_file:
+        config_file.write(json.dumps(new_config, indent=4))
+
+    return new_config
