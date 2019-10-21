@@ -13,7 +13,7 @@ class AccessControlLists(object):
     def standard(self):
         """ Configures standard Access Control Lists on the device """
         for identifier, config_data in self.acl_config["standard"].items():
-            std_source = self._format_acl_cmd_target(config_data["source"])
+            std_source = self._format_acl_target(config_data["source"])
             # Named ACL
             if identifier.isalpha():
                 named_acl_cmds = [
@@ -26,15 +26,15 @@ class AccessControlLists(object):
                 assert 0 < int(identifier) <= 100, \
                     f"Standard ACL '{identifier}' out of range"
                 self.utils.send_command(
-                    f"access-list {identifier} " 
+                    f"access-list {identifier} "
                     f"{config_data['action']} {std_source}"
                 )
     
     def extended(self):
         """ Configures extended Access Control Lists on the device """
         for identifier, config_data in self.acl_config["extended"].items():
-            ext_source = self._format_acl_cmd_target(config_data["source"])
-            ext_dest = self._format_acl_cmd_target(config_data["destination"])
+            ext_source = self._format_acl_target(config_data["source"])
+            ext_dest = self._format_acl_target(config_data["destination"])
             # Named ACL
             if re.match(r"[A-Za-z\_\-]+", identifier):
                 named_acl_cmds = [
@@ -48,7 +48,7 @@ class AccessControlLists(object):
                 assert 100 < int(identifier) <= 200, \
                     f"Extended ACL '{identifier}' out of range"
                 self.utils.send_command(
-                    f"access-list {identifier} " 
+                    f"access-list {identifier} "
                     f"{config_data['action']} {config_data['protocol']} "
                     f"{ext_source} {ext_dest} {config_data['port']}"
                 )
@@ -59,7 +59,7 @@ class AccessControlLists(object):
                     " or an underscore.\n"
                 )
     
-    def _format_acl_cmd_target(self, target):
+    def _format_acl_target(self, target):
         """ Forms a command subset where the source or destination 
         needs to be defined. 
         
