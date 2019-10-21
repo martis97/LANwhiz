@@ -30,9 +30,8 @@ class LANwhizMain(object):
 
         # Get SSH/Telnet channel
         print(f"{hostname}: Connecting to Cisco Device..")
-        mgmt_ip, port, username, password = list(device_dict.values())[1:5]
         connection = self.connect_to.cisco_device(
-            mgmt_ip, port, username, password, telnet=telnet
+            *list(device_dict.values())[1:5], telnet=telnet
         )
         print(f"{hostname}: Successfully connected")
 

@@ -108,7 +108,7 @@ class Utilities(object):
 
     def get_interfaces(self):
         """ Returns a list of interfaces using Napalm """
-        interfaces = self.napalm_connection .get_interfaces()
+        interfaces = self.napalm_connection.get_interfaces()
         
         return [interface for interface in interfaces.keys()]
 
@@ -143,7 +143,24 @@ class Utilities(object):
                 "service password-encryption"
             ],
             "interfaces": {},
-            "lines": {},
+            "lines": {
+                "console": {
+                    "password": "",
+                    "acl": {
+                        "inbound": [],
+                        "outbound": []
+                    },
+                    "synchronous_logging": False
+                },
+                "vty": {
+                    "password": "",
+                    "acl": {
+                        "inbound": [],
+                        "outbound": []
+                    },
+                    "synchronous_logging": False
+                }
+            },
             "routing": {
                 "static": [],
                 "ospf": {}

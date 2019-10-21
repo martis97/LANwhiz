@@ -10,6 +10,7 @@ class Configure(object):
         self.config = device_config
         self.connection = connection
         self.utils = Utilities(connection)
+        self.utils.ensure_global_config_mode()
 
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """

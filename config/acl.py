@@ -13,7 +13,7 @@ class AccessControlLists(object):
     def standard(self):
         """ Configures standard Access Control Lists on the device """
         for identifier, config_data in self.acl_config["standard"].items():
-            std_source = self.format_acl_cmd_target(config_data["source"])
+            std_source = self._format_acl_cmd_target(config_data["source"])
             # Named ACL
             if identifier.isalpha():
                 named_acl_cmds = [
@@ -33,8 +33,8 @@ class AccessControlLists(object):
     def extended(self):
         """ Configures extended Access Control Lists on the device """
         for identifier, config_data in self.acl_config["extended"].items():
-            ext_source = self.format_acl_cmd_target(config_data["source"])
-            ext_dest = self.format_acl_cmd_target(config_data["destination"])
+            ext_source = self._format_acl_cmd_target(config_data["source"])
+            ext_dest = self._format_acl_cmd_target(config_data["destination"])
             # Named ACL
             if re.match(r"[A-Za-z\_\-]+", identifier):
                 named_acl_cmds = [
@@ -59,7 +59,7 @@ class AccessControlLists(object):
                     " or an underscore.\n"
                 )
     
-    def format_acl_cmd_target(self, target):
+    def _format_acl_cmd_target(self, target):
         """ Forms a command subset where the source or destination 
         needs to be defined. 
         
