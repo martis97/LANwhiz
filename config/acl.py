@@ -1,18 +1,16 @@
 from LANwhiz.utils import Utilities
 from LANwhiz.exceptions import InvalidInputException
+from LANwhiz.config.base import BaseConfig
 import re
 
 
-class AccessControlLists(object):
-    def __init__(self, connection, acl_config):
-        self.connection = connection
-        self.acl_config = acl_config
-        self.utils = Utilities(self.connection)
-        self.utils.ensure_global_config_mode()
+class AccessControlLists(BaseConfig):
+    def __init__(self, connection, config):
+        super().__init__(connection, config)
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """
-        for identifier, config_data in self.acl_config["standard"].items():
+        for identifier, config_data in self.config["standard"].items():
             std_source = self._format_acl_target(config_data["source"])
             # Named ACL
             if identifier.isalpha():
@@ -33,7 +31,7 @@ class AccessControlLists(object):
     
     def extended(self):
         """ Configures extended Access Control Lists on the device """
-        for identifier, config_data in self.acl_config["extended"].items():
+        for identifier, config_data in self.config["extended"].items():
             source = self._format_acl_target(config_data["source"])
             dest = self._format_acl_target(config_data["destination"])
             # Named ACL

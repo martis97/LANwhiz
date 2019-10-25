@@ -23,7 +23,7 @@ class LANwhizMain(object):
         print(f"Starting configuration: {hostname}")
 
         self.util = Utilities(connection)
-        device_dict = self.util.read_config(hostname)
+        device_dict = Utilities.read_config(hostname)
 
         # Determine from port number whether Telnet required
         telnet = device_dict["mgmt_port"] == 23 \

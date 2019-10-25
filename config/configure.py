@@ -3,14 +3,12 @@ from LANwhiz.config.interface import Interface, Line
 from LANwhiz.config.routing import Static, OSPF
 from LANwhiz.config.acl import AccessControlLists
 from LANwhiz.config.dhcp import DHCPPool
+from LANwhiz.config.base import BaseConfig
 
 
-class Configure(object):
-    def __init__(self, *, device_config, connection):
-        self.config = device_config
-        self.connection = connection
-        self.utils = Utilities(connection)
-        self.utils.ensure_global_config_mode()
+class ConfigActions(BaseConfig):
+    def __init__(self, *, connection, device_config):
+        super().__init__(connection, device_config)
 
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
@@ -30,50 +28,33 @@ class Configure(object):
         """ Pass configuration information to class methods for interface
         configuration.
         """
-        configure_interface = Interface(self.connection)
-        for interface, int_config in self.config["interfaces"].items():
-            self.utils.ensure_global_config_mode()
-            access_interface = f"interface {interface}"
-            self.utils.send_command(access_interface)
-            self.utils.send_command("no shutdown")
-            if int_config.get("ipv4"):
-                configure_interface.ipv4(int_config["ipv4"])
-            if int_config.get("ipv6"):
-                configure_interface.ipv6(int_config["ipv6"])
-            if int_config.get("description"):
-                configure_interface.description(
-                    int_config["description"]
-                )
-            if int_config["acl"].get("inbound") \
-                or int_config["acl"].get("outbound"):
-                configure_interface.acl(
-                    interface,
-                    inbound=int_config["acl"].get("inbound"),
-                    outbound=int_config["acl"].get("outbound")
-                )
-            if int_config.get("nat"):
-                configure_interface.nat(int_config["nat"])
+        int_config = self.config["interfaces"]
+        for interface, config in int_config.items():
+            configure_interface = Interface(self.connection, config)
+            init_cmds = (f"interface {interface}", "no shutdown")
+            for cmd in init_cmds:
+                self.utils.send_command(cmd)
+            configure_interface.ipv4()
+            configure_interface.ipv6()
+            configure_interface.description()
+            configure_interface.acl()
+            configure_interface.nat()
 
     def lines(self):
         """ Pass configuration information to class methods for line
         configuration.
         """
-        configure_line = Line(self.connection)
         for line, line_config in self.config["lines"].items():
-            self.utils.ensure_global_config_mode()
+            configure_line = Line(self.connection, line_config)
             access_line = f"line {line}"
             if line == "console":
                 access_line += " 0"
             elif line == "vty":
                 access_line += " 0 4"
             self.utils.send_command(access_line)
-            if line_config.get("password"):
-                configure_line.password(line_config["password"])
-            if line_config["acl"]["inbound"] \
-                or line_config["acl"]["outbound"]:
-                configure_line.acl(**line_config["acl"])
-            if line_config.get("synchronous_logging"):
-                configure_line.synchronous_logging()
+            configure_line.password()
+            configure_line.acl()
+            configure_line.synchronous_logging()
     
     def routing(self):
         """ Pass config information to class methods for routing """
