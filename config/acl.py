@@ -16,11 +16,12 @@ class AccessControlLists(object):
             std_source = self._format_acl_target(config_data["source"])
             # Named ACL
             if identifier.isalpha():
-                named_acl_cmds = [
+                acl_cmds = [
                     f"ip access-list standard {identifier}",
                     f"{config_data['action']} {std_source}"
                 ]
-                self.connection.send_config_set(named_acl_cmds)
+                for cmd in acl_cmds:
+                    self.utils.send_command(cmd)
             # Numbered ACL
             elif identifier.isnumeric():
                 assert 0 < int(identifier) <= 100, \
@@ -33,14 +34,14 @@ class AccessControlLists(object):
     def extended(self):
         """ Configures extended Access Control Lists on the device """
         for identifier, config_data in self.acl_config["extended"].items():
-            ext_source = self._format_acl_target(config_data["source"])
-            ext_dest = self._format_acl_target(config_data["destination"])
+            source = self._format_acl_target(config_data["source"])
+            dest = self._format_acl_target(config_data["destination"])
             # Named ACL
             if re.match(r"[A-Za-z\_\-]+", identifier):
                 named_acl_cmds = [
                     f"ip access-list extended {identifier}",
                     f"{config_data['action']} {config_data['protocol']} "
-                    f"{ext_source} {ext_dest} {config_data['port']}"
+                    f"{source} {dest} {config_data['port']}"
                 ]
                 self.connection.send_config_set(named_acl_cmds)
             # Numbered ACL
@@ -50,7 +51,7 @@ class AccessControlLists(object):
                 self.utils.send_command(
                     f"access-list {identifier} "
                     f"{config_data['action']} {config_data['protocol']} "
-                    f"{ext_source} {ext_dest} {config_data['port']}"
+                    f"{source} {dest} {config_data['port']}"
                 )
             else:
                 raise InvalidInputException(

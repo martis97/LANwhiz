@@ -44,7 +44,8 @@ class Configure(object):
                 configure_interface.description(
                     int_config["description"]
                 )
-            if int_config.get("acl"):
+            if int_config["acl"].get("inbound") \
+                or int_config["acl"].get("outbound"):
                 configure_interface.acl(
                     interface,
                     inbound=int_config["acl"].get("inbound"),
@@ -92,8 +93,9 @@ class Configure(object):
     def acl(self):
         """ Configure ACLs on the device """
         config_acl = AccessControlLists(self.connection, self.config["acl"])
-        config_acl.standard()
-        config_acl.extended()
+        for acl_type in ("standard", "extended"):
+            if self.config["acl"].get(acl_type):
+                getattr(config_acl, acl_type)()
 
     def dhcp(self):
         """ Configures DHCP on the device """
