@@ -60,8 +60,8 @@ def add_new_device(request):
         print("Connecting..")
         connection = connect_to.cisco_device(*params, telnet=True)
     except Exception as e:
-            print("Connection failed.")
-            print(f"Message: {e.args[0]}")
+        print("Connection failed.")
+        print(f"Message: {e.args[0]}")
 
     utils = Utilities(connection)
     hostname = connection.find_prompt().rstrip("#")

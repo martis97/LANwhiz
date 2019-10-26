@@ -1,5 +1,4 @@
 from netmiko import Netmiko
-from getpass import getpass
 
 """
 AutoConf: Connection Module
