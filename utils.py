@@ -2,13 +2,12 @@ import json
 import re
 import os
 from napalm import get_network_driver
-from LANwhiz.exceptions import DeviceNotFoundException
+from LANwhiz.exceptions import DeviceNotFoundException, InvalidCommandException
 
 class Utilities(object):
     """ Utilities class """
     home_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices/"
     supported_device_types = ("routers", "switches")
-
 
     def __init__(self, connection):
         self.connection = connection
@@ -16,12 +15,23 @@ class Utilities(object):
 
     def send_command(self, command):
         """ Helper function to send a command to device """
-        self.connection.send_command(command, expect_string="")
+        response = self.connection.send_command(command, expect_string="")
+        # Check if command sent has not been rejected by IOS
+        if "Invalid input detected" in response:
+            prompt = self.connection.find_prompt()
+            self.connection.send_command("end", expect_string="")
+            response = self.connection.send_command("reload", expect_string="")
+            if "System configuration has been modified" in response:
+                self.connection.send_command("no", expect_string="")
+            self.connection.send_command("", expect_string="")
+            raise InvalidCommandException(
+                f"'{prompt}{command}' Has been detected as invalid by IOS"
+            )
 
     def _get_napalm_connection(self):
         """ Gets a Napalm connection object """
         ios_driver = get_network_driver("ios")
-        
+
         # Getting a Napalm instance with no connection needed
         napalm_connection = ios_driver(
             hostname=None, username=None, password=None
@@ -57,16 +67,6 @@ class Utilities(object):
                 config = json.loads(config_file.read())
                 
         return config
-    
-    # def write_config(self, hostname, new_config):
-    #     """ Write config given device's hostname.
-
-    #     Args:
-    #         hostname: Hostname of device (Root key dict value)
-    #     """
-    #     self.config[hostname] = new_config
-    #     with open(self.devices_path, "w") as config_file:
-    #         self.config = json.dumps(config_file.read())
 
     def cidr_to_subnet_mask(self, cidr, int_list=False):
         """ Convert CIDR to Subnet Mask
