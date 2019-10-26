@@ -8,7 +8,7 @@ Main Module
 
 from LANwhiz.connect import Connect
 from LANwhiz.utils import Utilities
-from LANwhiz.config.configure import Configure
+from LANwhiz.config.configure import ConfigActions
 from threading import Thread
 
 
@@ -18,36 +18,34 @@ class LANwhizMain(object):
 
     def configure_cisco_device(self, hostname):
         """ Connects to and configures a Cisco device """
-        connection = None
 
         print(f"Starting configuration: {hostname}")
 
-        self.util = Utilities(connection)
-        device_dict = Utilities.read_config(hostname)
+        device_config = Utilities.read_config(hostname)
 
         # Determine from port number whether Telnet required
-        telnet = device_dict["mgmt_port"] == 23 \
-                or device_dict["mgmt_port"] >= 5000
+        telnet = device_config["mgmt_port"] == 23 \
+                or device_config["mgmt_port"] >= 5000
 
         # Get SSH/Telnet channel
         print(f"{hostname}: Connecting to Cisco Device..")
         connection = self.connect_to.cisco_device(
-            *list(device_dict.values())[1:5], telnet=telnet
+            *list(device_config.values())[1:5], telnet=telnet
         )
         print(f"{hostname}: Successfully connected")
 
         # Only configure what's been defined in JSON config file
         methods = [
-            method for method in device_dict["config"] 
+            method for method in device_config["config"] 
                 if not "default" in method
         ]
 
-        config_device = Configure(
-            device_config=device_dict["config"], 
+        config_device = ConfigActions(
+            device_config=device_config["config"], 
             connection=connection
         )
 
-        # Ensuring this runs before all
+        # Ensuring initial commands are executed first
         print("Initialising configuration...")
         config_device.default_commands()
         print("\tDone!\n")
