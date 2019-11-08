@@ -207,7 +207,7 @@ h5 {
 .interface {
     display: inline-table;
     width: 380px;
-    height: 545px;
+    height: 90px;
     border: white solid;
     border-radius: 15px;
 }
@@ -228,8 +228,9 @@ h5.interface-title {
     float: right;
     margin: 10 10;
     cursor: pointer;
+    transform: rotate(180deg);
 }
 
 .dropdown-bottom {
-    display: block;
+    display: none;
 }
