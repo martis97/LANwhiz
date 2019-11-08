@@ -168,7 +168,7 @@ h4 {
     font-size: 20px;
 }
 
-.device-card {
+.card {
     border: 3px solid white;
     color: white;
     padding: 16px 32px;
@@ -180,9 +180,16 @@ h4 {
     border-radius: 20px;
 }
 
-.device-card:hover {
+.card:hover {
     background: white;
     color: #073ca6;
+}
+
+.card.acl {
+    font-size: 13px;
+    padding: 12px 20px;
+    margin: 10px;
+
 }
 
 #resposeField {
@@ -190,4 +197,39 @@ h4 {
     font-size: 20px;
     color: red;
     font-style: oblique;
+}
+
+h5 {
+    font-size: 16px;
+}
+
+
+.interface {
+    display: inline-table;
+    width: 380px;
+    height: 545px;
+    border: white solid;
+    border-radius: 15px;
+}
+
+.dropdown-top {
+    width: 335px;
+    display: inline-block;
+}
+
+h5.interface-title {
+    width: 250px;
+    margin: 10 10;
+    display: inline-block;
+}
+
+.arrow {
+    font-size: 20px;
+    float: right;
+    margin: 10 10;
+    cursor: pointer;
+}
+
+.dropdown-bottom {
+    display: block;
 }

@@ -1,5 +1,3 @@
-import re
-from LANwhiz.utils import Utilities
 from LANwhiz.config.base import BaseConfig
 
 

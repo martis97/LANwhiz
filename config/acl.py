@@ -1,4 +1,3 @@
-from LANwhiz.utils import Utilities
 from LANwhiz.exceptions import InvalidInputException
 from LANwhiz.config.base import BaseConfig
 import re
@@ -72,7 +71,7 @@ class AccessControlLists(BaseConfig):
             the ACL is for a single host and will return
             "host 192.168.1.15"
         
-            If 'any' is passed in, it is returned on its own
+            If 'any' is passed in, it does not change.
         """
         contains_cidr = re.compile(
             r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\/\d{1,2}"

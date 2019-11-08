@@ -12,7 +12,7 @@
         ],
         "interfaces": {
             "GigabitEthernet0/0": {
-                "ipv4": "292.168.5.1/24",
+                "ipv4": "192.168.5.1/24",
                 "ipv6": "2008:ACAB:B323:AADF::1:1/64",
                 "description": "Connection to LAN",
                 "acl": {
@@ -24,30 +24,6 @@
                 "nat": "inside"
             },
             "GigabitEthernet2/0": {
-                "ipv4": "192.168.1.1/24",
-                "ipv6": "",
-                "description": "",
-                "acl": {
-                    "outbound": [
-                        "permit-dns-for-internal"
-                    ],
-                    "inbound": []
-                },
-                "nat": "inside"
-            },
-            "GigabitEthernet3/0": {
-                "ipv4": "192.168.1.1/24",
-                "ipv6": "",
-                "description": "",
-                "acl": {
-                    "outbound": [
-                        "permit-dns-for-internal"
-                    ],
-                    "inbound": []
-                },
-                "nat": "inside"
-            },
-            "GigabitEthernet4/0": {
                 "ipv4": "192.168.1.1/24",
                 "ipv6": "",
                 "description": "",

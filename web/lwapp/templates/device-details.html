@@ -9,10 +9,32 @@
         for (i in configInputs) {
             configInputs[i].style.display = "none";
             if (configInputs[i].className.includes(sectionClass)) {
-                configInputs[i].style.display = "block";    
+                configInputs[i].style.display = "block";
             }
         }        
     }
+
+    function submitForm(formID) {
+        document.getElementByID(formID).submit()
+    }
+
+    function dropdown(dropdownNumber) {
+        var interfaceSection = document.getElementsByClassName(`interface ${dropdownNumber}`)[0];
+        var children = interfaceSection.children;
+        var arrow = interfaceSection.getElementsByClassName("arrow")[0];
+        var dropdownBottom = interfaceSection.getElementsByClassName("dropdown-bottom")[0];
+
+        if (dropdownBottom.style.display === "block") {
+            interfaceSection.style.height = "90px"; 
+            dropdownBottom.style.display = "none";           
+            arrow.style.transform = "rotate(180deg)";
+        } else {
+            interfaceSection.style.height = "545px";
+            dropdownBottom.style.display = "block";           
+            arrow.style.transform = "rotate(-180deg)";
+        }
+    }
+
     
     window.onload = function() {
         displaySection("access");
@@ -35,50 +57,84 @@
     </ul>
 </div>
 
+
+<form id="configForm" method="post">
+{% csrf_token %}
+
 <div class="config-inputs access">
     <h4>Access</h4>
     <div class="input-field">
         <div class="input-label">
             <label for="ip"> Management IP:</label>
         </div>
-        <input id="ip" type="text" name="name" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
+        <input id="ip" type="text" name="mgmt_ip" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
     </div>
 
     <div class="input-field">
         <div class="input-label">
             <label for="port">Port:</label>
         </div>
-        <input id="port" type="number" name="port" value="{{mgmt_port}}" placeholder="Port Number" required>
+        <input id="port" type="number" name="mgmt_port" value="{{mgmt_port}}" placeholder="Port Number" required>
     </div>
 
     <div class="input-field">
         <div class="input-label">
             <label for="username">Username:</label>
         </div>
-        <input id="username" type="text" name="Username" value="{{username}}" placeholder="Username">
+        <input id="username" type="text" name="username" value="{{username}}" placeholder="Username">
     </div>
 
     <div class="input-field">
         <div class="input-label">
             <label for="password">Password:</label>
         </div>
-        <input id="password" type="password" name="Password" value="{{password}}" placeholder="Password">
+        <input id="password" type="password" name="password" value="{{password}}" placeholder="Password">
     </div>
 </div>
 
 <div class="config-inputs default-commands">
     <h4>Default Commands</h4>
-    {% for command in default_commands %}
-    <p>{{command}}</p>
-    {% endfor %}
+    <p>Commands must be separated with a comma (,)</p>
+    <input style="width: 500px" type="text" name="default_commands" value="{% for command in default_commands %}{{command}},{% endfor %}">
 </div>
 
 <div class="config-inputs interfaces">
     <h4>Interfaces</h4>
-    {% for interface, interface_config in intefaces.items %}
-        <p>{{interface}}</p>
-        <p>{{interface_config}}</p>
-    {% endfor %}
+    {% for interface, interface_config in interfaces.items %}
+        <div class="interface {{ forloop.counter0 }}">
+            <div class="dropdown-top">
+                <h5 class="interface-title">{{ interface }}</h5> 
+                <div class="arrow" onclick="dropdown({{ forloop.counter0 }})">&#11167</div>
+            </div>
+            <div class="dropdown-bottom">
+                {% for config_area, values in interface_config.items %}
+                    {% if config_area == "acl" %}
+                        <p>{{ config_area|upper }}:</p>
+                        {% for acl_direction, rules in values.items %}
+                            <p>{{ acl_direction }}</p>
+                            {% for rule in rules %}
+                                <div class="card acl">{{ rule }}</div>
+                            {% endfor %}
+                            <div class="card acl"><strong>+ Add ACL</strong></div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="input-field">
+                        <div class="input-label">
+                            <label for="{{ config_area }}">
+                                {% if config_area == "description" %}
+                                    {{ config_area|title }}
+                                {% else %}
+                                    {{ config_area|upper }}
+                                {% endif %}:
+                            </label>
+                        </div>
+                        <input type="text" name="{{ config_area }}" value="{{ value }}" placeholder="{{ config_area|title }}">
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
 </div>
 
 <div class="config-inputs lines">
@@ -97,12 +153,16 @@
     <h4>DHCP</h4>
 </div>
 
-
 <a href="/devices">
     <button class="button1 back">
         Back to Devices
     </button>
 </a>
+
+<button class="button1 submit-form" onclick="submitForm('configForm')">
+    Update Configuration
+</button>
+</form>
 
 
 {% endblock content %}

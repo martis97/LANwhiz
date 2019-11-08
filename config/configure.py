@@ -1,9 +1,8 @@
-from LANwhiz.utils import Utilities
+from LANwhiz.config.base import BaseConfig
 from LANwhiz.config.interface import Interface, Line
-from LANwhiz.config.routing import Static, OSPF
+from LANwhiz.config.routing import StaticRoute, OSPF
 from LANwhiz.config.acl import AccessControlLists
 from LANwhiz.config.dhcp import DHCPPool
-from LANwhiz.config.base import BaseConfig
 
 
 class ConfigActions(BaseConfig):
@@ -31,8 +30,7 @@ class ConfigActions(BaseConfig):
         int_config = self.config["interfaces"]
         for interface, config in int_config.items():
             configure_interface = Interface(self.connection, config)
-            init_cmds = (f"interface {interface}", "no shutdown")
-            for cmd in init_cmds:
+            for cmd in (f"interface {interface}", "no shutdown"):
                 self.utils.send_command(cmd)
             configure_interface.ipv4()
             configure_interface.ipv6()
@@ -58,9 +56,9 @@ class ConfigActions(BaseConfig):
     
     def routing(self):
         """ Pass config information to class methods for routing """
-        static_routing = Static(self.connection)
-        for static_info in self.config["routing"].get("static"):
-            static_routing.send_static_route_command(**static_info)
+        for static_route_config in self.config["routing"].get("static"):
+            static_routing = StaticRoute(self.connection, static_route_config)
+            static_routing.send_static_route_command()
         if self.config["routing"].get("ospf"):
             ospf_routing = OSPF(
                 self.connection,
@@ -73,10 +71,10 @@ class ConfigActions(BaseConfig):
     
     def acl(self):
         """ Configure ACLs on the device """
-        config_acl = AccessControlLists(self.connection, self.config["acl"])
+        acl = AccessControlLists(self.connection, self.config["acl"])
         for acl_type in ("standard", "extended"):
-            if self.config["acl"].get(acl_type):
-                getattr(config_acl, acl_type)()
+            if acl.config[acl_type]:
+                getattr(acl, acl_type)()
 
     def dhcp(self):
         """ Configures DHCP on the device """

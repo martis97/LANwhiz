@@ -1,9 +1,7 @@
 """
-AutoConf Network Device Configuration Automation Platform
-// Send configuration remotely //
-b
+LANwhiz Network Device Configuration Automation 
 
-Main Module
+Main script
 """
 
 from LANwhiz.connect import Connect

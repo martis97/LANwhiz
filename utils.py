@@ -3,6 +3,7 @@ import re
 import os
 from napalm import get_network_driver
 from LANwhiz.exceptions import DeviceNotFoundException, InvalidCommandException
+from LANwhiz.connect import Connect
 
 class Utilities(object):
     """ Utilities class """
@@ -25,7 +26,8 @@ class Utilities(object):
                 self.connection.send_command("no", expect_string="")
             self.connection.send_command("", expect_string="")
             raise InvalidCommandException(
-                f"'{prompt}{command}' Has been detected as invalid by IOS"
+                f"'{prompt}{command}' marked invalid by IOS. "
+                "Reloading device - revert back to startup config."
             )
 
     def _get_napalm_connection(self):
@@ -110,7 +112,7 @@ class Utilities(object):
         """ Returns a list of interfaces using Napalm """
         interfaces = self.napalm_connection.get_interfaces()
         
-        return [interface for interface in interfaces.keys()]
+        return list(interfaces.keys())
 
     def ensure_global_config_mode(self):
         """ Ensures the configuration level is set to global config mode.
@@ -198,3 +200,40 @@ class Utilities(object):
             ]
 
         return devices
+
+    @staticmethod
+    def add_new_device(host, port, username=None, password=None):
+        """ Connect to device and create a JSON record of it """
+        
+        params = [host, port]
+
+        if username and password:
+            params += [username, password]
+
+        connect_to = Connect()
+        
+        try:
+            print("Connecting..")
+            connection = connect_to.cisco_device(*params, telnet=True)
+        except Exception as e:
+            print("Connection failed.")
+            print(f"Message: {e.args[0]}")
+
+        utils = Utilities(connection)
+        hostname = connection.find_prompt().rstrip("#")
+
+        new_config = {
+            "hostname": hostname,
+            "mgmt_ip": host,
+            "mgmt_port": port,
+            "username": username if username else "",
+            "password": password if password else "",    # Use Salting/Hashing/Secure Storage
+            "config": Utilities.build_initial_config_template()
+        }
+
+        with open(
+            f"{utils.home_path}routers/{hostname}.json", "w"
+        ) as config_file:
+            config_file.write(json.dumps(new_config, indent=4))
+
+        return new_config
