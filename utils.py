@@ -13,6 +13,7 @@ class Utilities(object):
     def __init__(self, connection):
         self.connection = connection
         self.napalm_connection = self._get_napalm_connection()
+        # self.interfaces = self.get_interfaces()
 
     def send_command(self, command):
         """ Helper function to send a command to device """
@@ -187,6 +188,35 @@ class Utilities(object):
             }
 
         return config 
+    
+    def get_structured_config(self, config_type="startup"):
+        """ Use Napalm connection to retrieve startup config and structure
+        and form a hierarchical dictionary.
+        """
+        struct_config = {
+            "global_commands": [],
+        }
+        device_config = self.napalm_connection.get_config()
+        config = [
+            line for line in device_config[config_type].split("\n") 
+                if line and "!" not in line 
+        ]
+
+        config = config[1:] if config_type == "startup" else config[4:]
+
+        for line in config:
+            if not line[0] == " ":
+                last_key = line
+                struct_config["global_commands"].append(line)
+            else:
+                try:
+                    struct_config[last_key].append(line[1:])
+                except KeyError:
+                    struct_config[last_key] = [line[1:]]
+                if last_key in struct_config["global_commands"]:
+                    struct_config["global_commands"].remove(last_key)
+
+        return struct_config
 
     @staticmethod
     def get_all_devices():
@@ -205,7 +235,12 @@ class Utilities(object):
     def add_new_device(host, port, username=None, password=None):
         """ Connect to device and create a JSON record of it """
         
-        params = [host, port]
+        params = {
+            "mgmt_ip": host, 
+            "port": port,
+            "username": username if username else None,
+            "password": password if password else None
+        }
 
         if username and password:
             params += [username, password]
@@ -228,7 +263,7 @@ class Utilities(object):
             "mgmt_port": port,
             "username": username if username else "",
             "password": password if password else "",    # Use Salting/Hashing/Secure Storage
-            "config": Utilities.build_initial_config_template()
+            "config": {} # Utilities.build_initial_config_template()
         }
 
         with open(

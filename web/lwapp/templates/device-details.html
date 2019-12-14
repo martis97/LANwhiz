@@ -24,14 +24,15 @@
         var arrow = interfaceSection.getElementsByClassName("arrow")[0];
         var dropdownBottom = interfaceSection.getElementsByClassName("dropdown-bottom")[0];
 
-        if (dropdownBottom.style.display === "block") {
-            interfaceSection.style.height = "90px"; 
-            dropdownBottom.style.display = "none";           
-            arrow.style.transform = "rotate(180deg)";
-        } else {
+        if (dropdownBottom.style.display === "block") { // Collapse if expanded
+            interfaceSection.style.height = "65px"; 
+            dropdownBottom.style.display = "none";
+            arrow.style.transform = "none";         
+        } else {                                        // Assume it's collapsed, so expand
             interfaceSection.style.height = "545px";
             dropdownBottom.style.display = "block";           
             arrow.style.transform = "none";
+            arrow.style.transform = "rotate(180deg)";
         }
     }
 
@@ -63,38 +64,49 @@
 
 <div class="config-inputs access">
     <h4>Access</h4>
-    <div class="input-field">
-        <div class="input-label">
-            <label for="ip"> Management IP:</label>
-        </div>
-        <input id="ip" type="text" name="mgmt_ip" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
-    </div>
-
-    <div class="input-field">
-        <div class="input-label">
-            <label for="port">Port:</label>
-        </div>
-        <input id="port" type="number" name="mgmt_port" value="{{mgmt_port}}" placeholder="Port Number" required>
-    </div>
-
-    <div class="input-field">
-        <div class="input-label">
-            <label for="username">Username:</label>
-        </div>
-        <input id="username" type="text" name="username" value="{{username}}" placeholder="Username">
-    </div>
-
-    <div class="input-field">
-        <div class="input-label">
-            <label for="password">Password:</label>
-        </div>
-        <input id="password" type="password" name="password" value="{{password}}" placeholder="Password">
-    </div>
+    <table class="form-table" role="presentation">
+        <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="ip"> Management IP:</label>
+                </th>
+                <td>
+                    <input id="ip" type="text" name="mgmt_ip" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
+                </td>
+            </tr>
+                <th scope="row">
+                    <label for="port">Port:</label>                
+                </th>
+                <td>
+                    <input id="port" type="number" name="mgmt_port" value="{{mgmt_port}}" placeholder="Port Number" required>
+                </td>
+            <tr>
+                <th scope="row">
+                    <label for="username">Username:</label>
+                </th>
+                <td>
+                    <input id="username" type="text" name="username" value="{{username}}" placeholder="Username">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="password">Password:</label>
+                </th>
+                <td>
+                    <input id="password" type="password" name="password" value="{{password}}" placeholder="Password">
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="config-inputs default-commands">
     <h4>Default Commands</h4>
-    <p>Commands must be separated with a comma (,)</p>
+    <p>Some Rules:
+    <ul>
+        <li>Commands must be separated with a comma (,)</li>
+        <li>Commands are to be executed in global config mode, so be mindful of what command is being entered.</li>
+    </ul>
     <input style="width: 500px" type="text" name="default_commands" value="{% for command in default_commands %}{{command}},{% endfor %}">
 </div>
 
@@ -139,6 +151,41 @@
 
 <div class="config-inputs lines">
     <h4>Lines</h4>
+    {% for line, line_config in lines.items %}
+        <div class="line {{ forloop.counter0 }}">
+            <div class="dropdown-top">
+                <h5 class="interface-title">{{ line }}</h5> 
+                <div class="arrow" onclick="dropdown('line {{ forloop.counter0 }}')">&#11167</div>
+            </div>
+            <div class="dropdown-bottom">
+                {% for config_area, values in line_config.items %}
+                    {% if config_area == "acl" %}
+                        <p>{{ config_area|upper }}:</p>
+                        {% for acl_direction, rules in values.items %}
+                            <p>{{ acl_direction }}</p>
+                            {% for rule in rules %}
+                                <div class="card acl">{{ rule }}</div>
+                            {% endfor %}
+                            <div class="card acl"><strong>+ Add ACL</strong></div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="input-field">
+                        <div class="input-label">
+                            <label for="{{ config_area }}">
+                                {% if config_area == "description" %}
+                                    {{ config_area|title }}
+                                {% else %}
+                                    {{ config_area|upper }}
+                                {% endif %}:
+                            </label>
+                        </div>
+                        <input type="text" name="{{ config_area }}" value="{{ value }}" placeholder="{{ config_area|title }}">
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+    {% endfor %}
 </div>
 
 <div class="config-inputs routing">

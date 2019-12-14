@@ -32,6 +32,8 @@ class LANwhizMain(object):
         )
         print(f"{hostname}: Successfully connected")
 
+        utils = Utilities(connection)
+
         # Only configure what's been defined in JSON config file
         methods = [
             method for method in device_config["config"] 
@@ -66,7 +68,4 @@ if __name__ == "__main__":
     try:
         thread.start()
     except Exception as e:
-        # print(f"ERROR: Exception occured on {device['hostname']}")
-        # print(f"{device['hostname']} says: {e.args}")
-        # print(f"Terminating configuration process for {device['hostname']}")
         pass

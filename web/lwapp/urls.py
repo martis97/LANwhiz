@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from . import views 
+from . import views
 
 urlpatterns = [
     path('', views.index, name='LANwhiz - Home'),
-    path('devices/', views.devices, name='LANwhiz - Devices'),
+    path('devices/', views.devices, name='LANwhiz - Devices'),    
     path('devices/add/', views.add_device, name='LANwhiz - Add Device'),
+    path('devices/<str:hostname>/', views.device_details, name="LANwhiz - Device"),
     path('admin', admin.site.urls)
 ]
 
