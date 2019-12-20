@@ -271,7 +271,7 @@ class Utilities(object):
                         "nat": ""
                     } for interface in utils.get_interfaces()
                 }
-            } # Utilities.build_initial_config_template()
+            } 
         }
 
         with open(
