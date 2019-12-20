@@ -56,13 +56,15 @@ class ConfigActions(BaseConfig):
     
     def routing(self):
         """ Pass config information to class methods for routing """
-        for static_route_config in self.config["routing"].get("static"):
-            static_routing = StaticRoute(self.connection, static_route_config)
-            static_routing.send_static_route_command()
-        if self.config["routing"].get("ospf"):
+        config = self.config["routing"]
+        if config.get("static"):
+            for static_route_config in config.get("static"):
+                static_routing = StaticRoute(self.connection, static_route_config)
+                static_routing.send_static_route_command()
+        if config.get("ospf"):
             ospf_routing = OSPF(
                 self.connection,
-                self.config["routing"]["ospf"]
+                config.get("ospf")
             )
             ospf_routing.router_id()
             ospf_routing.advertise_static_routes()

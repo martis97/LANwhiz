@@ -15,17 +15,18 @@ class Utilities(object):
         self.napalm_connection = self._get_napalm_connection()
         # self.interfaces = self.get_interfaces()
 
-    def send_command(self, command):
+    def send_command(self, command, reload=False):
         """ Helper function to send a command to device """
         response = self.connection.send_command(command, expect_string="")
         # Check if command sent has not been rejected by IOS
         if "Invalid input detected" in response:
             prompt = self.connection.find_prompt()
             self.connection.send_command("end", expect_string="")
-            response = self.connection.send_command("reload", expect_string="")
-            if "System configuration has been modified" in response:
-                self.connection.send_command("no", expect_string="")
-            self.connection.send_command("", expect_string="")
+            if reload:    
+                response = self.connection.send_command("reload", expect_string="")
+                if "configuration has been modified. Save?" in response:
+                    self.connection.send_command("no", expect_string="")
+                self.connection.send_command("", expect_string="")
             raise InvalidCommandException(
                 f"'{prompt}{command}' marked invalid by IOS. "
                 "Reloading device - revert back to startup config."
@@ -119,12 +120,10 @@ class Utilities(object):
         """ Ensures the configuration level is set to global config mode.
         Will exit down to privileged exec mode, then escalate to global 
         config. 
-
         E.g.
             If the prompt is:
                 R1(config-if)#
             It will send commands 'end' and 'conf t' consequently.
-
         or,
             If the prompt is:
                 R1#
@@ -190,8 +189,8 @@ class Utilities(object):
         return config 
     
     def get_structured_config(self, config_type="startup"):
-        """ Use Napalm connection to retrieve startup config and structure
-        and form a hierarchical dictionary.
+        """ Use Napalm connection to retrieve config and use it to
+        form a hierarchical dictionary.
         """
         struct_config = {
             "global_commands": [],
@@ -201,20 +200,19 @@ class Utilities(object):
             line for line in device_config[config_type].split("\n") 
                 if line and "!" not in line 
         ]
-
-        config = config[1:] if config_type == "startup" else config[4:]
+        config = config[4:-1] if config_type == "running" else config[1:-1]
 
         for line in config:
-            if not line[0] == " ":
-                last_key = line
-                struct_config["global_commands"].append(line)
-            else:
+            if line[0] == " ":
                 try:
                     struct_config[last_key].append(line[1:])
                 except KeyError:
                     struct_config[last_key] = [line[1:]]
                 if last_key in struct_config["global_commands"]:
                     struct_config["global_commands"].remove(last_key)
+            else:
+                last_key = line
+                struct_config["global_commands"].append(line)
 
         return struct_config
 
@@ -238,18 +236,15 @@ class Utilities(object):
         params = {
             "mgmt_ip": host, 
             "port": port,
-            "username": username if username else None,
-            "password": password if password else None
+            "username": username,
+            "password": password
         }
-
-        if username and password:
-            params += [username, password]
 
         connect_to = Connect()
         
         try:
             print("Connecting..")
-            connection = connect_to.cisco_device(*params, telnet=True)
+            connection = connect_to.cisco_device(**params, telnet=True)
         except Exception as e:
             print("Connection failed.")
             print(f"Message: {e.args[0]}")
@@ -261,9 +256,22 @@ class Utilities(object):
             "hostname": hostname,
             "mgmt_ip": host,
             "mgmt_port": port,
-            "username": username if username else "",
-            "password": password if password else "",    # Use Salting/Hashing/Secure Storage
-            "config": {} # Utilities.build_initial_config_template()
+            "username": username,
+            "password": password,    # Use Salting/Hashing/Secure Storage
+            "config": {
+                "interfaces": {
+                    interface: {
+                        "ipv4": "",
+                        "ipv6": "",
+                        "description": "",
+                        "acl": {
+                            "outbound": [],
+                            "inbound": []
+                        },
+                        "nat": ""
+                    } for interface in utils.get_interfaces()
+                }
+            } # Utilities.build_initial_config_template()
         }
 
         with open(

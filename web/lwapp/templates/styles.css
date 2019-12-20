@@ -249,3 +249,7 @@ h5.interface-title {
 .dropdown-bottom {
     display: none;
 }
+
+.form-table td {
+    padding-right: 20px;
+}

@@ -35,9 +35,13 @@ def device_details(request, hostname):
 def add_device(request):
     """ Add Device page """    
     if request.POST:
-        params = ("host", "port", "username", "password")
-        device_params = [request.POST.get(param) for param in params if param]
-        new_device = Utilities.add_new_device(*device_params)
+        print(request.POST)
+        host = request.POST.get("mgmt_ip")
+        port = int(request.POST.get("mgmt_port"))
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        params = (host, port, username, password)
+        new_device = Utilities.add_new_device(*params)
         return redirect(f"/devices/{new_device['hostname']}")
     else:
         return render(request, 'add-device.html', context=context)

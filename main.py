@@ -32,8 +32,6 @@ class LANwhizMain(object):
         )
         print(f"{hostname}: Successfully connected")
 
-        utils = Utilities(connection)
-
         # Only configure what's been defined in JSON config file
         methods = [
             method for method in device_config["config"] 
@@ -46,12 +44,12 @@ class LANwhizMain(object):
         )
 
         # Ensuring initial commands are executed first
-        print("Initialising configuration...")
+        print("Configuring: Global commands...")
         config_device.default_commands()
         print("\tDone!\n")
 
         for config_area in methods:
-            print("Configuring "
+            print("Configuring: "
                 f"{config_area.replace('_', ' ').title()}..."
             )
             getattr(config_device, config_area)()
@@ -64,8 +62,9 @@ class LANwhizMain(object):
 
 if __name__ == "__main__":
     lw = LANwhizMain()
-    thread = Thread(target=lw.configure_cisco_device, kwargs={"hostname":"R1"})
-    try:
-        thread.start()
-    except Exception as e:
-        pass
+    for device in ("R1", "R2", "R3", "R4"):    
+        thread = Thread(target=lw.configure_cisco_device, kwargs={"hostname":device})
+        try:
+            thread.start()
+        except Exception as e:
+            pass

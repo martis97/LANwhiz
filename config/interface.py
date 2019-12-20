@@ -28,15 +28,15 @@ class Interface(BaseConfig):
     def acl(self):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
-        inbound = self.config["acl"].get("inbound")
-        outbound = self.config["acl"].get("outbound")
-        if inbound or outbound:
-            for rule in outbound:
-                acl_commands.append(f"ip access-group {rule} out")
-            for rule in inbound:
-                acl_commands.append(f"ip access-group {rule} in")
-            for command in acl_commands:
-                self.utils.send_command(command)
+        config = self.config.get("acl")
+        inbound = config.get("inbound") if config else []
+        outbound = config.get("outbound") if config else []
+        for rule in outbound:
+            acl_commands.append(f"ip access-group {rule} out")
+        for rule in inbound:
+            acl_commands.append(f"ip access-group {rule} in")
+        for command in acl_commands:
+            self.utils.send_command(command)
 
     def nat(self):
         """ Sends command to configure NAT on the interface """
@@ -54,10 +54,11 @@ class Line(BaseConfig):
         self.utils.send_command("logging synchronous")
 
     def acl(self):
-        """ Sends commands to configure ACLs on line interfaces """
+        """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
-        inbound = self.config["acl"].get("inbound")
-        outbound = self.config["acl"].get("outbound")
+        config = self.config.get("acl")
+        inbound = config.get("inbound") if config else []
+        outbound = config.get("outbound") if config else []
         for rule in outbound:
             acl_commands.append(f"access-class {rule} out")
         for rule in inbound:

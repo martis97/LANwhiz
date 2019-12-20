@@ -119,6 +119,8 @@
                 <div class="arrow" onclick="dropdown({{ forloop.counter0 }})">&#11167</div>
             </div>
             <div class="dropdown-bottom">
+                <table class="form-table" role="presentation">
+                <tbody>
                 {% for config_area, values in interface_config.items %}
                     {% if config_area == "acl" %}
                         <p>{{ config_area|upper }}:</p>
@@ -129,8 +131,26 @@
                             {% endfor %}
                             <div class="card acl"><strong>+ Add ACL</strong></div>
                         {% endfor %}
+                    {% elif config_area == "nat" %}
+                    <tr>
+                        <th scope="row">
+                            <label for="{{ config_area }}">{{ config_area|upper }}:</label>
+                        </th>
+                        <td>
+                            <input type="radio" name="{{ config_area }}" value="inbound" placeholder="{{ config_area|title }}">Inbound</input>
+                            <input type="radio" name="{{ config_area }}" value="outbound" placeholder="{{ config_area|title }}">Inbound</input>
+                            <input type="radio" name="{{ config_area }}" value="off" placeholder="{{ config_area|title }}">Inbound</input>
+                        </td>
                     {% else %}
-                    <div class="input-field">
+                    <tr>
+                        <th scope="row">
+                            <label for="{{ config_area }}">{{ config_area|title }}:</label>
+                        </th>
+                        <td>
+                            <input type="text" name="{{ config_area }}" value="{{ values }}" placeholder="{{ config_area|title }}">
+                        </td>
+                    </tr>
+                    {% comment %} <div class="input-field">
                         <div class="input-label">
                             <label for="{{ config_area }}">
                                 {% if config_area == "description" %}
@@ -141,9 +161,11 @@
                             </label>
                         </div>
                         <input type="text" name="{{ config_area }}" value="{{ value }}" placeholder="{{ config_area|title }}">
-                    </div>
+                    </div> {% endcomment %}
                     {% endif %}
                 {% endfor %}
+                </table>
+                </tbody>
                 </div>
             </div>
         {% endfor %}
