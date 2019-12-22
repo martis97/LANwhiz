@@ -14,28 +14,22 @@
         "interfaces": {
             "GigabitEthernet0/0": {
                 "ipv4": "13.13.13.1/24",
-                "description": "Connection to R2",
-                "other_commands": [
-                    "ip ospf message-digest-key 1 md5 cisco"
-                ]
+                "description": "Connection to R2"
             },
             "GigabitEthernet1/0": {
                 "ipv4": "12.12.12.1/24",
-                "description": "Connection to R3",
-                "other_commands": [
-                    "ip ospf message-digest-key 1 md5 cisco"
-                ]
+                "description": "Connection to R3"
             },
             "GigabitEthernet2/0": {
                 "ipv4": "15.15.15.1/24",
-                "description": "Connection to R5",
-                "other_commands": [
-                    "ip ospf message-digest-key 1 md5 cisco"
-                ]
+                "description": "Connection to R5"
             },
             "Loopback0": {
                 "ipv4": "11.11.11.1/24",
-                "description": "Supposed LAN"
+                "description": "Supposed LAN",
+                "other_commands": [
+                    "ip ospf network point-to-point"
+                ]
             }
         },
         "lines": {
@@ -63,9 +57,6 @@
                     "Loopback0"
                 ],
                 "other_commands": [
-                    "area 0 authentication message-digest",
-                    "area 14 authentication message-digest",
-                    "area 1235 authentication message-digest",
                     "area 14 stub"
                 ]
             }

@@ -57,22 +57,23 @@ class ConfigActions(BaseConfig):
     
     def routing(self):
         """ Pass config information to class methods for routing """
-        config = self.config["routing"]
-        if config.get("static"):
-            for static_route_config in config.get("static"):
-                static_routing = StaticRoute(self.connection, static_route_config)
-                static_routing.send_static_route_command()
-        if config.get("ospf"):
-            ospf_routing = OSPF(
-                self.connection,
-                config.get("ospf")
-            )
-            ospf_routing.router_id()
-            ospf_routing.advertise_static_routes()
-            ospf_routing.advertise_networks()
-            ospf_routing.passive_interfaces()
-            ospf_routing.other_commands()
-    
+        if self.config.get("routing"):
+            config = self.config["routing"]
+            if config.get("static"):
+                for static_route_config in config.get("static"):
+                    static_routing = StaticRoute(self.connection, static_route_config)
+                    static_routing.send_static_route_command()
+            if config.get("ospf"):
+                ospf_routing = OSPF(
+                    self.connection,
+                    config.get("ospf")
+                )
+                ospf_routing.router_id()
+                ospf_routing.advertise_static_routes()
+                ospf_routing.advertise_networks()
+                ospf_routing.passive_interfaces()
+                ospf_routing.other_commands()
+        
     def acl(self):
         """ Configure ACLs on the device """
         acl = AccessControlLists(self.connection, self.config["acl"])
