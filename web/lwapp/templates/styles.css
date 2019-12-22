@@ -25,7 +25,7 @@ body {
 
  /* NAVIGATION BAR */
 .navigation {
-    min-height: 100px;
+    min-height: 50px;
     width: 100%;
     background-color: #445463;
     float: left;
@@ -49,15 +49,14 @@ body {
 
 .navigation a {
     display: block;
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
+    border-radius: 20px;
+    width: 150px;
+    height: 30px;
     border: 3px solid white;
     text-decoration: none;
     color: white;
     font-size: 25px;
     text-align: center;
-    line-height: 115px;
     margin: 5%;
 }
 

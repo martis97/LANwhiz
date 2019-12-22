@@ -32,12 +32,20 @@ class OSPF(BaseConfig):
     
     def advertise_networks(self):
         """ Advertises OSPF networks """
-        for network in self.config["advertise_networks"]:
-            ip, cidr, area = network.split("/")
-            wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
-            self.utils.send_command(f"network {ip} {wildcard} {area}")
+        if self.config.get("advertise_networks"):
+            for network in self.config["advertise_networks"]:
+                ip, cidr, area = network.split("/")
+                wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
+                self.utils.send_command(f"network {ip} {wildcard} {area}")
     
     def passive_interfaces(self):
         """ Defines all passive interfaces """
-        for interface in self.config["passive_interfaces"]:
-            self.utils.send_command(f"passive-interface {interface}")
+        if self.config.get("passive_interfaces"):
+            for interface in self.config["passive_interfaces"]:
+                self.utils.send_command(f"passive-interface {interface}")
+
+    def other_commands(self):
+        """ Sends other commands on OSPF-level configuration """
+        if self.config.get("other_commands"):
+            for cmd in self.config["other_commands"]:
+                self.utils.send_command(cmd)

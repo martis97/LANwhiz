@@ -43,6 +43,17 @@ class Interface(BaseConfig):
         if self.config.get("nat"):
             nat_command = f"ip nat {self.config['nat']}"
             self.utils.send_command(nat_command)
+    
+    def clock_rate(self):
+        """ Sends command to configure clock rate of Serial interface """
+        if self.config.get("clock_rate"):
+            self.utils.send_command(f"clock rate {self.config['clock_rate']}")
+
+    def other_config(self):
+        """ Sends commands on interface config level """
+        if self.config.get("other_commands"):
+            for cmd in self.config["other_commands"]:
+                self.utils.send_command(cmd)
 
 
 class Line(BaseConfig):

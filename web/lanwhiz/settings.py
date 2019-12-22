@@ -122,5 +122,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    'lwapp/templates/'
+    'lwapp/templates/',
+    'static/'
 ]

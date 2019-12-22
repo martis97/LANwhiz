@@ -72,7 +72,8 @@ class Utilities(object):
                 
         return config
 
-    def cidr_to_subnet_mask(self, cidr, int_list=False):
+    @staticmethod
+    def cidr_to_subnet_mask(cidr, int_list=False):
         """ Convert CIDR to Subnet Mask
         
         Args:
@@ -106,7 +107,7 @@ class Utilities(object):
             Converted Wildcard Mask
         """
         assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
-        subnetmask = self.cidr_to_subnet_mask(cidr, int_list=True)
+        subnetmask = Utilities.cidr_to_subnet_mask(cidr, int_list=True)
 
         return ".".join([str(255 - octet) for octet in subnetmask])
 
