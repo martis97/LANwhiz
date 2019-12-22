@@ -37,6 +37,7 @@ class ConfigActions(BaseConfig):
             configure_interface.description()
             configure_interface.acl()
             configure_interface.nat()
+            configure_interface.other_config()
 
     def lines(self):
         """ Pass configuration information to class methods for line
@@ -70,6 +71,7 @@ class ConfigActions(BaseConfig):
             ospf_routing.advertise_static_routes()
             ospf_routing.advertise_networks()
             ospf_routing.passive_interfaces()
+            ospf_routing.other_commands()
     
     def acl(self):
         """ Configure ACLs on the device """

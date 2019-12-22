@@ -1,7 +1,7 @@
 {
     "hostname": "R1",
     "mgmt_ip": "192.168.74.128",
-    "mgmt_port": 5000,
+    "mgmt_port": 5001,
     "username": "admin",
     "password": "cisco",
     "config": {
@@ -14,7 +14,21 @@
         "interfaces": {
             "GigabitEthernet0/0": {
                 "ipv4": "13.13.13.1/24",
+                "description": "Connection to R2",
+                "other_commands": [
+                    "ip ospf message-digest-key 1 md5 cisco"
+                ]
+            },
+            "GigabitEthernet1/0": {
+                "ipv4": "12.12.12.1/24",
                 "description": "Connection to R3",
+                "other_commands": [
+                    "ip ospf message-digest-key 1 md5 cisco"
+                ]
+            },
+            "GigabitEthernet2/0": {
+                "ipv4": "15.15.15.1/24",
+                "description": "Connection to R5",
                 "other_commands": [
                     "ip ospf message-digest-key 1 md5 cisco"
                 ]

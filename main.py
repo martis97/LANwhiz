@@ -62,9 +62,8 @@ class LANwhizMain(object):
 
 if __name__ == "__main__":
     lw = LANwhizMain()
-    for device in ("R1", "R2", "R3", "R4"):    
-        thread = Thread(target=lw.configure_cisco_device, kwargs={"hostname":device})
-        try:
-            thread.start()
-        except Exception as e:
-            pass
+    thread = Thread(target=lw.configure_cisco_device, kwargs={"hostname": "R1"})
+    try:
+        thread.start()
+    except Exception as e:
+        pass
