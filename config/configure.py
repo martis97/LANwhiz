@@ -78,7 +78,7 @@ class ConfigActions(BaseConfig):
         """ Configure ACLs on the device """
         acl = AccessControlLists(self.connection, self.config["acl"])
         for acl_type in ("standard", "extended"):
-            if acl.config[acl_type]:
+            if acl.config.get(acl_type):
                 getattr(acl, acl_type)()
 
     def dhcp(self):

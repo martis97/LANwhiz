@@ -1,6 +1,8 @@
 import json
 import re
 import os
+from socket import inet_ntoa
+from struct import pack
 from napalm import get_network_driver
 from LANwhiz.exceptions import DeviceNotFoundException, InvalidCommandException
 from LANwhiz.connect import Connect
@@ -72,8 +74,7 @@ class Utilities(object):
                 
         return config
 
-    @staticmethod
-    def cidr_to_subnet_mask(cidr, int_list=False):
+    def cidr_to_subnet_mask(self, cidr):
         """ Convert CIDR to Subnet Mask
         
         Args:
@@ -82,20 +83,9 @@ class Utilities(object):
         Returns:
             Converted Subnet Mask
         """
-        assert cidr in range(8, 31), f"Invalid CIDR value: {cidr}!"
-        octets = []
-        possible_octets = ["128","192","224","240","248","252","254"]
-        for _ in range(cidr // 8):
-            octets.append("255")
-        bits_left = cidr % 8
-        if bits_left:
-            octets.append(possible_octets[bits_left - 1])
-        while not len(octets) == 4:
-            octets.append("0")
-        if int_list:
-            return [int(octet) for octet in octets]
+        assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
 
-        return ".".join(octets)
+        return inet_ntoa(pack('!I', (1 << 32) - (1 << 32 - cidr)))
 
     def cidr_to_wildcard_mask(self, cidr):
         """ Convert CIDR to Wildcard Mask
@@ -107,9 +97,9 @@ class Utilities(object):
             Converted Wildcard Mask
         """
         assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
-        subnetmask = Utilities.cidr_to_subnet_mask(cidr, int_list=True)
+        subnetmask = self.cidr_to_subnet_mask(cidr)
 
-        return ".".join([str(255 - octet) for octet in subnetmask])
+        return ".".join([str(255 - int(octet)) for octet in subnetmask.split(".")])
 
     def get_interfaces(self):
         """ Returns a list of interfaces using Napalm """

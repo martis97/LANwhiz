@@ -44,16 +44,17 @@ class LANwhizMain(object):
         )
 
         # Ensuring initial commands are executed first
-        print("Configuring: Global commands...")
+        print(f"{hostname}: Configuring Global commands... ")
         config_device.default_commands()
-        print("\tDone!\n")
+        print("Done!")
 
         for config_area in methods:
-            print("Configuring: "
-                f"{config_area.replace('_', ' ').title()}..."
+            print(f"{hostname}: Configuring: "
+                f"{config_area.replace('_', ' ').title()}...",
+                end=""
             )
             getattr(config_device, config_area)()
-            print("\tDone!\n")
+            print("Done!")
 
         print(f"{hostname}: Configuration Complete!")
         print(f"{hostname}: Closing session..")
@@ -64,7 +65,10 @@ if __name__ == "__main__":
     lw = LANwhizMain()
     devices = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"]
     for device in devices:
-        thread = Thread(target=lw.configure_cisco_device, kwargs={"hostname": device})
+        thread = Thread(
+            target=lw.configure_cisco_device, 
+            kwargs={"hostname": device}
+        )
         try:
             thread.start()
         except Exception as e:

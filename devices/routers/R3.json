@@ -19,7 +19,8 @@
             "Serial3/0": {
                 "ipv4": "36.36.36.1/24",
                 "description": "Connection to R4",
-                "clock_rate": 128000
+                "clock_rate": 128000,
+                "bandwidth": 8000
             },
             "Loopback0": {
                 "ipv4": "33.33.33.1/24",

@@ -18,7 +18,7 @@ class Interface(BaseConfig):
         if self.config.get("ipv6"):
             ipv6_command = f"ipv6 address {self.config['ipv6']}"
             self.utils.send_command(ipv6_command)
-    
+
     def description(self):
         """ Sends command to configure interface description """
         if self.config.get("description"):
@@ -48,6 +48,10 @@ class Interface(BaseConfig):
         """ Sends command to configure clock rate of Serial interface """
         if self.config.get("clock_rate"):
             self.utils.send_command(f"clock rate {self.config['clock_rate']}")
+    
+    def bandwidth(self):
+        if self.config.get("bandwidth"):
+            self.utils.send_command(f"bandwidth {self.config['bandwidth']}")
 
     def other_config(self):
         """ Sends commands on interface config level """
