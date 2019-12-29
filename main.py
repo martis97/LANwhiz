@@ -50,8 +50,7 @@ class LANwhizMain(object):
 
         for config_area in methods:
             print(f"{hostname}: Configuring: "
-                f"{config_area.replace('_', ' ').title()}...",
-                end=""
+                f"{config_area.replace('_', ' ').title()}..."
             )
             getattr(config_device, config_area)()
             print("Done!")

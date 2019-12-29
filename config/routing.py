@@ -28,7 +28,8 @@ class OSPF(BaseConfig):
 
     def advertise_static_routes(self):
         """ Distribute default static routes to OSPF network """
-        self.utils.send_command("default-information originate")
+        if self.config.get("advertise_static"):
+            self.utils.send_command("default-information originate")
     
     def advertise_networks(self):
         """ Advertises OSPF networks """
