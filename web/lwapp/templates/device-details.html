@@ -8,7 +8,7 @@
     function displayConfigSection(sectionClass) {
         var configInputs = document.querySelectorAll(".config-inputs");
         for (i in configInputs) {
-            $( configInputs[i] ).fadeOut();
+            $( configInputs[i] ).hide();
             if (configInputs[i].className.includes(sectionClass)) {
                 $( configInputs[i] ).fadeIn();
             }
@@ -101,63 +101,26 @@ $( "li" ).click( function() {
 <div class="config-inputs interfaces">
     <h4>Interfaces</h4>
     {% for interface, interface_config in interfaces.items %}
-        <div class="interface {{ forloop.counter0 }}">
+        <div class="interface {{ forloop.counter1 }}">
             <div class="dropdown-top">
                 <h5 class="interface-title">{{ interface }}</h5> 
-                <div class="arrow" onclick="dropdown({{ forloop.counter0 }})">&#11167</div>
-            </div>
-            <div class="dropdown-bottom">
-                <table class="form-table" role="presentation">
-                <tbody>
-                {% for config_area, values in interface_config.items %}
-                    {% if config_area == "acl" %}
-                        <p>{{ config_area|upper }}:</p>
-                        {% for acl_direction, rules in values.items %}
-                            <p>{{ acl_direction }}</p>
-                            {% for rule in rules %}
-                                <div class="card acl">{{ rule }}</div>
-                            {% endfor %}
-                            <div class="card acl"><strong>+ Add ACL</strong></div>
-                        {% endfor %}
-                    {% elif config_area == "nat" %}
-                    <tr>
-                        <th scope="row">
-                            <label for="{{ config_area }}">{{ config_area|upper }}:</label>
-                        </th>
-                        <td>
-                            <input type="radio" name="{{ config_area }}" value="inbound" placeholder="{{ config_area|title }}">Inbound</input>
-                            <input type="radio" name="{{ config_area }}" value="outbound" placeholder="{{ config_area|title }}">Inbound</input>
-                            <input type="radio" name="{{ config_area }}" value="off" placeholder="{{ config_area|title }}">Inbound</input>
-                        </td>
-                    {% else %}
-                    <tr>
-                        <th scope="row">
-                            <label for="{{ config_area }}">{{ config_area|title }}:</label>
-                        </th>
-                        <td>
-                            <input type="text" name="{{ config_area }}" value="{{ values }}" placeholder="{{ config_area|title }}">
-                        </td>
-                    </tr>
-                    {% comment %} <div class="input-field">
-                        <div class="input-label">
-                            <label for="{{ config_area }}">
-                                {% if config_area == "description" %}
-                                    {{ config_area|title }}
-                                {% else %}
-                                    {{ config_area|upper }}
-                                {% endif %}:
-                            </label>
-                        </div>
-                        <input type="text" name="{{ config_area }}" value="{{ value }}" placeholder="{{ config_area|title }}">
-                    </div> {% endcomment %}
-                    {% endif %}
-                {% endfor %}
+                <table class="form-table">
+                    <tbody>
+                        {{ int_config_form }}
+                    </tbody>
                 </table>
-                </tbody>
-                </div>
             </div>
-        {% endfor %}
+        </div>
+    {% endfor %}
 </div>
+
+<script>
+
+$( ".dropdown-top" ).click( function() {
+    $( this.querySelector() )    
+})
+
+</script>
 
 <div class="config-inputs lines">
     <h4>Lines</h4>
