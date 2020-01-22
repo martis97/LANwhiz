@@ -1,25 +1,43 @@
 {% load static %}
 <html lang="en">
+
     <head>
-        <link rel="stylesheet" href="{% static 'styles.css' %}">
         <title>LANwhiz</title>
+
+        <link rel="stylesheet" href="{% static "styles.css" %}">
+        <link rel="stylesheet" href="{% static "node_modules/xterm/css/xterm.css" %}" />
+
+
+        <script src="{% static "node_modules/xterm/lib/xterm.js" %}"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        
     </head>
+
     <body>
+
         <div class="header">
-            <img src="{% static 'logo.jpg' %}">
+            <img src="{% static "logo.jpg" %}">
         </div>
+    
         <div class="content">
+    
             <div class="navigation">
                 <ul>
                     <li><a href="/">Home</a></li>
                     <li><a href="/devices">Devices</a></li>
                 </ul>
             </div>
+    
             <div class="main-content">
                 {% block content %} 
+
                 <!-- Main content to be extended --> 
+                
                 {% endblock %}
             </div>
+    
         </div>
+
     </body>
+
 </html>

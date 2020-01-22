@@ -3,17 +3,14 @@
 {% block content %}
 {% load static %}
 
-<link rel="stylesheet" href="{% static "node_modules/xterm/css/xterm.css" %}" />
-<script src="{% static "node_modules/xterm/lib/xterm.js" %}"></script>
-
 <script type="text/javascript">
 
-    function displaySection(sectionClass) {
-        var configInputs = document.getElementsByClassName("config-inputs");
+    function displayConfigSection(sectionClass) {
+        var configInputs = document.querySelectorAll(".config-inputs");
         for (i in configInputs) {
-            configInputs[i].style.display = "none";
+            $( configInputs[i] ).fadeOut();
             if (configInputs[i].className.includes(sectionClass)) {
-                configInputs[i].style.display = "block";
+                $( configInputs[i] ).fadeIn();
             }
         }        
     }
@@ -43,14 +40,13 @@
     function displayTerminal() {
         var term = new Terminal();
         term.open(document.getElementById('terminal'));
-        term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
+        term.writeln('R1# ')
     }
 
-    
-    window.onload = function() {
-        displaySection("access");
+    $( document ).ready(function() {
         displayTerminal();
-    }
+        displayConfigSection("access");
+    });
 
 </script>
 
@@ -59,15 +55,24 @@
 
 <div class="sub-navigation">  
     <ul>
-        <li onclick="displaySection('access')">Access</li>
-        <li onclick="displaySection('default-commands')">Default</li>
-        <li onclick="displaySection('interfaces')">Interfaces</li>
-        <li onclick="displaySection('lines')">Lines</li>
-        <li onclick="displaySection('routing')">Routing</li>
-        <li onclick="displaySection('acl')">ACL</li>
-        <li onclick="displaySection('dhcp')">DHCP</li>
+        <li id="access">Access</li>
+        <li id="default-commands">Default</li>
+        <li id="interfaces">Interfaces</li>
+        <li id="lines">Lines</li>
+        <li id="routing">Routing</li>
+        <li id="acl">ACL</li>
+        <li id="dhcp">DHCP</li>
+        <li id="cli">CLI</li>
     </ul>
 </div>
+
+<script>
+
+$( "li" ).click( function() {
+    displayConfigSection($( this ).attr("id"));
+})
+
+</script>
 
 
 <form id="configForm" method="post">
@@ -77,36 +82,7 @@
     <h4>Access</h4>
     <table class="form-table" role="presentation">
         <tbody>
-            <tr>
-                <th scope="row">
-                    <label for="ip"> Management IP:</label>
-                </th>
-                <td>
-                    <input id="ip" type="text" name="mgmt_ip" value="{{mgmt_ip}}" placeholder="IP or Domain Name" required>
-                </td>
-            </tr>
-                <th scope="row">
-                    <label for="port">Port:</label>                
-                </th>
-                <td>
-                    <input id="port" type="number" name="mgmt_port" value="{{mgmt_port}}" placeholder="Port Number" required>
-                </td>
-            <tr>
-                <th scope="row">
-                    <label for="username">Username:</label>
-                </th>
-                <td>
-                    <input id="username" type="text" name="username" value="{{username}}" placeholder="Username">
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="password">Password:</label>
-                </th>
-                <td>
-                    <input id="password" type="password" name="password" value="{{password}}" placeholder="Password">
-                </td>
-            </tr>
+            {{ access_form }}
         </tbody>
     </table>
 </div>
@@ -119,7 +95,7 @@
         <li>Commands are to be executed in global config mode, so be mindful of what command is being entered.</li>
     </ul>
     <input style="width: 500px" type="text" name="default_commands" value="{% for command in default_commands %}{{command}},{% endfor %}">
-    <div id="terminal"></div>
+    
 </div>
 
 <div class="config-inputs interfaces">
@@ -233,6 +209,8 @@
 <div class="config-inputs dhcp">
     <h4>DHCP</h4>
 </div>
+
+<div id="terminal" class="config-inputs cli"></div>
 
 <a href="/devices">
     <button class="button1 back">

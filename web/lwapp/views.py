@@ -1,7 +1,9 @@
+import json
+
 from django.shortcuts import render, redirect
 from LANwhiz.utils import Utilities
 from LANwhiz.connect import Connect
-import json
+from LANwhiz.web.lwapp.forms import AccessForm
 
 
 context = {
@@ -17,20 +19,27 @@ def index(request):
 def devices(request):
     """ All Devices page """
     
-    context.update(Utilities.get_all_devices())
-    return render(request, 'devices.html', context=context)
+    return render(request, 'devices.html', context=Utilities.get_all_devices())
+
 
 def device_details(request, hostname):
     device_config = Utilities.read_config(hostname)
-    context.update({
+
+    initial = {
         "hostname": device_config["hostname"],
         "mgmt_ip": device_config["mgmt_ip"],
         "mgmt_port": device_config["mgmt_port"],
         "username": device_config["username"],
         "password": device_config["password"]
+    }
+    context.update({
+        "access_form": AccessForm(initial=initial)
     })
+
     context.update(device_config["config"])
+
     return render(request, 'device-details.html', context=context)
+
 
 def add_device(request):
     """ Add Device page """    
