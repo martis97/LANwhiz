@@ -19,21 +19,17 @@
         document.getElementByID(formID).submit()
     }
 
-    function dropdown(dropdownNumber) {
-        var interfaceSection = document.getElementsByClassName(`interface ${dropdownNumber}`)[0];
-        var children = interfaceSection.children;
-        var arrow = interfaceSection.getElementsByClassName("arrow")[0];
-        var dropdownBottom = interfaceSection.getElementsByClassName("dropdown-bottom")[0];
+    function dropdown(id) {
+        var section = document.querySelector(`[int-number="${id}"]`);
+        var dropdownBottom = section.querySelector(".dropdown-bottom");
+        var arrow = section.querySelector(".arrow");
 
-        if (dropdownBottom.style.display === "block") { // Collapse if expanded
-            interfaceSection.style.height = "65px"; 
-            dropdownBottom.style.display = "none";
-            arrow.style.transform = "none";         
-        } else {                                        // Assume it's collapsed, so expand
-            interfaceSection.style.height = "545px";
-            dropdownBottom.style.display = "block";           
-            arrow.style.transform = "none";
-            arrow.style.transform = "rotate(180deg)";
+        if (dropdownBottom.style.display === "block") { 
+            $( arrow ).attr("class", "arrow down")
+            $( dropdownBottom ).slideUp();
+        } else {                                     
+            $( arrow ).attr("class", "arrow up")
+            $( dropdownBottom ).slideDown();
         }
     }
 
@@ -101,17 +97,24 @@ $( "li" ).click( function() {
 <div class="config-inputs interfaces">
     <h4>Interfaces</h4>
     {% for interface, interface_config in interfaces.items %}
-        <div class="interface {{ forloop.counter1 }}">
-            <div class="dropdown-top">
-                <h5 class="interface-title">{{ interface }}</h5> 
-                <table class="form-table">
-                    <tbody>
-                        {{ int_config_form }}
-                    </tbody>
-                </table>
-            </div>
+        <div class="interface" int-number="{{ forloop.counter }}">
+            <h5 class="interface-title">{{ interface }}<span style="float: right"><i class="arrow down"></span></i></h5>
+            <div class="dropdown-bottom">
+            <table class="form-table">
+                <tbody>
+                    {{ int_config_form.nat }}
+                </tbody>
+            </table>
+        </div>
         </div>
     {% endfor %}
+
+    <script>
+        $( "h5" ).click( function() {
+            dropdown($( $( this ).parent()).attr("int-number"));
+        })
+    </script>
+
 </div>
 
 <script>
@@ -125,39 +128,6 @@ $( ".dropdown-top" ).click( function() {
 <div class="config-inputs lines">
     <h4>Lines</h4>
     {% for line, line_config in lines.items %}
-        <div class="line {{ forloop.counter0 }}">
-            <div class="dropdown-top">
-                <h5 class="interface-title">{{ line }}</h5> 
-                <div class="arrow" onclick="dropdown('line {{ forloop.counter0 }}')">&#11167</div>
-            </div>
-            <div class="dropdown-bottom">
-                {% for config_area, values in line_config.items %}
-                    {% if config_area == "acl" %}
-                        <p>{{ config_area|upper }}:</p>
-                        {% for acl_direction, rules in values.items %}
-                            <p>{{ acl_direction }}</p>
-                            {% for rule in rules %}
-                                <div class="card acl">{{ rule }}</div>
-                            {% endfor %}
-                            <div class="card acl"><strong>+ Add ACL</strong></div>
-                        {% endfor %}
-                    {% else %}
-                    <div class="input-field">
-                        <div class="input-label">
-                            <label for="{{ config_area }}">
-                                {% if config_area == "description" %}
-                                    {{ config_area|title }}
-                                {% else %}
-                                    {{ config_area|upper }}
-                                {% endif %}:
-                            </label>
-                        </div>
-                        <input type="text" name="{{ config_area }}" value="{{ value }}" placeholder="{{ config_area|title }}">
-                    </div>
-                    {% endif %}
-                {% endfor %}
-                </div>
-            </div>
     {% endfor %}
 </div>
 

@@ -234,26 +234,38 @@ h5 {
     border-radius: 15px;
 }
 
-.dropdown-top {
-    width: 95%;
-    display: inline-block;
-}
 
 h5.interface-title {
-    width: 250px;
+    width: 97%;
     display: inline-block;
+    line-height: 2;
+    font-size: 22;
 }
 
-.arrow {
-    font-size: 20px;
-    float: right;
-    cursor: pointer;
+.helptext {
+    color: grey;
 }
 
 .dropdown-bottom {
     display: none;
 }
 
-.helptext {
-    color: grey;
+  
+i {
+    border: solid white;
+    border-width: 0 4px 4px 0;
+    display: inline-block;
+    padding: 5px;
+}
+  
+.up {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    transition: 0.6s ease;
+}
+
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transition: 0.6s ease;
 }
