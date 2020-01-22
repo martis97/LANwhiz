@@ -102,7 +102,7 @@ $( "li" ).click( function() {
             <div class="dropdown-bottom">
             <table class="form-table">
                 <tbody>
-                    {{ int_config_form.nat }}
+                    {{ int_config_form }}
                 </tbody>
             </table>
         </div>
@@ -111,7 +111,7 @@ $( "li" ).click( function() {
 
     <script>
         $( "h5" ).click( function() {
-            dropdown($( $( this ).parent()).attr("int-number"));
+            dropdown($( $( this ).parent() ).attr("int-number"));
         })
     </script>
 
