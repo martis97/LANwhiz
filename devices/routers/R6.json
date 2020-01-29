@@ -5,7 +5,7 @@
     "username": "admin",
     "password": "cisco",
     "config": {
-        "default_commands": [
+        "global_commands": [
             "ipv6 unicast-routing",
             "no ip domain-lookup",
             "service password-encryption",

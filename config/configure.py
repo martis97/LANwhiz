@@ -11,7 +11,7 @@ class ConfigActions(BaseConfig):
 
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
-        for cmd in self.config["default_commands"]:
+        for cmd in self.config["global_commands"]:
             self.utils.send_command(cmd)
 
     def superuser(self):

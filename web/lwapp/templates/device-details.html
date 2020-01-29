@@ -15,6 +15,17 @@
         }        
     }
 
+    function initGlobalCmds() {
+        var container = document.querySelector("#globalCmdsContainer");
+        var cmds = document.querySelector("#globalCmds").value.split(",");
+
+        for (i in cmds) {
+            if (cmds[i]) {
+                container.innerHTML += `<div style='margin-right: 10px;' class='card'>${cmds[i]}<span class="remove-command">X</span></div>`;
+            }
+        }
+    }
+
     function submitForm(formID) {
         document.getElementByID(formID).submit()
     }
@@ -24,12 +35,14 @@
         var dropdownBottom = section.querySelector(".dropdown-bottom");
         var arrow = section.querySelector(".arrow");
 
-        if (dropdownBottom.style.display === "block") { 
+        if (dropdownBottom.style.display === "inline-flex") { 
             $( arrow ).attr("class", "arrow down")
+            $( dropdownBottom ).css("display", "flex")
             $( dropdownBottom ).slideUp();
         } else {                                     
             $( arrow ).attr("class", "arrow up")
             $( dropdownBottom ).slideDown();
+            $( dropdownBottom ).css("display", "inline-flex")
         }
     }
 
@@ -41,6 +54,7 @@
 
     $( document ).ready(function() {
         displayTerminal();
+        initGlobalCmds();
         displayConfigSection("access");
     });
 
@@ -52,7 +66,7 @@
 <div class="sub-navigation">  
     <ul>
         <li id="access">Access</li>
-        <li id="default-commands">Default</li>
+        <li id="global-commands">Global</li>
         <li id="interfaces">Interfaces</li>
         <li id="lines">Lines</li>
         <li id="routing">Routing</li>
@@ -83,15 +97,10 @@ $( "li" ).click( function() {
     </table>
 </div>
 
-<div class="config-inputs default-commands">
-    <h4>Default Commands</h4>
-    <p>Some Rules:
-    <ul>
-        <li>Commands must be separated with a comma (,)</li>
-        <li>Commands are to be executed in global config mode, so be mindful of what command is being entered.</li>
-    </ul>
-    <input style="width: 500px" type="text" name="default_commands" value="{% for command in default_commands %}{{command}},{% endfor %}">
-    
+<div class="config-inputs global-commands">
+    <h4>Global Commands</h4>
+    <input id="globalCmds" type="hidden" name="global_commands" value="{% for command in global_commands %}{{command}},{% endfor %}">
+    <div id="globalCmdsContainer"></div>
 </div>
 
 <div class="config-inputs interfaces">
@@ -100,12 +109,28 @@ $( "li" ).click( function() {
         <div class="interface" int-number="{{ forloop.counter }}">
             <h5 class="interface-title">{{ interface }}<span style="float: right"><i class="arrow down"></span></i></h5>
             <div class="dropdown-bottom">
-            <table class="form-table">
-                <tbody>
-                    {{ int_config_form }}
-                </tbody>
-            </table>
-        </div>
+                <div class="input-fields">
+                    <table class="form-table">
+                        <tbody>
+                            {{ int_config_form }}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="input-fields radio">
+                    {{ int_nat_form }}
+                </div>     
+                <div class="input-fields">
+                    <p style="margin-bottom: 7;">Access Control Lists</p>
+                    <p>Inbound</p>
+                    {% for acl in interface_config.acl.inbound %}
+                        <div class="card">{{ acl }}</div> 
+                    {% endfor %}
+                    <p>Outbound</p>
+                    {% for acl in interface_config.acl.outbound %}
+                        <div class="card">{{ acl }}</div> 
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     {% endfor %}
 
@@ -145,15 +170,18 @@ $( ".dropdown-top" ).click( function() {
 
 <div id="terminal" class="config-inputs cli"></div>
 
-<a href="/devices">
-    <button class="button1 back">
-        Back to Devices
-    </button>
-</a>
+<div style="padding-top: 30px;">
+    <a href="/devices">
+        <button class="button1 back">
+            Back to Devices
+        </button>
+    </a>
 
-<button class="button1 submit-form" onclick="submitForm('configForm')">
-    Update Configuration
-</button>
+    <button class="button1 submit-form">
+        Update Configuration
+    </button>
+</div>
+
 </form>
 
 

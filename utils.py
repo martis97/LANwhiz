@@ -72,7 +72,7 @@ class Utilities(object):
         with open(f"{devices_path}{hostname}", "r") as config_file:
                 config = json.loads(config_file.read())
                 
-        print(os.path.abspath("file"))
+        print(os.path.abspath("").replace("\\", "/"))
         return config
 
     def cidr_to_subnet_mask(self, cidr):
