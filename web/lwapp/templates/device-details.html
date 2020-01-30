@@ -24,6 +24,8 @@
                 container.innerHTML += `<div style='margin-right: 10px;' class='card'>${cmds[i]}<span class="remove-command">X</span></div>`;
             }
         }
+
+        container.innerHTML += '<div class="card"><b>+ Add<b></div>'
     }
 
     function submitForm(formID) {
@@ -122,13 +124,24 @@ $( "li" ).click( function() {
                 <div class="input-fields">
                     <p style="margin-bottom: 7;">Access Control Lists</p>
                     <p>Inbound</p>
-                    {% for acl in interface_config.acl.inbound %}
-                        <div class="card">{{ acl }}</div> 
-                    {% endfor %}
+                    {% if interface_config.acl.inbound %}
+                        {% for acl in interface_config.acl.inbound %}
+                            <div class="card">{{ acl }}</div> 
+                        {% endfor %}
+                    {% else %}
+                        <span style="font-size: 10px;">None Assigned</span>
+                    {% endif %}
+                    <hr>
                     <p>Outbound</p>
-                    {% for acl in interface_config.acl.outbound %}
-                        <div class="card">{{ acl }}</div> 
-                    {% endfor %}
+                    {% if interface_config.acl.outbound %}
+                        {% for acl in interface_config.acl.outbound %}
+                            <div class="card">{{ acl }}</div> 
+                        {% endfor %}
+                    {% else %}
+                        <span style="font-size: 10px;">None Assigned</span>
+                    {% endif %}
+                    <br>
+                    <div class="card" style="margin-top: 10px;"><b>+ Add<b></div> 
                 </div>
             </div>
         </div>

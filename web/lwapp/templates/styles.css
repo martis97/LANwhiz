@@ -28,7 +28,7 @@ body {
     min-height: 50px;
     width: 100%;
     background-color: #445463;
-    border-radius: 10px;
+    border-radius: 15px;
 }
 
 .navigation ul {
@@ -86,7 +86,7 @@ body {
     font-size: 20px;
     display: inline-block; 
     background-color: #445463;
-    border-radius: 10px;
+    border-radius: 15px;
 }
 
 .sub-navigation ul li {
@@ -213,7 +213,7 @@ h5 {
     height: 65px;
     border: white solid;
     border-radius: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 h5.interface-title {
@@ -274,3 +274,9 @@ ul {
     list-style-type: none;
 }
 
+.remove-command {
+    font-weight: bold;
+    font-size: 20px;
+    margin-left: 10px;
+    vertical-align: -2.4;
+}
