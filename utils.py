@@ -9,7 +9,8 @@ from LANwhiz.connect import Connect
 
 class Utilities(object):
     """ Utilities class """
-    home_path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/devices/"
+    home_path = os.path.abspath('').replace('\\', '/').replace('web', '')
+    devices_path = f"{home_path}devices/"
     supported_device_types = ("routers", "switches")
 
     def __init__(self, connection):
@@ -58,7 +59,7 @@ class Utilities(object):
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        path = Utilities.home_path
+        path = Utilities.devices_path
         hostname = hostname + ".json"
         if hostname in os.listdir(f"{path}routers"):
             devices_path = path + "routers/"
@@ -72,7 +73,7 @@ class Utilities(object):
         with open(f"{devices_path}{hostname}", "r") as config_file:
                 config = json.loads(config_file.read())
                 
-        print(os.path.abspath("").replace("\\", "/"))
+        print(os.path.abspath("").replace("\\", "/").replace("web", ""))
         return config
 
     def cidr_to_subnet_mask(self, cidr):
@@ -211,7 +212,7 @@ class Utilities(object):
     @staticmethod
     def get_all_devices():
         """ Gets all device records from ./devices """
-        home_path = Utilities.home_path
+        home_path = Utilities.devices_path
         devices = {}
         for device_type in Utilities.supported_device_types:
             devices_dir = os.listdir(f"{home_path}{device_type}")
@@ -267,7 +268,7 @@ class Utilities(object):
         }
 
         with open(
-            f"{utils.home_path}routers/{hostname}.json", "w"
+            f"{utils.devices_path}routers/{hostname}.json", "w"
         ) as config_file:
             config_file.write(json.dumps(new_config, indent=4))
 
