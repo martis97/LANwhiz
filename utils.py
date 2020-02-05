@@ -16,16 +16,15 @@ class Utilities(object):
     def __init__(self, connection):
         self.connection = connection
         self.napalm_connection = self._get_napalm_connection()
-        # self.interfaces = self.get_interfaces()
 
-    def send_command(self, command, reload=False):
+    def send_command(self, command, on_fail_reload=False, web=False):
         """ Helper function to send a command to device """
         response = self.connection.send_command(command, expect_string="")
         # Check if command sent has not been rejected by IOS
-        if "Invalid input detected" in response:
+        if not web and "Invalid input detected" in response:
             prompt = self.connection.find_prompt()
             self.connection.send_command("end", expect_string="")
-            if reload:    
+            if on_fail_reload:    
                 response = self.connection.send_command("reload", expect_string="")
                 if "configuration has been modified. Save?" in response:
                     self.connection.send_command("no", expect_string="")
@@ -34,6 +33,8 @@ class Utilities(object):
                 f"'{prompt}{command}' marked invalid by IOS. "
                 "Reloading device - revert back to startup config."
             )
+        
+        return response
 
     def _get_napalm_connection(self):
         """ Gets a Napalm connection object """
@@ -73,7 +74,6 @@ class Utilities(object):
         with open(f"{devices_path}{hostname}", "r") as config_file:
                 config = json.loads(config_file.read())
                 
-        print(os.path.abspath("").replace("\\", "/").replace("web", ""))
         return config
 
     def cidr_to_subnet_mask(self, cidr):
@@ -128,58 +128,6 @@ class Utilities(object):
             self.send_command("conf t")
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.send_command("conf t")
-
-    def build_initial_config_template(self):
-        """ Creates an initial 'config' section for config param file """
-        interfaces = self.get_interfaces()
-        config = {
-            "default_commands": [
-                "no ip domain-lookup",
-                "service password-encryption"
-            ],
-            "interfaces": {},
-            "lines": {
-                "console": {
-                    "password": "",
-                    "acl": {
-                        "inbound": [],
-                        "outbound": []
-                    },
-                    "synchronous_logging": False
-                },
-                "vty": {
-                    "password": "",
-                    "acl": {
-                        "inbound": [],
-                        "outbound": []
-                    },
-                    "synchronous_logging": False
-                }
-            },
-            "routing": {
-                "static": [],
-                "ospf": {}
-            },
-            "acl": {
-                "standard": {},
-                "extended": {}
-            },
-            "dhcp": []
-        }
-
-        for interface in interfaces:
-            config["interfaces"][interface] = {
-                "ipv4": "",
-                "ipv6": "",
-                "description": "",
-                "acl": {
-                    "outbound": [],
-                    "inbound": []
-                },
-                "nat": ""
-            }
-
-        return config 
     
     def get_structured_config(self, config_type="startup"):
         """ Use Napalm connection to retrieve config and use it to

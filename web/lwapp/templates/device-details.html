@@ -15,17 +15,15 @@
         }        
     }
 
-    function initGlobalCmds() {
+    function showGlobalCmds() {
         var container = document.querySelector("#globalCmdsContainer");
-        var cmds = document.querySelector("#globalCmds").value.split(",");
-
+        var cmds = $( "#globalCmds" ).val().split(",");
+        
         for (i in cmds) {
             if (cmds[i]) {
                 container.innerHTML += `<div style='margin-right: 10px;' class='card'>${cmds[i]}<span class="remove-command">X</span></div>`;
             }
         }
-
-        container.innerHTML += '<div class="card"><b>+ Add<b></div>'
     }
 
     function submitForm(formID) {
@@ -39,11 +37,11 @@
 
         if (dropdownBottom.style.display === "inline-flex") { 
             $( arrow ).attr("class", "arrow down")
-            $( dropdownBottom ).css("display", "flex")
-            $( dropdownBottom ).slideUp();
+            $( dropdownBottom ).css("display", "inline-flex")
+            $( dropdownBottom ).slideUp(600);
         } else {                                     
             $( arrow ).attr("class", "arrow up")
-            $( dropdownBottom ).slideDown();
+            $( dropdownBottom ).slideDown(600);
             $( dropdownBottom ).css("display", "inline-flex")
         }
     }
@@ -51,18 +49,28 @@
     function displayTerminal() {
         var term = new Terminal();
         term.open(document.getElementById('terminal'));
-        term.writeln("Cisco IOS");
         term.prompt = () => {
-            term.writeln('\r\nR1# ');
+            term.write('\r\nR1# ');
         };
 
-        terminalPrompt(term);
+        term.prompt()
+        
+        var cmd = "";
 
         term.onKey(e => {
             const printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey;
-
+            
+        
             if (e.domEvent.keyCode === 13) {
-                terminalPrompt(term);
+                $.post(document.location.href + "term", {
+                    csrfmiddlewaretoken: $( 'input[name=csrfmiddlewaretoken]' ).val(), 
+                    cmd: cmd 
+                } , function(response) {
+                    term.write("\n" + response)
+                    cmd = "";
+                    term.prompt();
+                })
+
             } else if (e.domEvent.keyCode === 8) {
                 // Do not delete the prompt
                 if (term._core.buffer.x > 2) {
@@ -70,18 +78,15 @@
                 }
             } else if (printable) {
                 term.write(e.key);
+                cmd += e.key;
             }
         });
-
-    function terminalPrompt(term) {
-      term.write('\r\nR1> ');
-    }
 
     }
 
     $( document ).ready(function() {
         displayTerminal();
-        initGlobalCmds();
+        showGlobalCmds();
         displayConfigSection("access");
     });
 
@@ -128,13 +133,27 @@ $( "li" ).click( function() {
     <h4>Global Commands</h4>
     <input id="globalCmds" type="hidden" name="global_commands" value="{% for command in global_commands %}{{command}},{% endfor %}">
     <div id="globalCmdsContainer"></div>
+    <input id="newCmd" class="new-cmd" type="text"><button id="addCmd" class="button1 new-cmd"><b>+ Add</b>
+
+    <script>
+    
+    $( "#addCmd" ).on( "click", function() {
+        var $hidden = $( "#globalCmds" );
+        var current = $hidden.val();
+        var newCmd = $( "#newCmd" ).val();
+    
+        $hidden.val( `${current},${newCmd}` );
+        $( "#globalCmdsContainer" ).append( `<div style='margin-right: 10px;' class='card'>${newCmd}<span class="remove-command">X</span></div>` );
+    });
+    
+    </script>
 </div>
 
 <div class="config-inputs interfaces">
     <h4>Interfaces</h4>
     {% for interface, interface_config in interfaces.items %}
         <div class="interface" int-number="{{ forloop.counter }}">
-            <h5 class="interface-title">{{ interface }}<span style="float: right"><i class="arrow down"></span></i></h5>
+            <h5 class="interface-title">{{ interface }}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>
             <div class="dropdown-bottom">
                 <div class="input-fields">
                     <table class="form-table">
@@ -166,7 +185,7 @@ $( "li" ).click( function() {
                         <span style="font-size: 10px;">None Assigned</span>
                     {% endif %}
                     <br>
-                    <div class="card" style="margin-top: 10px;"><b>+ Add<b></div> 
+                    <div class="card" style="margin-top: 10px;"><b>+ Add</b></div> 
                 </div>
             </div>
         </div>
@@ -174,7 +193,7 @@ $( "li" ).click( function() {
 
     <script>
         $( "h5" ).click( function() {
-            dropdown($( $( this ).parent() ).attr("int-number"));
+            dropdown($( $( this ).parent() ).attr("int-number") );
         })
     </script>
 

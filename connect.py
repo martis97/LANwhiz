@@ -10,7 +10,7 @@ AutoConf: Connection Module
 class Connect(object):
 
     def __init__(self):
-        self.active_connections = 0
+        self.active = {}
         
     def cisco_device(
         self,
@@ -42,12 +42,13 @@ class Connect(object):
             "device_type": "cisco_ios"
         }
 
-        if telnet:
+        if port == 23 or port >= 5000:
             cisco_device["device_type"] += "_telnet"
 
         connection = Netmiko(**cisco_device)
+        hostname = connection.find_prompt().rstrip("#")
 
-        self.active_connections += 1
+        self.active.update({hostname: connection})
 
         return connection 
         

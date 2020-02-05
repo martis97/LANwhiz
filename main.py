@@ -21,21 +21,17 @@ class LANwhizMain(object):
 
         device_config = Utilities.read_config(hostname)
 
-        # Determine from port number whether Telnet required
-        telnet = device_config["mgmt_port"] == 23 \
-                or device_config["mgmt_port"] >= 5000
-
         # Get SSH/Telnet channel
         print(f"{hostname}: Connecting to Cisco Device..")
         connection = self.connect_to.cisco_device(
-            *list(device_config.values())[1:5], telnet=telnet
+            *list(device_config.values())[1:5]
         )
         print(f"{hostname}: Successfully connected")
 
         # Only configure what's been defined in JSON config file
         methods = [
             method for method in device_config["config"] 
-                if not "default" in method
+                if not "global" in method
         ]
 
         config_device = ConfigActions(

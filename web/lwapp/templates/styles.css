@@ -32,18 +32,21 @@ body {
 }
 
 .navigation ul {
-    list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
 .navigation ul li {
     display: inline-block;
+}
+
+.navigation ul a {
     transition: background-color 0.3s ease;
 }
 
 .navigation ul a:hover {
-    background-color: #000033
+    background-color: #000033;
+    transition: background-color 0.3s ease;
 }
 
 .navigation a {
@@ -146,11 +149,11 @@ input[type="text"],
 .button1 {
     border-radius: 25px;
     height: 30px;
+    
     background-color: transparent;
+    border: white solid;
     color: white;
     font-size: 15px;
-    text-align: center;
-    text-decoration: none;
     cursor: pointer;
 }
 
@@ -185,7 +188,7 @@ h4 {
     color: #000033;
 }
 
-.all-devices a {
+a {
     text-decoration: none;
 }
 
@@ -206,12 +209,10 @@ h5 {
     font-size: 16px;
 }
 
-.interface,
-.line {
+.interface, .line {
     display: inline-table;
-    width: 100%;
-    height: 65px;
-    border: white solid;
+    width: 99%;
+    border: white solid 4px;
     border-radius: 15px;
     margin-bottom: 15px;
 }
@@ -252,7 +253,7 @@ i {
 
 .input-fields {
     padding: 10px;
-    border: white solid 3px;
+    border: white solid 2px;
     border-radius: 15px;
     margin: 0 10 10 10;
 }
@@ -278,4 +279,12 @@ ul {
     font-size: 20px;
     margin-left: 10px;
     vertical-align: -2.4;
+}
+
+.new-cmd {
+    margin: 30px 0 0 10px;
+}
+
+#globalCmdsContainer {
+    padding-top: 10px;
 }

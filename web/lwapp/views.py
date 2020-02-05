@@ -1,10 +1,11 @@
 import json
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from LANwhiz.utils import Utilities as Utils
 from LANwhiz.connect import Connect
 from LANwhiz.web.lwapp.forms import *
 
+connections = Connect() 
 
 def index(request):
     """ Index Page """
@@ -19,6 +20,8 @@ def devices(request):
 
 
 def device_details(request, hostname):
+
+
     device_config = Utils.read_config(hostname)
 
     access_form_initial = {
@@ -39,6 +42,31 @@ def device_details(request, hostname):
     context.update(device_config["config"])
 
     return render(request, 'device-details.html', context=context)
+
+
+def handle_terminal(request, hostname):
+    """ Handles the requests for the embedded terminal of device's details
+        page
+    """
+
+    connection = connections.active.get(hostname)
+
+    if request.POST.get("cmd"):
+        cmd = request.POST.get("cmd")
+        if not connection:
+            config = Utils.read_config(hostname)
+            access = {
+                "mgmt_ip": config["mgmt_ip"],
+                "port": config["mgmt_port"],
+                "username": config["username"],
+                "password": config["password"]
+            }
+            connection = connections.cisco_device(**access)
+
+    response = Utils(connection).send_command(cmd, web=True)
+
+    return HttpResponse(response, status=200)
+
 
 
 def add_device(request):
