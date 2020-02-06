@@ -1,6 +1,7 @@
 import json
 
 from django.shortcuts import render, redirect, HttpResponse
+from django.http import JsonResponse
 from LANwhiz.utils import Utilities as Utils
 from LANwhiz.connect import Connect
 from LANwhiz.web.lwapp.forms import *
@@ -50,22 +51,25 @@ def handle_terminal(request, hostname):
     """
 
     connection = connections.active.get(hostname)
+    if not connection:
+        config = Utils.read_config(hostname)
+        access = {
+            "mgmt_ip": config["mgmt_ip"],
+            "port": config["mgmt_port"],
+            "username": config["username"],
+            "password": config["password"]
+        }
+        connection = connections.cisco_device(**access)
 
-    if request.POST.get("cmd"):
-        cmd = request.POST.get("cmd")
-        if not connection:
-            config = Utils.read_config(hostname)
-            access = {
-                "mgmt_ip": config["mgmt_ip"],
-                "port": config["mgmt_port"],
-                "username": config["username"],
-                "password": config["password"]
-            }
-            connection = connections.cisco_device(**access)
+    cmd = request.POST.get("cmd")
+    cmd_out = None if not cmd else Utils(connection).send_command(cmd, web=True)
 
-    response = Utils(connection).send_command(cmd, web=True)
+    response = {
+        "prompt": connection.find_prompt(),
+        "cmd_out": cmd_out
+    }
 
-    return HttpResponse(response, status=200)
+    return JsonResponse(response, status=200)
 
 
 
