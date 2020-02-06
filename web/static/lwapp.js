@@ -46,18 +46,24 @@ function displayTerminal() {
     term.open(document.getElementById('terminal'));
     var termURI = document.location.href + "term";
     var csrfToken = $( 'input[name=csrfmiddlewaretoken]' ).val();
+    var termPrompt = "";
+
     var intro = [
         "LANwhiz CLI Interface",
+        "\nUse for various 'show' commands and other bespoke configuration",
+        "\nNOTE: Changing the config areas which are overseen by the program will",
+        "require a config sync once finished.\n\n"
     ];
-    term.writeln("");
+    for (i in intro) term.writeln(intro[i]);
+    
 
-    prompt = function() {
-        $.post(termURI, {
-            csrfmiddlewaretoken: csrfToken
-        }, function (resp) {
-            term.write(resp.prompt);
-        });
-    }
+    $.post(termURI, {
+        csrfmiddlewaretoken: csrfToken
+    }, function (resp) {
+        termPrompt = resp.prompt;
+        term.write(termPrompt);
+    });
+    
     
     var cmd = "";
 
@@ -66,30 +72,33 @@ function displayTerminal() {
         
     
         if (e.domEvent.keyCode === 13) {
-            $.post(termURI, {
-                csrfmiddlewaretoken: csrfToken, 
-                cmd: cmd 
-            } , function(response) {
-                termPrompt = response.prompt
-                response = response.cmd_out.split("\n");
-                term.writeln("");
-                for (var i in response) {
-                    term.writeln(response[i])
-                }
-                cmd = "";
-                term.write
-            })
+            if (!cmd) {
+                term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
+            } else {
+                $.post(termURI, {
+                    csrfmiddlewaretoken: csrfToken, 
+                    cmd: cmd 
+                } , function(response) {
+                    termPrompt = response.prompt
+                    response = response.cmd_out.split("\n");
+                    term.writeln("");
+                    for (var i in response) term.writeln(response[i]);
+                    cmd = "";
 
+                    term.write(termPrompt)
+                })
+            }
         } else if (e.domEvent.keyCode === 8) {
             // Do not delete the prompt
-            if (term._core.buffer.x > 2) {
+            if (term._core.buffer.x > termPrompt.length) {
                 term.write('\b \b');
+                cmd = cmd.slice(NaN,-1)
             }
-            cmd = cmd.slice(NaN,-1)
         } else if (printable) {
             term.write(e.key);
             cmd += e.key;
         }
+        
     });
 
 }

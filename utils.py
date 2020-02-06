@@ -9,7 +9,9 @@ from LANwhiz.connect import Connect
 
 class Utilities(object):
     """ Utilities class """
-    home_path = os.path.abspath('').replace('\\', '/').replace('web', '')
+    home_path = os.path.abspath('')
+    for replace in (('\\', '/'), ('web', '')):
+        home_path = home_path.replace(*replace)
     devices_path = f"{home_path}devices/"
     supported_device_types = ("routers", "switches")
 
@@ -20,7 +22,7 @@ class Utilities(object):
     def send_command(self, command, on_fail_reload=False, web=False):
         """ Helper function to send a command to device """
         if "sh" in command:
-            return self.connection.send_command(command)
+            return self.connection.send_command_expect(command)
         else:
             response = self.connection.send_command(command, expect_string="")
             
