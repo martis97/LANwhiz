@@ -69,7 +69,7 @@ def handle_terminal(request, hostname):
 
     response = {
         "prompt": connection.find_prompt(),
-        "cmd_out": cmd_out.split("\n")[1:-1]
+        "cmd_out": None if not cmd_out else cmd_out.split("\n")[1:-1]
     }
 
     return JsonResponse(response, status=200)

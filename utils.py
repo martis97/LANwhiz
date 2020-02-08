@@ -22,9 +22,9 @@ class Utilities(object):
 
     def send_command(self, command, on_fail_reload=False, web=False):
         """ Helper function to send a command to device """
-        if "sh" in command:
+        if "sh" == command[:2]:
             self.connection.write_channel(f"{command}\r\n")
-            # Reading the channel after fraction of second for more output
+            # Reading the channel after a second for more output
             for _ in range(2):
                 response = self.connection.read_channel()
                 sleep(1)
