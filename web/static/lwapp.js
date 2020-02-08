@@ -64,7 +64,7 @@ function displayTerminal() {
     }, function (resp) {
         if ('error' in resp) {
             error = true;
-            term.writeln("Could not establish connection to the device");
+            term.writeln("Error: " + resp.error);
         } else {
             term.writeln("Connected!\n\n")
             termPrompt = resp.prompt;

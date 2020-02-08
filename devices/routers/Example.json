@@ -33,7 +33,10 @@
                 "description": "",
                 "acl": {
                     "outbound": [
-                        "permit-dns-for-internal"
+                        "permit-dns-for-internal",
+                        "permit-dns-for-internal1",
+                        "permit-dns-for-internal2",
+                        "permit-dns-for-internal3"
                     ],
                     "inbound": []
                 },

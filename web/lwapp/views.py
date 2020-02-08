@@ -61,8 +61,9 @@ def handle_terminal(request, hostname):
         }
         try:
             connection = connections.cisco_device(**access)
-        except Exception:
-            return JsonResponse({"error": "Failed to connect"}, status=200)
+        except Exception as e:
+            print(e.args[1])
+            return JsonResponse({"error": e.args[1]}, status=200)
 
     cmd = request.POST.get("cmd")
     cmd_out = None if not cmd else Utils(connection).send_command(cmd, web=True)

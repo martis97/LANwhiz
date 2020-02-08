@@ -1,7 +1,7 @@
 /* BODY */
 
 body {
-    background-color: #1f2830;
+    background-color: #272727;
     padding: 0 7%;
     font-family: 'Work Sans', sans-serif;
     font-weight: 300;
@@ -27,13 +27,12 @@ body {
 .navigation {
     min-height: 50px;
     width: 100%;
-    background-color: #445463;
+    background-color: #8E8D8A;
     border-radius: 15px;
 }
 
 .navigation ul {
     padding: 0;
-    margin: 0;
 }
 
 .navigation ul li {
@@ -45,7 +44,7 @@ body {
 }
 
 .navigation ul a:hover {
-    background-color: #000033;
+    background-color: #123C69;
     transition: background-color 0.3s ease;
 }
 
@@ -66,7 +65,7 @@ body {
 /* MAIN CONTENT */
 
 .main-content {
-    background-color: #000033;
+    background-color: #123C69;
     width: 96.5%;
     min-height: 500px;
     margin-top: 10px;
@@ -88,7 +87,7 @@ body {
     overflow: hidden;
     font-size: 20px;
     display: inline-block;
-    background-color: #445463;
+    background-color: #8E8D8A;
     border-radius: 15px;
 }
 
@@ -211,8 +210,9 @@ h5 {
 
 .interface, .line {
     display: inline-table;
-    width: 380px;
-    border: white solid 4px;
+    min-width: 360px;
+    width: 48%;
+    border: white solid 5px;
     border-radius: 15px;
     margin-bottom: 15px;
 }
@@ -230,8 +230,6 @@ h5.interface-title {
 
 .dropdown-bottom {
     display: none;
-    width: 380px;
-    height: 420px;
     flex-flow: wrap;
 }
 
@@ -255,6 +253,7 @@ i {
 }
 
 .input-fields {
+    width: 100%;
     padding: 10px;
     border: white solid 2px;
     border-radius: 15px;
