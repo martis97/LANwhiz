@@ -8,7 +8,10 @@ class AccessForm(forms.Form):
     mgmt_ip = forms.CharField(label="IP/Domain Name:")
     mgmt_port = forms.IntegerField(label="Management Port:")
     username = forms.CharField(label="Username:", required=False)
-    password = forms.PasswordInput()
+    password = forms.CharField(
+        label="Password:", 
+        widget=forms.PasswordInput(render_value=True)
+    )
 
 
 class InterfaceConfigForm(forms.Form):

@@ -1,6 +1,7 @@
 import json
 import re
 import os
+from time import sleep
 from socket import inet_ntoa
 from struct import pack
 from napalm import get_network_driver
@@ -22,7 +23,18 @@ class Utilities(object):
     def send_command(self, command, on_fail_reload=False, web=False):
         """ Helper function to send a command to device """
         if "sh" in command:
-            return self.connection.send_command_expect(command)
+            self.connection.write_channel(f"{command}\r\n")
+            # Reading the channel after fraction of second for more output
+            for _ in range(2):
+                response = self.connection.read_channel()
+                sleep(1)
+            while "--More--" in response:
+                response = response.replace("--More--", "")
+                self.connection.write_channel(r"\s")
+                sleep(0.3)
+                response += self.connection.read_channel()
+            
+            return response
         else:
             response = self.connection.send_command(command, expect_string="")
             

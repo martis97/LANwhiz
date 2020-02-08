@@ -47,12 +47,14 @@ function displayTerminal() {
     var termURI = document.location.href + "term";
     var csrfToken = $( 'input[name=csrfmiddlewaretoken]' ).val();
     var termPrompt = "";
+    var error = false;
 
     var intro = [
         "LANwhiz CLI Interface",
         "\nUse for various 'show' commands and other bespoke configuration",
         "\nNOTE: Changing the config areas which are overseen by the program will",
-        "require a config sync once finished.\n\n"
+        "require a config sync once finished.\n",
+        "Connecting...\n"
     ];
     for (i in intro) term.writeln(intro[i]);
     
@@ -60,33 +62,38 @@ function displayTerminal() {
     $.post(termURI, {
         csrfmiddlewaretoken: csrfToken
     }, function (resp) {
-        termPrompt = resp.prompt;
-        term.write(termPrompt);
+        if ('error' in resp) {
+            error = true;
+            term.writeln("Could not establish connection to the device");
+        } else {
+            term.writeln("Connected!\n\n")
+            termPrompt = resp.prompt;
+            term.write(termPrompt);
+        }
     });
     
-    
-    var cmd = "";
+    cmd = "";
 
     term.onKey(e => {
         const printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey;
         
-    
         if (e.domEvent.keyCode === 13) {
-            if (!cmd) {
-                term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
-            } else {
+            if (!termPrompt || error) return;
+            if (cmd) {
                 $.post(termURI, {
                     csrfmiddlewaretoken: csrfToken, 
                     cmd: cmd 
                 } , function(response) {
                     termPrompt = response.prompt
-                    response = response.cmd_out.split("\n");
+                    response = response.cmd_out;
                     term.writeln("");
                     for (var i in response) term.writeln(response[i]);
                     cmd = "";
 
                     term.write(termPrompt)
                 })
+            } else {
+                term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
             }
         } else if (e.domEvent.keyCode === 8) {
             // Do not delete the prompt
@@ -101,6 +108,10 @@ function displayTerminal() {
         
     });
 
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 $( document ).ready(function() {

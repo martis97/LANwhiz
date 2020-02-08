@@ -59,14 +59,17 @@ def handle_terminal(request, hostname):
             "username": config["username"],
             "password": config["password"]
         }
-        connection = connections.cisco_device(**access)
+        try:
+            connection = connections.cisco_device(**access)
+        except Exception:
+            return JsonResponse({"error": "Failed to connect"}, status=200)
 
     cmd = request.POST.get("cmd")
     cmd_out = None if not cmd else Utils(connection).send_command(cmd, web=True)
 
     response = {
         "prompt": connection.find_prompt(),
-        "cmd_out": cmd_out
+        "cmd_out": cmd_out.split("\n")[1:-1]
     }
 
     return JsonResponse(response, status=200)

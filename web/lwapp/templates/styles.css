@@ -211,7 +211,7 @@ h5 {
 
 .interface, .line {
     display: inline-table;
-    width: 99%;
+    width: 380px;
     border: white solid 4px;
     border-radius: 15px;
     margin-bottom: 15px;
@@ -221,6 +221,7 @@ h5.interface-title {
     width: 95%;
     font-size: 22;
     margin: 20;
+    cursor: pointer;
 }
 
 .helptext {
@@ -229,6 +230,8 @@ h5.interface-title {
 
 .dropdown-bottom {
     display: none;
+    width: 380px;
+    height: 420px;
     flex-flow: wrap;
 }
 
