@@ -8,8 +8,6 @@
         <link rel="stylesheet" href="{% static "node_modules/xterm/css/xterm.css" %}" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat:900|Work+Sans:300" rel="stylesheet">
 
-
-
         <script src="{% static "node_modules/xterm/lib/xterm.js" %}"></script>
         <script src="{% static "jquery-3.4.1.min.js" %}"></script>
         <script src="{% static "lwapp.js" %}"></script>
@@ -23,18 +21,25 @@
         <div class="content">
     
             <div class="navigation">
+
                 <ul>
+             
                     <li><a href="/">Home</a></li>
+             
                     <li><a href="/devices">Devices</a></li>
+             
                 </ul>
+            
             </div>
     
             <div class="main-content">
+            
                 {% block content %} 
 
                 <!-- Main content to be extended --> 
                 
                 {% endblock %}
+            
             </div>
     
         </div>

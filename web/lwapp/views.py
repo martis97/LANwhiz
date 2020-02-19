@@ -38,26 +38,32 @@ def device_details(request, hostname):
     context = {
         "hostname": device_config["hostname"],
         "access_form": AccessForm(initial=access_form_initial), 
-        "global_cmds": GlobalCmdsForm(initial=global_cmds),
+        "global_commands": GlobalCmdsForm(initial={
+            "global_commands": global_cmds
+        }),
         "int_config": {}
     }
 
     for interface, config in device_config["config"]["interfaces"].items():
+        int_config_initial = {
+            "ipv4": config.get("ipv4"),
+            "ipv6": config.get("ipv6"),
+            "description": config.get("description"),
+            "nat": config["nat"] if config.get("nat") else "off"
+        }
+
         if config.get("acl"):
-            int_config_initial = {
+            int_config_initial.update({
                 "inbound_acl": ",".join(config["acl"].get("inbound")),
                 "outbound_acl": ",".join(config["acl"].get("outbound")),
-                "nat": config["nat"] if config.get("nat") else "off"
-            } 
-        else: 
-            int_config_initial = {
-                "nat": config["nat"] if config.get("nat") else "off"
-            }
+            })
 
         context["int_config"][interface] = InterfaceConfigForm(
-            initial=int_config_initial
-        )
+            initial=int_config_initial,
+            prefix=interface
 
+        )
+    print(context)
     return render(request, 'device-details.html', context=context)
 
 

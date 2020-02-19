@@ -21,8 +21,38 @@ function showGlobalCmds() {
     }
 }
 
-function submitForm(formID) {
-    document.getElementByID(formID).submit()
+function showACLCards() {
+    var noneAssigned = '<span style="font-size: 10px;">None Assigned</span>';
+    var interfaces = document.querySelectorAll(".interface");
+    interfaces.forEach( interface => {
+        var $int = $( interface );
+        var interfaceTitle = $int.find(".interface-title").text().replace("/", "\\/");
+        var $inboundContainer = $int.find(`#${interfaceTitle}-inbound-container`);
+        var $outboundContainer = $int.find(`#${interfaceTitle}-outbound-container`);
+        var inboundACLs = $int.find(`#id_${interfaceTitle}-inbound_acl`).val();
+        var outboundACLs = $int.find(`#id_${interfaceTitle}-outbound_acl`).val();
+
+        if (inboundACLs) {
+            inboundACLs.split(",").forEach( cmd => {
+                if (cmd) {
+                    cmd = `<div style='margin-right: 10px;' class='card acl-in'>${cmd}<span class="remove-command">X</span></div>`;
+                    $inboundContainer.append(cmd)
+                }
+            });
+        } else {
+            $inboundContainer.append(noneAssigned)
+        }
+        if (outboundACLs) {
+            outboundACLs.split(",").forEach( cmd => {
+                if (cmd) {
+                    cmd = `<div style='margin-right: 10px;' class='card  acl-out'>${cmd}<span class="remove-command">X</span></div>`;
+                    $outboundContainer.append(cmd)
+                }
+            });
+        } else {
+            $outboundContainer.append(noneAssigned)
+        }
+    })
 }
 
 function dropdown(id) {
@@ -61,13 +91,13 @@ function displayTerminal() {
 
     $.post(termURI, {
         csrfmiddlewaretoken: csrfToken
-    }, function (resp) {
-        if ('error' in resp) {
+    }, response => {
+        if ('error' in response) {
             error = true;
-            term.writeln("Error: " + resp.error);
+            term.writeln("Error: " + response.error);
         } else {
             term.writeln("Connected!\n\n")
-            termPrompt = resp.prompt;
+            termPrompt = response.prompt;
             term.write(termPrompt);
         }
     });
@@ -83,7 +113,7 @@ function displayTerminal() {
                 $.post(termURI, {
                     csrfmiddlewaretoken: csrfToken, 
                     cmd: cmd 
-                } , function(response) {
+                } , response => {
                     termPrompt = response.prompt
                     response = response.cmd_out;
                     term.writeln("");
@@ -110,11 +140,9 @@ function displayTerminal() {
 
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 $( document ).ready(function() {
+    showACLCards();
     displayTerminal();
     showGlobalCmds();
     displayConfigSection("access");
