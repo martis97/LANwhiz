@@ -3,7 +3,6 @@
 {% block content %}
 {% load static %}
 
-<div class="content-title">
 <h3>Device - {{hostname}}</h3>
 
 <div class="sub-navigation">  
@@ -21,7 +20,7 @@
 
 <script>
 
-$( "li" ).click( function() {
+$( "li" ).on("click", function() {
     displayConfigSection($( this ).attr("id"));
 })
 
@@ -32,18 +31,29 @@ $( "li" ).click( function() {
 {% csrf_token %}
 
 <div class="config-inputs access">
+
     <h4>Access</h4>
+
     <table class="form-table" role="presentation">
+
         <tbody>
+
             {{ access_form }}
+
         </tbody>
+
     </table>
+
 </div>
 
 <div class="config-inputs global-commands">
+
     <h4>Global Commands</h4>
+
     <input id="globalCmds" type="hidden" name="global_commands" value="{% for command in global_commands %}{{command}},{% endfor %}">
+
     <div id="globalCmdsContainer"></div>
+
     <input id="newCmd" class="new-cmd" type="text"><button id="addCmd" class="button1 new-cmd"><b>+ Add</b>
 
     <script>
@@ -58,87 +68,143 @@ $( "li" ).click( function() {
     });
     
     </script>
+
 </div>
 
 <div class="config-inputs interfaces">
+
     <h4>Interfaces</h4>
+
+    <div style="float: left; width: 49%"></div>
+
+    <div style="float: right; width: 49%"></div>
+
     {% for interface, interface_config in interfaces.items %}
+
         <div class="interface" int-number="{{ forloop.counter }}">
+
             <h5 class="interface-title">{{ interface }}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>
+
             <div class="dropdown-bottom">
+
                 <div class="input-fields">
+
                     <table class="form-table">
+
                         <tbody>
+
                             {{ int_config_form }}
+
                         </tbody>
+
                     </table>
-                </div>
-                <div class="input-fields radio">
-                    {{ int_nat_form }}
-                </div>     
+                
+                </div> 
+                
                 <div class="input-fields">
+                    
                     <p style="margin-bottom: 7;">Access Control Lists</p>
+
                     <p>Inbound</p>
+                    
                     {% if interface_config.acl.inbound %}
+                    
                         {% for acl in interface_config.acl.inbound %}
+                    
                             <div class="card">{{ acl }}</div> 
+                    
                         {% endfor %}
+                    
                     {% else %}
+                    
                         <span style="font-size: 10px;">None Assigned</span>
+                    
                     {% endif %}
+                    
                     <hr>
+                    
                     <p>Outbound</p>
+                    
                     {% if interface_config.acl.outbound %}
+                    
                         {% for acl in interface_config.acl.outbound %}
+                    
                             <div class="card">{{ acl }}</div> 
+                    
                         {% endfor %}
+                    
                     {% else %}
+                    
                         <span style="font-size: 10px;">None Assigned</span>
+                    
                     {% endif %}
+                    
                     <br>
+                    
                     <div class="card" style="margin-top: 10px;"><b>+ Add</b></div> 
+ 
                 </div>
+ 
             </div>
+ 
         </div>
+ 
     {% endfor %}
 
+
+
     <script>
+
         $( "h5" ).click( function() {
             dropdown($( $( this ).parent() ).attr("int-number") );
         })
+
     </script>
 
 </div>
 
 <script>
 
-$( ".dropdown-top" ).click( function() {
-    $( this.querySelector() )    
-})
+    $( ".dropdown-top" ).click( function() {
+        $( this.querySelector() )    
+    })
 
 </script>
 
 <div class="config-inputs lines">
+
     <h4>Lines</h4>
+
     {% for line, line_config in lines.items %}
+
     {% endfor %}
+
 </div>
+
 
 <div class="config-inputs routing">
+
     <h4>Routing</h4>
+
 </div>
 
+
 <div class="config-inputs acl">
+
     <h4>Access Control Lists</h4>
+
 </div>
 
 <div class="config-inputs dhcp">
+
     <h4>DHCP</h4>
+
 </div>
 
 <div id="terminal" class="config-inputs cli"></div>
 
 <div style="padding-top: 30px;">
+
     <a href="/devices">
         <button class="button1 back">
             Back to Devices

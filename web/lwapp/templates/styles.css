@@ -2,37 +2,22 @@
 
 body {
     background-color: #272727;
-    padding: 0 7%;
     font-family: 'Work Sans', sans-serif;
-    font-weight: 300;
+}
+
+/* LOGO */
+body img {
+    width: 350px
 }
 
 
-/* LOGO */
-
 .header {
-    height: 120px;
+    height: 100px;
     font-size: 20px;
 }
 
-.header img {
-    position: absolute;
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-
-/* NAVIGATION BAR */
-
-.navigation {
-    min-height: 50px;
-    width: 100%;
-    background-color: #8E8D8A;
-    border-radius: 15px;
-}
-
 .navigation ul {
-    padding: 0;
+    margin: 10 0;
 }
 
 .navigation ul li {
@@ -41,36 +26,29 @@ body {
 
 .navigation ul a {
     transition: background-color 0.3s ease;
+    border: 2px solid;
 }
 
 .navigation ul a:hover {
-    background-color: #123C69;
+    background-color: #242582;
     transition: background-color 0.3s ease;
 }
 
 .navigation a {
     display: block;
-    border-radius: 15px;
     width: 150px;
-    height: 30px;
-    border: 3px solid white;
-    text-decoration: none;
     color: white;
     font-size: 25px;
     text-align: center;
-    margin: 5%;
 }
 
 
 /* MAIN CONTENT */
 
 .main-content {
-    background-color: #123C69;
-    width: 96.5%;
+    background-color: #242582;
     min-height: 500px;
-    margin-top: 10px;
     color: white;
-    border-radius: 10px;
     margin-bottom: 100px;
     padding: 1px 15px;
 }
@@ -88,7 +66,6 @@ body {
     font-size: 20px;
     display: inline-block;
     background-color: #8E8D8A;
-    border-radius: 15px;
 }
 
 .sub-navigation ul li {
@@ -108,7 +85,6 @@ body {
 
 .config-inputs {
     margin: 10 0;
-    /* display: none; */
 }
 
 .input-field {
@@ -125,10 +101,10 @@ body {
 
 input[type="text"],
 .form-table input {
-    width: 200px;
     font-size: 18px;
     margin: 10 0;
     border-radius: 5px;
+    
 }
 
 .form-table {
@@ -146,9 +122,8 @@ input[type="text"],
 }
 
 .button1 {
-    border-radius: 25px;
     height: 30px;
-    
+    border-radius: 15px;
     background-color: transparent;
     border: white solid;
     color: white;
@@ -178,7 +153,7 @@ h4 {
     font-size: 16px;
     cursor: pointer;
     margin: 0 10 10 0;
-    border-radius: 15px;
+    
 }
 
 .card:hover {
@@ -213,7 +188,6 @@ h5 {
     min-width: 360px;
     width: 48%;
     border: white solid 5px;
-    border-radius: 15px;
     margin-bottom: 15px;
 }
 
@@ -255,8 +229,7 @@ i {
 .input-fields {
     width: 100%;
     padding: 10px;
-    border: white solid 2px;
-    border-radius: 15px;
+    border: white solid 2px;  
     margin: 0 10 10 10;
 }
 
@@ -273,6 +246,7 @@ i {
 }
 
 ul {
+    padding: 0;
     list-style-type: none;
 }
 

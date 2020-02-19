@@ -2,6 +2,18 @@ from django import forms
 from LANwhiz.utils import Utilities  
 
 
+class AddDeviceForm(forms.Form):
+
+    mgmt_ip = forms.CharField(label="IP/Domain Name:")
+    mgmt_port = forms.IntegerField(label="Management Port:")
+    username = forms.CharField(label="Username:", required=False)
+    password = forms.CharField(
+        label="Password:", 
+        widget=forms.PasswordInput(render_value=True),
+        required=False
+    )
+
+
 class AccessForm(forms.Form):
     
     hostname = forms.CharField(label="Device Hostname:")
@@ -15,16 +27,29 @@ class AccessForm(forms.Form):
 
 
 class InterfaceConfigForm(forms.Form):
-    #  placeholder="IPv4/CIDR"
+
+    # Interface Dropdown
     ipv4 = forms.CharField(label="IPv4 Address:")
     ipv6 = forms.CharField(label="IPv6 Address:")
     description = forms.CharField(label="Description:")
-
-
-class NATRadioForm(forms.Form):
     nat_choices = [
         ("inside", "Inside"),
         ("outside", "Outside"),
         ("off", "Off")
     ]
-    nat = forms.ChoiceField(choices=nat_choices, widget=forms.RadioSelect, label="NAT")
+    nat = forms.ChoiceField(
+        choices=nat_choices, 
+        widget=forms.RadioSelect, 
+        label="NAT"
+    )
+
+    # Some hiddens to be displayed as cards
+    inbound_acl = forms.CharField(widget=forms.HiddenInput)
+    outbound_acl = forms.CharField(widget=forms.HiddenInput)
+
+
+class GlobalCmdsForm(forms.Form):
+
+    global_cmds = forms.CharField(widget=forms.HiddenInput)
+
+   

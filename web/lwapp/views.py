@@ -22,7 +22,6 @@ def devices(request):
 
 def device_details(request, hostname):
 
-
     device_config = Utils.read_config(hostname)
 
     access_form_initial = {
@@ -33,14 +32,31 @@ def device_details(request, hostname):
         "password": device_config["password"]
     }
 
+    if device_config["config"].get("global_commands"):
+        global_cmds = ",".join(device_config["config"]["global_commands"])
+
     context = {
         "hostname": device_config["hostname"],
-        "access_form": AccessForm(initial=access_form_initial),
-        "int_config_form": InterfaceConfigForm(),
-        "int_nat_form": NATRadioForm()
+        "access_form": AccessForm(initial=access_form_initial), 
+        "global_cmds": GlobalCmdsForm(initial=global_cmds),
+        "int_config": {}
     }
 
-    context.update(device_config["config"])
+    for interface, config in device_config["config"]["interfaces"].items():
+        if config.get("acl"):
+            int_config_initial = {
+                "inbound_acl": ",".join(config["acl"].get("inbound")),
+                "outbound_acl": ",".join(config["acl"].get("outbound")),
+                "nat": config["nat"] if config.get("nat") else "off"
+            } 
+        else: 
+            int_config_initial = {
+                "nat": config["nat"] if config.get("nat") else "off"
+            }
+
+        context["int_config"][interface] = InterfaceConfigForm(
+            initial=int_config_initial
+        )
 
     return render(request, 'device-details.html', context=context)
 
@@ -62,7 +78,6 @@ def handle_terminal(request, hostname):
         try:
             connection = connections.cisco_device(**access)
         except Exception as e:
-            print(e.args[1])
             return JsonResponse({"error": e.args[1]}, status=200)
 
     cmd = request.POST.get("cmd")
