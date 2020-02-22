@@ -49,7 +49,9 @@ def device_details(request, hostname):
             "ipv4": config.get("ipv4"),
             "ipv6": config.get("ipv6"),
             "description": config.get("description"),
-            "nat": config["nat"] if config.get("nat") else "off"
+            "nat": config["nat"] if config.get("nat") else "off",
+            "other_commands": ",".join(config["other_commands"]) \
+                                if config.get("other_commands") else ""
         }
 
         if config.get("acl"):
@@ -63,7 +65,7 @@ def device_details(request, hostname):
             prefix=interface
 
         )
-    print(context)
+
     return render(request, 'device-details.html', context=context)
 
 

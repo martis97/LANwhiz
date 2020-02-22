@@ -76,7 +76,7 @@ $( "li" ).on("click", function() {
         var newCmd = $( "#newCmd" ).val();
     
         $hidden.val( `${current},${newCmd}` );
-        $( "#globalCmdsContainer" ).append( `<div style='margin-right: 10px;' class='card'>${newCmd}<span class="remove-command">X</span></div>` );
+        $( "#globalCmdsContainer" ).append( `<div style='margin-right: 10px;' class='card'>${newCmd}<span class="remove command">X</span></div>` );
     });
     
     </script>
@@ -112,6 +112,14 @@ $( "li" ).on("click", function() {
                     </table>
                 
                 </div> 
+
+                <div  id="{{ interface }}-other-cmds" class="input-fields">
+
+                    <p>Other Commands</p>
+
+                    <div class="card" style="margin-top: 10px;"><b>+ Add</b></div>
+
+                </div>
                 
                 <div class="input-fields">
                     

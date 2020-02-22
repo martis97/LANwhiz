@@ -46,7 +46,7 @@ class InterfaceConfigForm(forms.Form):
     # Some hiddens to be displayed as cards
     inbound_acl = forms.CharField(widget=forms.HiddenInput)
     outbound_acl = forms.CharField(widget=forms.HiddenInput)
-    other_commands = forms.CharField(widget=forms.HiddenInput)    
+    other_commands = forms.CharField(widget=forms.HiddenInput)
 
 
 class GlobalCmdsForm(forms.Form):

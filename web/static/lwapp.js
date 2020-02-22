@@ -1,7 +1,8 @@
 
 
 function displayConfigSection(sectionClass) {
-    var configInputs = document.querySelectorAll(".config-inputs");
+    const configInputs = document.querySelectorAll(".config-inputs");
+
     for (i in configInputs) {
         $( configInputs[i] ).hide();
         if (configInputs[i].className.includes(sectionClass)) {
@@ -11,8 +12,8 @@ function displayConfigSection(sectionClass) {
 }
 
 function showGlobalCmds() {
-    var container = document.querySelector("#globalCmdsContainer");
-    var cmds = $( "#globalCmds" ).val().split(",");
+    const container = document.querySelector("#globalCmdsContainer");
+    const cmds = $( "#globalCmds" ).val().split(",");
     
     for (i in cmds) {
         if (cmds[i]) {
@@ -22,31 +23,33 @@ function showGlobalCmds() {
 }
 
 function showACLCards() {
-    var noneAssigned = '<span style="font-size: 10px;">None Assigned</span>';
-    var interfaces = document.querySelectorAll(".interface");
+    const noneAssigned = '<span style="font-size: 10px;">None Assigned</span>'
+    const interfaces = document.querySelectorAll(".interface")
+
     interfaces.forEach( interface => {
-        var $int = $( interface );
-        var interfaceTitle = $int.find(".interface-title").text().replace("/", "\\/");
-        var $inboundContainer = $int.find(`#${interfaceTitle}-inbound-container`);
-        var $outboundContainer = $int.find(`#${interfaceTitle}-outbound-container`);
-        var inboundACLs = $int.find(`#id_${interfaceTitle}-inbound_acl`).val();
-        var outboundACLs = $int.find(`#id_${interfaceTitle}-outbound_acl`).val();
+        const $int = $( interface )
+        const interfaceTitle = $int.find(".interface-title").text().replace("/", "\\/")
+        const $inboundContainer = $int.find(`#${interfaceTitle}-inbound-container`)
+        const $outboundContainer = $int.find(`#${interfaceTitle}-outbound-container`)
+        const inboundACLs = $int.find(`#id_${interfaceTitle}-inbound_acl`).val()
+        const outboundACLs = $int.find(`#id_${interfaceTitle}-outbound_acl`).val()
 
         if (inboundACLs) {
-            inboundACLs.split(",").forEach( cmd => {
-                if (cmd) {
-                    cmd = `<div style='margin-right: 10px;' class='card acl-in'>${cmd}<span class="remove-command">X</span></div>`;
-                    $inboundContainer.append(cmd)
+            inboundACLs.split(",").forEach( acl => {
+                if (acl) {
+                    acl = `<div style='margin-right: 10px;' class='card acl-in'>${acl}<span class="remove acl">X</span></div>`
+                    $inboundContainer.append(acl)
                 }
             });
         } else {
             $inboundContainer.append(noneAssigned)
         }
+        
         if (outboundACLs) {
-            outboundACLs.split(",").forEach( cmd => {
-                if (cmd) {
-                    cmd = `<div style='margin-right: 10px;' class='card  acl-out'>${cmd}<span class="remove-command">X</span></div>`;
-                    $outboundContainer.append(cmd)
+            outboundACLs.split(",").forEach( acl => {
+                if (acl) {
+                    cmd = `<div style='margin-right: 10px;' class='card  acl-out'>${acl}<span class="remove acl">X</span></div>`
+                    $outboundContainer.append(acl)
                 }
             });
         } else {
@@ -55,10 +58,27 @@ function showACLCards() {
     })
 }
 
+function showOtherInterfaceCmds() {
+    const interfaces = document.querySelectorAll(".interface")
+    const card = function(cmd) {
+        return `<div class='card'>${cmd}<span class='remove command'>X</span></div>`
+    }
+    
+    interfaces.forEach( interface => {
+        const $int = $( interface )
+        const interfaceTitle = $int.find(".interface-title").text().replace("/", "\\/")
+        const otherCmds = $int.find(`#id_${interfaceTitle}-other_commands`).val()  
+        const container = $int.find(`#${interfaceTitle}-other-cmds`)
+        otherCmds.split(",").forEach( cmd => {
+            if (cmd) container.append(card(cmd))
+        })
+    })
+}
+
 function dropdown(id) {
-    var section = document.querySelector(`[int-number="${id}"]`);
-    var dropdownBottom = section.querySelector(".dropdown-bottom");
-    var arrow = section.querySelector(".arrow");
+    const section = document.querySelector(`[int-number="${id}"]`);
+    const dropdownBottom = section.querySelector(".dropdown-bottom");
+    const arrow = section.querySelector(".arrow");
 
     if (dropdownBottom.style.display === "inline-flex") { 
         $( arrow ).attr("class", "arrow down")
@@ -74,14 +94,14 @@ function dropdown(id) {
 function displayTerminal() {
     term = new Terminal();
     term.open(document.getElementById('terminal'));
-    var termURI = document.location.href + "term";
-    var csrfToken = $( 'input[name=csrfmiddlewaretoken]' ).val();
-    var termPrompt = "";
-    var error = false;
+    const termURI = document.location.href + "term";
+    const csrfToken = $( 'input[name=csrfmiddlewaretoken]' ).val();
+    const termPrompt = "";
+    const error = false;
 
-    var intro = [
+    const intro = [
         "LANwhiz CLI Interface",
-        "\nUse for various 'show' commands and other bespoke configuration",
+        "\nUse for constious 'show' commands and other bespoke configuration",
         "\nNOTE: Changing the config areas which are overseen by the program will",
         "require a config sync once finished.\n",
         "Connecting...\n"
@@ -117,7 +137,7 @@ function displayTerminal() {
                     termPrompt = response.prompt
                     response = response.cmd_out;
                     term.writeln("");
-                    for (var i in response) term.writeln(response[i]);
+                    for (const i in response) term.writeln(response[i]);
                     cmd = "";
 
                     term.write(termPrompt)
@@ -142,6 +162,7 @@ function displayTerminal() {
 
 
 $( document ).ready(function() {
+    showOtherInterfaceCmds()
     showACLCards();
     displayTerminal();
     showGlobalCmds();
