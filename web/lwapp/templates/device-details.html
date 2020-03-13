@@ -84,7 +84,7 @@ $( "li" ).on("click", function() {
 
     {% for interface, interface_config in int_config.items %}
 
-        <div class="dropdown interface" int-number="{{ forloop.counter }}">
+        <div class="dropdown interface">
 
             <h5 class="dropdown-title">{{ interface }}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>
 
@@ -166,7 +166,7 @@ $( "li" ).on("click", function() {
 
     {% for line, lineconfig in line_config.items %}
 
-        <div class="dropdown line" line-number="{{ forloop.counter }}">
+        <div class="dropdown line">
 
             <h5 class="dropdown-title">{{ line }}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>
 
