@@ -19,6 +19,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='LANwhiz - Home'),
+    path('action/', views.action),
     path('devices/', views.devices, name='LANwhiz - Devices'),    
     path('devices/add/', views.add_device, name='LANwhiz - Add Device'),
     path('devices/<str:hostname>/term', views.handle_terminal),

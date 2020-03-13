@@ -54,6 +54,7 @@ class ConfigActions(BaseConfig):
             configure_line.password()
             configure_line.acl()
             configure_line.synchronous_logging()
+            configure_line.other_config()
     
     def routing(self):
         """ Pass config information to class methods for routing """

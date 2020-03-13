@@ -31,7 +31,7 @@ body img {
 }
 
 .navigation ul a:hover {
-    background-color: #242582;
+    background-color: #314d91;
     transition: background-color 0.3s ease;
 }
 
@@ -47,37 +47,33 @@ body img {
 /* MAIN CONTENT */
 
 .main-content {
-    background-color: #2c2c61;
+    background-color: #314d91;
     min-height: 500px;
     color: white;
     margin-bottom: 100px;
     padding: 1px 15px;
 }
 
-.sub-navigation {
-    text-align: center;
-}
-
 .sub-navigation ul {
     max-width: 800px;
     list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
     font-size: 20px;
     display: inline-block;
     background-color: #272727;
+    border: 2px solid white;
 }
 
 .sub-navigation ul li {
     margin: 0;
     padding: 10;
     display: inline-block;
+    transition: background-color 0.3s ease;
 }
 
 .sub-navigation ul li:hover {
     background-color: #768da2;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .main-content h3 {
@@ -88,8 +84,7 @@ body img {
     margin: 10 0;
 }
 
-.input-field {
-    display: inline-block;
+.input-fields {
     width: 340px;
 }
 
@@ -101,7 +96,8 @@ body img {
 }
 
 input[type="text"],
-.form-table input {
+.form-table input,
+select {
     font-size: 18px;
     margin: 10 0;
     border-radius: 5px;
@@ -167,12 +163,6 @@ a {
     text-decoration: none;
 }
 
-.card.acl {
-    font-size: 13px;
-    padding: 12px 20px;
-    margin: 10px;
-}
-
 #resposeField {
     height: 100px;
     font-size: 20px;
@@ -184,18 +174,18 @@ h5 {
     font-size: 16px;
 }
 
-.interface, .line {
+.dropdown {
     display: inline-table;
     width: 99%;
     border: white solid 5px;
     margin-bottom: 15px;
 }
 
-.interface li {
+.dropdown li {
     color: white;
 }
 
-h5.interface-title {
+h5.dropdown-title {
     width: 95%;
     font-size: 22;
     margin: 20;
@@ -231,10 +221,10 @@ i {
 }
 
 .input-fields {
-    min-width: 400px;
+    width: 100%;
     padding: 10px;
     border: white solid 2px;  
-    margin: 0 0 10 10;
+    margin: 0 10 10 10;
 }
 
 .input-fields p {
@@ -258,7 +248,8 @@ ul {
     font-weight: bold;
     font-size: 20px;
     margin-left: 10px;
-    vertical-align: -2.4;
+    vertical-align: -2;
+    padding: 5px 7px;
 }
 
 .new-cmd {
@@ -267,4 +258,13 @@ ul {
 
 #globalCmdsContainer {
     padding-top: 10px;
+}
+
+#spinner {
+    width: 70px;
+    display: none;
+}
+
+.loading-bar {
+    float: left;
 }

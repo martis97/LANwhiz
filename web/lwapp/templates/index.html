@@ -1,9 +1,70 @@
 {% extends 'backbone.html' %}
-
+{% load static %}
 
 {% block content %}
 
 <h3>Home page</h3>
 
+
+<div class="actions-container">
+
+    <h4>Gather Command Outputs</h4>
+
+    <form id="output-capture" method="post">
+
+        {% csrf_token %}
+
+        {% for cmd in capture_output_cmds %}
+
+            <input type="checkbox" name="cmd" value="{{ cmd }}">
+        
+            <label for="cmd">{{ cmd }}</label>
+            
+            <br>
+
+        {% endfor %}
+
+        <p>Of Devices:</p>
+
+
+        {% for device in devices %}
+
+            <input type="checkbox" name="device" value="{{ device }}">
+        
+            <label for="device">{{ device }}</label>
+            
+            <br>
+
+        {% endfor %}
+
+        <input class="button1" type="submit" value="Capture" style="margin-top: 10px;">
+
+    <img id="spinner" src="{% static "Rolling-1s-200px.svg" %}">
+
+</div>
+
+<script>
+
+    const dropdown = function(hostname) {
+        return `<h5 class="dropdown-title">${hostname}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>`
+    }
+    var csrfToken = $( 'input[name=csrfmiddlewaretoken]' ).val();
+    var actionURI = document.location.href + "action/";
+
+    const $outputCapture = $( "#output-capture" )
+
+    $outputCapture.submit( function(event) {
+        console.log("submited")
+        event.preventDefault();
+
+        $.post(actionURI, {
+            csrfmiddlewaretoken: csrfToken,
+            cmds: $outputCapture.serializeArray()
+        }, function(response) {
+            console.log(response)
+        })
+    })
+
+</script>
 
 {% endblock content %}

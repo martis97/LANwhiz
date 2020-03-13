@@ -1,7 +1,7 @@
 {
     "hostname": "R2",
     "mgmt_ip": "192.168.74.128",
-    "mgmt_port": 5004,
+    "mgmt_port": 5001,
     "username": "admin",
     "password": "cisco",
     "config": {

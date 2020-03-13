@@ -86,3 +86,9 @@ class Line(BaseConfig):
         if self.config.get("password"):
             self.utils.send_command(f"password {self.config['password']}")
             self.utils.send_command("login")
+
+    def other_config(self):
+        """ Sends commands on interface config level """
+        if self.config.get("other_commands"):
+            for cmd in self.config["other_commands"]:
+                self.utils.send_command(cmd)

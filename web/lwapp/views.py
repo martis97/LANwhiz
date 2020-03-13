@@ -1,7 +1,9 @@
 import json
+from threading import Thread
 
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
+
 from LANwhiz.utils import Utilities as Utils
 from LANwhiz.connect import Connect
 from LANwhiz.web.lwapp.forms import *
@@ -10,7 +12,20 @@ connections = Connect()
 
 def index(request):
     """ Index Page """
-    context = {}
+    
+    devices = Utils.get_all_devices()
+
+    context = {
+        "capture_output_cmds": [
+            "show ip route",
+            "show ip protocols",
+            "show ip interface brief",
+            "show running-config",
+            "show startup-config"
+        ],
+        "devices": devices["routers"] + devices["switches"]
+    }
+
     return render(request, 'index.html', context=context)
 
 
@@ -41,7 +56,8 @@ def device_details(request, hostname):
         "global_commands": GlobalCmdsForm(initial={
             "global_commands": global_cmds
         }),
-        "int_config": {}
+        "int_config": {},
+        "line_config": {}
     }
 
     for interface, config in device_config["config"]["interfaces"].items():
@@ -63,8 +79,24 @@ def device_details(request, hostname):
         context["int_config"][interface] = InterfaceConfigForm(
             initial=int_config_initial,
             prefix=interface
-
         )
+
+    if device_config["config"].get("lines"):
+        for line, config in device_config["config"]["lines"].items():
+            line_config_initial = {
+                "password": config["password"],
+                "synchronous_logging": config["synchronous_logging"]
+            }
+
+            if config.get("acl"):
+                int_config_initial.update({
+                    "inbound_acl": ",".join(config["acl"].get("inbound")),
+                    "outbound_acl": ",".join(config["acl"].get("outbound")),
+                })
+            context["line_config"][line] = LineConfigForm(
+                initial=line_config_initial,
+                prefix=line
+            )
 
     return render(request, 'device-details.html', context=context)
 
@@ -99,7 +131,6 @@ def handle_terminal(request, hostname):
     return JsonResponse(response, status=200)
 
 
-
 def add_device(request):
     """ Add Device page """    
     context = {}
@@ -115,5 +146,50 @@ def add_device(request):
         return redirect(f"/devices/{new_device['hostname']}")
     else:
         return render(request, 'add-device.html', context=context)
+
+
+def action(request):
+    post = [i[0] for i in list(dict(request.POST).values())[1:]]
+    cmds =  []
+    devices = []
+
+    for i, data in enumerate(post):
+        if data == "cmd":
+            cmds.append(post[i + 1])
+        elif data == "device":
+            devices.append(post[i + 1])
+    
+    for device in devices:
+        Thread(target=send_cmd_outputs, kwargs={
+            "device": device, 
+            "cmds": cmds
+        }).start()
+
+    return JsonResponse({"started": 1})
+    
+
+def send_cmd_outputs(device, cmds):
+    response = {
+        "device": device,
+        "cmd_outs": {}
+    }
+    connection = connections.active.get(device)
+    if not connection:
+        config = Utils.read_config(device)
+        access = {
+            "mgmt_ip": config["mgmt_ip"],
+            "port": config["mgmt_port"],
+            "username": config["username"],
+            "password": config["password"]
+        }
+        try:
+            connection = connections.cisco_device(**access)
+        except Exception:
+            JsonResponse({"error": f"Could not connect to {device}"}, status=200)
+
+    for cmd in cmds:
+        response[cmd] = Utilities(connection).send_command(cmd)
+    
+    return JsonResponse(response, status=200)
 
 

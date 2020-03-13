@@ -1,0 +1,53 @@
+ipv6 unicast-routing
+no ip domain-lookup
+service password-encryption
+no shutdown
+!
+interface GigabitEthernet1/0
+ ip address 192.168.5.1 255.255.255.0
+ ipv6 address 2008:ACAB:B323:AADF::1:1/64
+ description Connection to LAN
+ ip access-group permit-dns-for-internal out
+ ip access-group 1 in
+ ip access-group 3 in
+ ip access-group 5 in
+ ip nat inside
+ ip ospf network point-to-point
+!
+interface GigabitEthernet2/0
+no shutdown
+ip address 192.168.1.1 255.255.255.0
+ip access-group permit-dns-for-internal out
+ip access-group permit-dns-for-internal1 out
+ip access-group permit-dns-for-internal2 out
+ip access-group permit-dns-for-internal3 out
+ip nat inside
+interface GigabitEthernet3/0
+no shutdown
+ip address 192.168.1.1 255.255.255.0
+ip access-group permit-dns-for-internal out
+ip nat inside
+interface GigabitEthernet4/0
+no shutdown
+ip address 192.168.1.1 255.255.255.0
+ip access-group permit-dns-for-internal out
+ip nat inside
+line console 0
+password netautoconfig
+login
+logging synchronous
+line vty 0 4
+password netautoconfig
+login
+access-class permit-mgmt-remote-access in
+logging synchronous
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet1/0
+ip route 10.1.1.0 255.255.255.0 192.168.1.0
+router ospf 10
+router-id 1.1.1.1
+default-information originate
+network 192.168.5.1 0.0.0.255 area 0
+network 192.168.1.1 0.0.0.255 area 0
+passive-interface GigabitEthernet1/0
+ip access-list standard nat
+permit 192.168.0.0 0.0.255.255

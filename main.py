@@ -36,7 +36,7 @@ class LANwhizMain(object):
 
         config_device = ConfigActions(
             device_config=device_config["config"], 
-            connection=connection
+            connection=None
         )
 
         # Ensuring initial commands are executed first
@@ -58,7 +58,11 @@ class LANwhizMain(object):
 
 if __name__ == "__main__":
     lw = LANwhizMain()
-    devices = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"]
+    
+    # devices = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"]
+    
+    devices = ["R1", "R2", "R3", "S1", "S2"]
+    
     for device in devices:
         thread = Thread(
             target=lw.configure_cisco_device, 

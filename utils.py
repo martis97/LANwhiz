@@ -16,24 +16,27 @@ class Utilities(object):
     devices_path = f"{home_path}devices/"
     supported_device_types = ("routers", "switches")
 
-    def __init__(self, connection):
+    def __init__(self, connection=None):
         self.connection = connection
-        self.napalm_connection = self._get_napalm_connection()
+        self.napalm_connection = self._get_napalm_connection() if connection else None
+        self.path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/cmds.txt"
 
     def send_command(self, command, on_fail_reload=False, web=False):
         """ Helper function to send a command to device """
+        response = ""
+        
         if "sh" == command[:2]:
             self.connection.write_channel(f"{command}\r\n")
             # Reading the channel after a second for more output
             for _ in range(2):
-                response = self.connection.read_channel()
-                sleep(1)
+                response += self.connection.read_channel()
+                sleep(0.5)
             while "--More--" in response:
                 response = response.replace("--More--", "")
                 self.connection.write_channel(r"\s")
                 sleep(0.3)
                 response += self.connection.read_channel()
-            
+
             return response
         else:
             response = self.connection.send_command(command, expect_string="")
@@ -201,9 +204,10 @@ class Utilities(object):
 
         connect_to = Connect()
         
+        # TODO: Change print statements to JSON response to UI
         try:
             print("Connecting..")
-            connection = connect_to.cisco_device(**params, telnet=True)
+            connection = connect_to.cisco_device(**params)
         except Exception as e:
             print("Connection failed.")
             print(f"Message: {e.args[0]}")

@@ -18,7 +18,6 @@ class Connect(object):
         port,
         username=None,
         password=None,
-        telnet=False
     ):
         """ Establishes a connection to a Cisco devices
 
