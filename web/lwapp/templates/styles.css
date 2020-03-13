@@ -6,11 +6,12 @@ body {
     font-family: 'Work Sans', sans-serif;
 }
 
+
 /* LOGO */
+
 body img {
     width: 350px
 }
-
 
 .header {
     height: 100px;
@@ -77,7 +78,7 @@ body img {
 }
 
 .main-content h3 {
-    font-size: 25px;
+    font-size: 22px;
 }
 
 .config-inputs {
@@ -101,7 +102,6 @@ select {
     font-size: 18px;
     margin: 10 0;
     border-radius: 5px;
-    
 }
 
 .form-table {
@@ -148,9 +148,7 @@ h4 {
     text-align: center;
     display: inline-block;
     font-size: 16px;
-    cursor: pointer;
     margin: 0 10 10 0;
-    
 }
 
 .card:hover {
@@ -223,7 +221,7 @@ i {
 .input-fields {
     width: 100%;
     padding: 10px;
-    border: white solid 2px;  
+    border: white solid 2px;
     margin: 0 10 10 10;
 }
 
@@ -250,6 +248,7 @@ ul {
     margin-left: 10px;
     vertical-align: -2;
     padding: 5px 7px;
+    cursor: pointer;
 }
 
 .new-cmd {

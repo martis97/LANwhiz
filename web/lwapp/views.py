@@ -57,7 +57,9 @@ def device_details(request, hostname):
             "global_commands": global_cmds
         }),
         "int_config": {},
-        "line_config": {}
+        "line_config": {},
+        "static_routes": [],
+        "dynamic_routing": []
     }
 
     for interface, config in device_config["config"]["interfaces"].items():
@@ -97,6 +99,14 @@ def device_details(request, hostname):
                 initial=line_config_initial,
                 prefix=line
             )
+
+    if device_config["config"].get("routing"):
+        if device_config["config"]["routing"].get("static"):
+            context["static_routes"] = device_config["config"]["routing"]["static"]
+        if device_config["config"]["routing"].get("ospf"):
+            context["dynamic_routing"].append(device_config["config"]["routing"]["ospf"])
+
+    print(context)
 
     return render(request, 'device-details.html', context=context)
 
