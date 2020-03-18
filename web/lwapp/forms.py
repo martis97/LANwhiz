@@ -56,7 +56,30 @@ class GlobalCmdsForm(forms.Form):
         widget=forms.HiddenInput(attrs={"id": "globalCmds"}),
     )
 
+
 class LineConfigForm(forms.Form):
-    synchronous_logging = forms.BooleanField()
+    synchronous_logging = forms.BooleanField(required=False)
     inbound_acl = forms.CharField(widget=forms.HiddenInput)
     outbound_acl = forms.CharField(widget=forms.HiddenInput)
+
+
+class OSPFConfigForm(forms.Form):
+    instance_id = forms.IntegerField(label="Instance ID:", required=False)
+    router_id = forms.CharField(label="Router ID:", required=False)
+    advertise_static = forms.BooleanField()
+    advertise_networks = forms.CharField(widget=forms.HiddenInput)
+    passive_interfaces = forms.CharField(widget=forms.HiddenInput)
+    other_commands = forms.CharField(widget=forms.HiddenInput)
+
+class NewStaticRouteForm(forms.Form):
+    network = forms.CharField(label="Destination Network:", required=False)
+    subnet_mask = forms.CharField(label="Subnet Mask:", required=False)
+    forward_choices = [
+        ("interface", "Interface"),
+        ("network", "Network")
+    ]
+    forward_to = forms.ChoiceField(
+        choices=forward_choices, 
+        widget=forms.RadioSelect, 
+        label="Forward To:",
+    )

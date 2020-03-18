@@ -58,8 +58,10 @@ def device_details(request, hostname):
         }),
         "int_config": {},
         "line_config": {},
-        "static_routes": [],
-        "dynamic_routing": []
+        "static_routes": "",
+        "new_static_route": NewStaticRouteForm(),
+        "dynamic_routing": [],
+        "ospf_nets_to_advertise": []
     }
 
     for interface, config in device_config["config"]["interfaces"].items():
@@ -83,6 +85,8 @@ def device_details(request, hostname):
             prefix=interface
         )
 
+        context["ospf_nets_to_advertise"].append(config.get("ipv4"))
+
     if device_config["config"].get("lines"):
         for line, config in device_config["config"]["lines"].items():
             line_config_initial = {
@@ -101,12 +105,22 @@ def device_details(request, hostname):
             )
 
     if device_config["config"].get("routing"):
-        if device_config["config"]["routing"].get("static"):
-            context["static_routes"] = device_config["config"]["routing"]["static"]
-        if device_config["config"]["routing"].get("ospf"):
-            context["dynamic_routing"].append(device_config["config"]["routing"]["ospf"])
 
-    print(context)
+        if device_config["config"]["routing"].get("static"):
+            static_routes = []
+            for route in device_config["config"]["routing"]["static"]:
+                static_routes.append("-".join(route.values()))
+            context["static_routes"] = ",".join(static_routes)
+
+        
+        if device_config["config"]["routing"].get("ospf"):
+            form_init = device_config["config"]["routing"]["ospf"]
+            form_init["advertise_networks"] = ",".join(form_init.get("advertise_networks"))
+            form_init["passive_interfaces"] = ",".join(form_init.get("passive_interfaces"))
+            if form_init.get("other_commands"):
+                form_init["other_commands"] = ",".join(form_init["other_commands"])
+            context["dynamic_routing"].append(("OSPF", OSPFConfigForm(initial=form_init)))
+
 
     return render(request, 'device-details.html', context=context)
 
@@ -146,12 +160,9 @@ def add_device(request):
     context = {}
 
     if request.POST:
-        print(request.POST)
-        host = request.POST.get("mgmt_ip")
-        port = int(request.POST.get("mgmt_port"))
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        params = (host, port, username, password)
+        params = [request.POST.get(param) for param in [
+            "mgmt_ip", "mgmt_port", "username", "password"
+        ]]
         new_device = Utils.add_new_device(*params)
         return redirect(f"/devices/{new_device['hostname']}")
     else:
@@ -198,7 +209,7 @@ def send_cmd_outputs(device, cmds):
             JsonResponse({"error": f"Could not connect to {device}"}, status=200)
 
     for cmd in cmds:
-        response[cmd] = Utilities(connection).send_command(cmd)
+        response["cmd_outs"][cmd] = Utilities(connection).send_command(cmd)
     
     return JsonResponse(response, status=200)
 

@@ -18,6 +18,7 @@ class Utilities(object):
 
     def __init__(self, connection=None):
         self.connection = connection
+        self.prompt = connection.find_prompt()
         self.napalm_connection = self._get_napalm_connection() if connection else None
         self.path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/cmds.txt"
 
@@ -27,17 +28,9 @@ class Utilities(object):
         
         if "sh" == command[:2]:
             self.connection.write_channel(f"{command}\r\n")
-            # Reading the channel after a second for more output
-            for _ in range(2):
-                response += self.connection.read_channel()
-                sleep(0.5)
-            while "--More--" in response:
-                response = response.replace("--More--", "")
-                self.connection.write_channel(r"\s")
-                sleep(0.3)
-                response += self.connection.read_channel()
+            sleep(2)
+            return self.connection.read_channel()
 
-            return response
         else:
             response = self.connection.send_command(command, expect_string="")
             
