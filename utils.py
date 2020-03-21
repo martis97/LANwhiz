@@ -1,6 +1,7 @@
 import json
 import re
 import os
+from netaddr import IPNetwork
 from time import sleep
 from socket import inet_ntoa
 from struct import pack
@@ -90,7 +91,29 @@ class Utilities(object):
                 
         return config
 
-    def cidr_to_subnet_mask(self, cidr):
+    @staticmethod
+    def write_config(hostname, new_config):
+        """ Write a new config to a template 
+        
+        Args:
+            hostname: Hostname of device to write configuration for
+        """
+        path = Utilities.devices_path
+        hostname = hostname + ".json"
+        if hostname in os.listdir(f"{path}routers"):
+            devices_path = path + "routers/"
+        elif hostname in os.listdir(f"{path}switches"):
+            devices_path = path + "switches/"
+        else:
+            raise DeviceNotFoundException(
+                f"Config for '{hostname}' "
+                "does not exist"
+            )
+        with open(f"{devices_path}{hostname}", "w") as config_file:
+            config_file.write(json.dumps(new_config, indent=4))
+                
+    @staticmethod
+    def cidr_to_subnet_mask(cidr):
         """ Convert CIDR to Subnet Mask
         
         Args:
@@ -236,3 +259,14 @@ class Utilities(object):
             config_file.write(json.dumps(new_config, indent=4))
 
         return new_config
+
+    @staticmethod
+    def get_network_address(ip):
+        """ Uses the IPv4 and prefix length combination to return a 
+            network address
+        """
+        ip, cidr = ip.split("/")
+        subnetmask = Utilities.cidr_to_subnet_mask(int(cidr))
+        ip_obj = IPNetwork(f"{ip}/{subnetmask}")
+
+        return str(ip_obj.network), ip_obj.prefixlen

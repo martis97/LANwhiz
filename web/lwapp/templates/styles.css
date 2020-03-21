@@ -13,13 +13,13 @@ body img {
     width: 350px
 }
 
+p {
+    color: white;
+}
+
 .header {
     height: 100px;
     font-size: 20px;
-}
-
-.navigation ul {
-    margin: 10 0;
 }
 
 .navigation ul li {
@@ -86,12 +86,6 @@ body img {
     margin: 10 0;
 }
 
-.input-fields {
-    width: 340px;
-    background-color: #5d6887;
-    opacity: 0.95;
-}
-
 .input-label {
     width: 140px;
     float: left;
@@ -100,11 +94,13 @@ body img {
 }
 
 input[type="text"],
-.form-table input,
+input[type="number"],
+input[type="password"],
 select {
     font-size: 18px;
     margin: 10 0;
     border-radius: 5px;
+    width: 250;
 }
 
 .form-table {
@@ -152,12 +148,6 @@ h4 {
     display: inline-block;
     font-size: 16px;
     margin: 0 10 10 0;
-}
-
-.card:hover {
-    background: white;
-    font-weight: bolder;
-    color: #000033;
 }
 
 a {
@@ -226,10 +216,12 @@ i {
 
 .input-fields {
     width: 100%;
-    padding: 10px;
+    padding: 10;
     border: white solid 2px;
     margin: 0 10 10 10;
     display: inline-block;
+    background-color: #5d6887;
+    opacity: 0.95;
 }
 
 .input-fields p {
@@ -275,9 +267,14 @@ ul {
 }
 
 .network, .passive-interface, .other-cmd {
-    width: 200;
+    min-width: 200;
+    max-width: 480;
 }
 
 .network p, .passive-interface p, .other-cmd p {
     float: left;
+}
+
+#terminal {
+    width: 720;
 }

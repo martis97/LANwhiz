@@ -37,6 +37,8 @@ def devices(request):
 
 def device_details(request, hostname):
 
+    print(json.dumps(dict(request.POST), indent=4))
+
     device_config = Utils.read_config(hostname)
 
     access_form_initial = {
@@ -61,48 +63,27 @@ def device_details(request, hostname):
         "static_routes": "",
         "new_static_route": NewStaticRouteForm(),
         "dynamic_routing": [],
-        "ospf_nets_to_advertise": []
+        "ospf_nets_to_advertise": [],
+        "acl": {
+            "standard": [],
+            "extended": []
+        },
+        "dhcp_pools": []
     }
 
     for interface, config in device_config["config"]["interfaces"].items():
-        int_config_initial = {
-            "ipv4": config.get("ipv4"),
-            "ipv6": config.get("ipv6"),
-            "description": config.get("description"),
-            "nat": config["nat"] if config.get("nat") else "off",
-            "other_commands": ",".join(config["other_commands"]) \
-                                if config.get("other_commands") else ""
-        }
-
-        if config.get("acl"):
-            int_config_initial.update({
-                "inbound_acl": ",".join(config["acl"].get("inbound")),
-                "outbound_acl": ",".join(config["acl"].get("outbound")),
-            })
-
-        context["int_config"][interface] = InterfaceConfigForm(
-            initial=int_config_initial,
-            prefix=interface
+        context["int_config"][interface] = get_interface_config_initial(
+            interface, config
         )
 
-        context["ospf_nets_to_advertise"].append(config.get("ipv4"))
+        if config.get("ipv4"): 
+            net_addr, prefix = Utils.get_network_address(config["ipv4"])
+            context["ospf_nets_to_advertise"].append(f"{net_addr}/{prefix}")
+
 
     if device_config["config"].get("lines"):
         for line, config in device_config["config"]["lines"].items():
-            line_config_initial = {
-                "password": config["password"],
-                "synchronous_logging": config["synchronous_logging"]
-            }
-
-            if config.get("acl"):
-                int_config_initial.update({
-                    "inbound_acl": ",".join(config["acl"].get("inbound")),
-                    "outbound_acl": ",".join(config["acl"].get("outbound")),
-                })
-            context["line_config"][line] = LineConfigForm(
-                initial=line_config_initial,
-                prefix=line
-            )
+            context["line_config"][line] = get_line_config_initial(line, config)
 
     if device_config["config"].get("routing"):
 
@@ -120,6 +101,27 @@ def device_details(request, hostname):
             if form_init.get("other_commands"):
                 form_init["other_commands"] = ",".join(form_init["other_commands"])
             context["dynamic_routing"].append(("OSPF", OSPFConfigForm(initial=form_init)))
+
+    if device_config["config"].get("acl"):
+        acls = device_config["config"]["acl"]
+        acl_types = (
+            ("standard", StandardACLForm), 
+            ("extended", ExtendedACLForm)
+        )
+        for acl_type, form in acl_types:
+            if acls.get(acl_type):
+                for acl_id, meta in acls[acl_type].items():
+                    context["acl"][acl_type].append(
+                        (acl_id, form(prefix=acl_id, initial=meta))
+                    )
+    
+    if device_config["config"].get("dhcp"):
+        dhcp_pools = device_config["config"]["dhcp"]
+        for pool in dhcp_pools:
+            name = pool["pool_name"]
+            context["dhcp_pools"].append(
+                (name, DHCPPoolForm(prefix=name, initial=pool))
+            )
 
 
     return render(request, 'device-details.html', context=context)
@@ -167,6 +169,56 @@ def add_device(request):
         return redirect(f"/devices/{new_device['hostname']}")
     else:
         return render(request, 'add-device.html', context=context)
+
+
+def new_acl(request):
+    acl_type = request.GET.get("acl_type")
+    acl_name = request.GET.get("acl_name")
+    acl_types = {
+        "standard": StandardACLForm(prefix=acl_name),
+        "extended": ExtendedACLForm(prefix=acl_name)
+    }
+
+    return JsonResponse({
+        "acl_type": acl_type, 
+        "form": acl_types[acl_type].as_table()
+    })
+
+def new_routing_protocol(request):
+    protocol = request.GET.get("protocol")
+
+    protocols = {
+        "OSPF": OSPFConfigForm().as_table()
+    }
+
+    return JsonResponse({
+        "form": protocols[protocol]
+    })
+
+def new_dhcp_pool(request):
+    hostname = request.GET.get("hostname")
+    pool_name = request.GET.get("pool_name")
+    config = Utils.read_config(hostname)
+    new_pool = {
+        "pool_name": pool_name,
+        "network": "",
+        "default_gateway": "",
+        "dns": ""
+    }
+
+    if config["config"].get("dhcp"): 
+        config["config"]["dhcp"].append(new_pool)
+    else:
+        config["config"]["dhcp"] = [new_pool]
+
+    Utils.write_config(hostname, config)    
+
+    return JsonResponse({
+        "form": DHCPPoolForm(
+            prefix=pool_name,
+            initial={"pool_name": pool_name}
+        ).as_table()
+    })
 
 
 def action(request):

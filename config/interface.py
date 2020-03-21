@@ -1,4 +1,6 @@
 from LANwhiz.config.base import BaseConfig
+from LANwhiz.utils import Utilities
+
 
 
 class Interface(BaseConfig):
@@ -9,7 +11,7 @@ class Interface(BaseConfig):
         """ Sends command to configure IPv4 address """
         if self.config.get("ipv4"):
             ip, cidr = self.config["ipv4"].split("/")
-            subnet_mask = self.utils.cidr_to_subnet_mask(int(cidr))
+            subnet_mask = Utilities.cidr_to_subnet_mask(int(cidr))
             ipv4_command = f"ip address {ip} {subnet_mask}"
             self.utils.send_command(ipv4_command)
 

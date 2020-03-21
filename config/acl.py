@@ -11,22 +11,22 @@ class AccessControlLists(BaseConfig):
         """ Configures standard Access Control Lists on the device """
         for identifier, config_data in self.config["standard"].items():
             std_source = self._format_acl_target(config_data["source"])
-            # Named ACL
-            if re.match(r"[A-Za-z0-9\_\-]+", identifier):
-                acl_cmds = [
-                    f"ip access-list standard {identifier}",
-                    f"{config_data['action']} {std_source}"
-                ]
-                for cmd in acl_cmds:
-                    self.utils.send_command(cmd)
-            # Numbered ACL
-            elif identifier.isnumeric():
+            # Numbered ACL            
+            if identifier.isnumeric():
                 assert 0 < int(identifier) <= 100, \
                     f"Standard ACL '{identifier}' out of range"
                 self.utils.send_command(
                     f"access-list {identifier} "
                     f"{config_data['action']} {std_source}"
                 )
+            # Named ACL
+            else: 
+                acl_cmds = [
+                    f"ip access-list standard {identifier}",
+                    f"{config_data['action']} {std_source}"
+                ]
+                for cmd in acl_cmds:
+                    self.utils.send_command(cmd)
 
     def extended(self):
         """ Configures extended Access Control Lists on the device """

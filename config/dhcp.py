@@ -1,4 +1,5 @@
 from LANwhiz.config.base import BaseConfig
+from LANwhiz.utils import Utilities
 
 
 class DHCPPool(BaseConfig):
@@ -17,7 +18,7 @@ class DHCPPool(BaseConfig):
     def set_network(self):
         """ Defines DHCP pool's network and size """
         ip, cidr = self.config["network"].split("/")
-        sm = self.utils.cidr_to_subnet_mask(int(cidr))
+        sm = Utilities.cidr_to_subnet_mask(int(cidr))
         self.utils.send_command(f"network {ip} {sm}")
 
     def set_default_gateway(self):

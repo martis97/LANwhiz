@@ -20,6 +20,9 @@ from . import views
 urlpatterns = [
     path('', views.index, name='LANwhiz - Home'),
     path('action/', views.action),
+    path('ajax/new-acl/', views.new_acl),
+    path('ajax/new-routing-protocol/', views.new_routing_protocol),
+    path('ajax/new-dhcp-pool/', views.new_dhcp_pool),
     path('devices/', views.devices, name='LANwhiz - Devices'),    
     path('devices/add/', views.add_device, name='LANwhiz - Add Device'),
     path('devices/<str:hostname>/term', views.handle_terminal),
