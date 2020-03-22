@@ -136,7 +136,7 @@ class Utilities(object):
             Converted Wildcard Mask
         """
         assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
-        subnetmask = self.cidr_to_subnet_mask(cidr)
+        subnetmask = Utilities.cidr_to_subnet_mask(cidr)
 
         return ".".join([str(255 - int(octet)) for octet in subnetmask.split(".")])
 
