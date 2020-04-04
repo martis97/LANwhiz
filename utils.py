@@ -265,40 +265,7 @@ class Utilities(object):
         """
         ip, prefix = ip.split("/")
         subnetmask = Utilities.prefix_to_subnet_mask(int(prefix))
-        ip_obj = IPNetwork(f"{ip}/{subnetmask}")
 
-        return str(ip_obj.network), ip_obj.prefixlen
+        return str(IPNetwork(f"{ip}/{subnetmask}").network), prefix
 
-    @staticmethod
-    def diff_interface_config(post_data, current):
-        changes = {}
-        for interface, config in current.items():
-            initial = get_interface_config_initial(config)
-            form = InterfaceConfigForm(
-                post_data, 
-                prefix=interface, 
-                initial=initial
-            )
-            if form.is_valid():
-                for item in form.changed_data:
-                    new_value = form.cleaned_data.get(item, "empty")
-                    if "acl" in item:
-                        acl_type = item.split("_")[0]
-                        old_value = current["interfaces"][interface]["acl"][acl_type]
-                        new_value = new_value.split(",") if new_value else []
-                    elif "other_commands" == item:
-                        old_value = current["interfaces"][interface].get("other_commands")
-                        new_value = new_value.split(",") if new_value else []
-                    else:
-                        old_value = current["interfaces"][interface].get(item, "empty") 
-                    
-                    if changes["interfaces"].get(interface):
-                        changes[interface].update({
-                            item: f"{old_value} -> {new_value}"
-                        })
-                    else: 
-                        changes.update({
-                            interface: {item: f"{old_value} -> {new_value}"}
-                        })
-
-        return changes
+    
