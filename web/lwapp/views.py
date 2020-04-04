@@ -8,7 +8,7 @@ from LANwhiz.utils import Utilities as Utils
 from LANwhiz.connect import Connect
 from LANwhiz.web.lwapp.forms import *
 
-connections = Connect() 
+connections = Connect()
 
 def index(request):
     """ Index Page """
@@ -36,10 +36,8 @@ def devices(request):
 
 
 def device_details(request, hostname):
-
-    print(json.dumps(dict(request.POST), indent=4))
-
     device_config = Utils.read_config(hostname)
+    print(request.POST)
 
     access_form_initial = {
         "hostname": device_config["hostname"],
@@ -49,8 +47,12 @@ def device_details(request, hostname):
         "password": device_config["password"]
     }
 
+    print(AccessForm(request.POST, initial=access_form_initial).has_changed())   
+
     if device_config["config"].get("global_commands"):
         global_cmds = ",".join(device_config["config"]["global_commands"])
+    else:
+        global_cmds = ""
 
     context = {
         "hostname": device_config["hostname"],
@@ -72,18 +74,17 @@ def device_details(request, hostname):
     }
 
     for interface, config in device_config["config"]["interfaces"].items():
-        context["int_config"][interface] = get_interface_config_initial(
-            interface, config
-        )
+        initial = FormInitials.interface_config(config)
+        context["int_config"][interface] = InterfaceConfigForm(prefix=interface, initial=initial)
 
         if config.get("ipv4"): 
             net_addr, prefix = Utils.get_network_address(config["ipv4"])
             context["ospf_nets_to_advertise"].append(f"{net_addr}/{prefix}")
 
-
     if device_config["config"].get("lines"):
         for line, config in device_config["config"]["lines"].items():
-            context["line_config"][line] = get_line_config_initial(line, config)
+            initial = FormInitials.line_config(config)
+            context["line_config"][line] = LineConfigForm(prefix=line, initial=initial)
 
     if device_config["config"].get("routing"):
 
@@ -127,6 +128,31 @@ def device_details(request, hostname):
     return render(request, 'device-details.html', context=context)
 
 
+def diff_config(request, hostname):
+
+    form_diff = FormDiff(request.POST)
+    current = Utils.read_config(hostname)["config"]
+    changes = {
+        "global_commands": [],
+        "interfaces": form_diff.interface_config(current["interfaces"]),
+        "lines": form_diff.line_config(current["lines"]),
+        "routing": form_diff.routing(current["routing"]),
+        "acl": {},
+        "dhcp": {}
+    }
+
+    global_cmds = request.POST.get("global_commands").split(",")
+
+    if set(global_cmds) != set(current["global_commands"]):
+        changes["global_commands"].append(
+           [current['global_commands'], global_cmds]
+        )
+
+    print(json.dumps(changes, indent=4))
+
+    return JsonResponse(changes)
+
+
 def handle_terminal(request, hostname):
     """ Handles the requests for the embedded terminal of device's details
         page
@@ -151,7 +177,7 @@ def handle_terminal(request, hostname):
 
     response = {
         "prompt": connection.find_prompt(),
-        "cmd_out": None if not cmd_out else cmd_out.split("\n")[1:-1]
+        "cmd_out": cmd_out.split("\n")[1:-1] if  cmd_out else None
     }
 
     return JsonResponse(response, status=200)
@@ -159,7 +185,6 @@ def handle_terminal(request, hostname):
 
 def add_device(request):
     """ Add Device page """    
-    context = {}
 
     if request.POST:
         params = [request.POST.get(param) for param in [
@@ -168,37 +193,105 @@ def add_device(request):
         new_device = Utils.add_new_device(*params)
         return redirect(f"/devices/{new_device['hostname']}")
     else:
-        return render(request, 'add-device.html', context=context)
+        return render(request, 'add-device.html')
 
 
 def new_acl(request):
     acl_type = request.GET.get("acl_type")
     acl_name = request.GET.get("acl_name")
+    hostname = request.GET.get("hostname")
+    config = Utils.read_config(hostname)
+
     acl_types = {
         "standard": StandardACLForm(prefix=acl_name),
         "extended": ExtendedACLForm(prefix=acl_name)
     }
+
+    if acl_type == "standard":
+        acl_config = {
+            "action": "",
+            "source": ""
+        }
+    elif acl_type == "extended":
+        acl_config = {
+            "action": "",
+            "protocol": "",
+            "source": "",
+            "destination": "",
+            "port": ""
+        }
+
+    if config["config"].get("acl"):
+        config["config"]["acl"][acl_type][acl_name] = acl_config
+    else:
+        config["config"]["acl"] = {
+            "standard": {},
+            "extended": {}
+        }
+        config["config"]["acl"][acl_type][acl_name] = acl_config
+    
+    Utils.write_config(hostname, config)
 
     return JsonResponse({
         "acl_type": acl_type, 
         "form": acl_types[acl_type].as_table()
     })
 
+def remove_acl(request):
+    acl_type = request.GET.get("acl_type")
+    acl_name = request.GET.get("acl_name")
+    hostname = request.GET.get("hostname")
+    config = Utils.read_config(hostname)
+    try:
+        config["config"]["acl"][acl_type].pop(acl_name, None)
+        Utils.write_config(hostname, config)
+        return JsonResponse({
+            "acl_name": acl_name,
+            "acl_type": acl_type,
+            "removed": True
+        })
+    except:
+        return JsonResponse({"removed": False})
+
+
 def new_routing_protocol(request):
     protocol = request.GET.get("protocol")
+    hostname = request.GET.get("hostname")
+    config = Utils.read_config(hostname)
 
-    protocols = {
+    available_protocols = {
         "OSPF": OSPFConfigForm().as_table()
     }
 
+    config["config"]["routing"][protocol] = {
+        "instance_id": "",
+        "router_id": "",
+        "advertise_static": False,
+        "advertise_networks": [],
+        "passive_interfaces": []
+    }
+
+    Utils.write_config(hostname, config)
+
     return JsonResponse({
-        "form": protocols[protocol]
+        "form": available_protocols[protocol]
     })
 
-def new_dhcp_pool(request):
+def dhcp_pool(request):
     hostname = request.GET.get("hostname")
     pool_name = request.GET.get("pool_name")
     config = Utils.read_config(hostname)
+
+    if request.GET.get("action") == "remove":
+
+        for i, pool in enumerate(config["config"]["dhcp"]):
+            if pool["pool_name"] == pool_name:
+                config["config"]["dhcp"].pop(i)
+
+        Utils.write_config(hostname, config)
+
+        return JsonResponse({"removed": True})
+
     new_pool = {
         "pool_name": pool_name,
         "network": "",
@@ -220,6 +313,27 @@ def new_dhcp_pool(request):
         ).as_table()
     })
 
+def new_loopback_interface(request):
+    hostname = request.GET.get("hostname")
+    config = Utils.read_config(hostname)
+    number = request.GET.get("number")
+    config["config"]["interfaces"][f"Loopback{number}"] = {
+        "ipv4": "",
+        "ipv6": "",
+        "description": "",
+        "acl": {
+            "outbound": [],
+            "inbound": []
+        },
+        "nat": "",
+        "other_commands": []
+    }
+
+    Utils.write_config(hostname, config)
+
+    return JsonResponse({
+        "form": InterfaceConfigForm(prefix=f"Loopback{number}").as_table()
+    })
 
 def action(request):
     post = [i[0] for i in list(dict(request.POST).values())[1:]]

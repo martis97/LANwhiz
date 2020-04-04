@@ -18,7 +18,7 @@ class DHCPPool(BaseConfig):
     def set_network(self):
         """ Defines DHCP pool's network and size """
         ip, cidr = self.config["network"].split("/")
-        sm = Utilities.cidr_to_subnet_mask(int(cidr))
+        sm = Utilities.prefix_to_subnet_mask(int(cidr))
         self.utils.send_command(f"network {ip} {sm}")
 
     def set_default_gateway(self):

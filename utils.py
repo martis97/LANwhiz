@@ -1,6 +1,7 @@
 import json
 import re
 import os
+from pathlib import Path
 from netaddr import IPNetwork
 from time import sleep
 from socket import inet_ntoa
@@ -11,10 +12,8 @@ from LANwhiz.connect import Connect
 
 class Utilities(object):
     """ Utilities class """
-    home_path = os.path.abspath('')
-    for replace in (('\\', '/'), ('web', '')):
-        home_path = home_path.replace(*replace)
-    devices_path = f"{home_path}devices/"
+    home_path = Path(__file__).parent
+    devices_path = f"{home_path}/devices/"
     supported_device_types = ("routers", "switches")
 
     def __init__(self, connection=None):
@@ -31,10 +30,9 @@ class Utilities(object):
             self.connection.write_channel(f"{command}\r\n")
             sleep(2)
             return self.connection.read_channel()
-
         else:
             response = self.connection.send_command(command, expect_string="")
-            
+
         # Check if command sent has not been rejected by IOS
         if not web and "Invalid input detected" in response:
             prompt = self.connection.find_prompt()
@@ -76,12 +74,12 @@ class Utilities(object):
             particular device.
         """
         path = Utilities.devices_path
+        devices_path = None
         hostname = hostname + ".json"
-        if hostname in os.listdir(f"{path}routers"):
-            devices_path = path + "routers/"
-        elif hostname in os.listdir(f"{path}switches"):
-            devices_path = path + "switches/"
-        else:
+        for device_type in Utilities.supported_device_types:
+            if hostname in os.listdir(f"{path}{device_type}"):
+                devices_path = f"{path}{device_type}/"
+        if not devices_path:
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
@@ -99,12 +97,12 @@ class Utilities(object):
             hostname: Hostname of device to write configuration for
         """
         path = Utilities.devices_path
+        devices_path = None
         hostname = hostname + ".json"
-        if hostname in os.listdir(f"{path}routers"):
-            devices_path = path + "routers/"
-        elif hostname in os.listdir(f"{path}switches"):
-            devices_path = path + "switches/"
-        else:
+        for device_type in Utilities.supported_device_types:
+            if hostname in os.listdir(f"{path}{device_type}"):
+                devices_path = f"{path}{device_type}/"
+        if not devices_path:
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
@@ -113,30 +111,30 @@ class Utilities(object):
             config_file.write(json.dumps(new_config, indent=4))
                 
     @staticmethod
-    def cidr_to_subnet_mask(cidr):
-        """ Convert CIDR to Subnet Mask
+    def prefix_to_subnet_mask(prefix):
+        """ Convert Prefix to Subnet Mask
         
         Args:
-            cidr: CIDR to be converted
+            prefix: Prefix to be converted
 
         Returns:
             Converted Subnet Mask
         """
-        assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
+        assert prefix in range(8, 31), f"Invalid Prefix value {prefix}!"
 
-        return inet_ntoa(pack('!I', (1 << 32) - (1 << 32 - cidr)))
+        return inet_ntoa(pack('!I', (1 << 32) - (1 << 32 - prefix)))
 
-    def cidr_to_wildcard_mask(self, cidr):
-        """ Convert CIDR to Wildcard Mask
+    def prefix_to_wildcard_mask(self, prefix):
+        """ Convert Prefix to Wildcard Mask
         
         Args:
-            cidr: CIDR to be converted
+            prefix: Prefix to be converted
 
         Returns:
             Converted Wildcard Mask
         """
-        assert cidr in range(8, 31), f"Invalid CIDR value {cidr}!"
-        subnetmask = self.cidr_to_subnet_mask(cidr)
+        assert prefix in range(8, 31), f"Invalid Prefix value {prefix}!"
+        subnetmask = self.prefix_to_subnet_mask(prefix)
 
         return ".".join([str(255 - int(octet)) for octet in subnetmask.split(".")])
 
@@ -265,8 +263,42 @@ class Utilities(object):
         """ Uses the IPv4 and prefix length combination to return a 
             network address
         """
-        ip, cidr = ip.split("/")
-        subnetmask = Utilities.cidr_to_subnet_mask(int(cidr))
+        ip, prefix = ip.split("/")
+        subnetmask = Utilities.prefix_to_subnet_mask(int(prefix))
         ip_obj = IPNetwork(f"{ip}/{subnetmask}")
 
         return str(ip_obj.network), ip_obj.prefixlen
+
+    @staticmethod
+    def diff_interface_config(post_data, current):
+        changes = {}
+        for interface, config in current.items():
+            initial = get_interface_config_initial(config)
+            form = InterfaceConfigForm(
+                post_data, 
+                prefix=interface, 
+                initial=initial
+            )
+            if form.is_valid():
+                for item in form.changed_data:
+                    new_value = form.cleaned_data.get(item, "empty")
+                    if "acl" in item:
+                        acl_type = item.split("_")[0]
+                        old_value = current["interfaces"][interface]["acl"][acl_type]
+                        new_value = new_value.split(",") if new_value else []
+                    elif "other_commands" == item:
+                        old_value = current["interfaces"][interface].get("other_commands")
+                        new_value = new_value.split(",") if new_value else []
+                    else:
+                        old_value = current["interfaces"][interface].get(item, "empty") 
+                    
+                    if changes["interfaces"].get(interface):
+                        changes[interface].update({
+                            item: f"{old_value} -> {new_value}"
+                        })
+                    else: 
+                        changes.update({
+                            interface: {item: f"{old_value} -> {new_value}"}
+                        })
+
+        return changes

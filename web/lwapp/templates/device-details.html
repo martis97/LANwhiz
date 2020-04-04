@@ -40,7 +40,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
 
 
-<form id="configForm" method="post">
+<form id="deviceConfig" action="/devices/{{ hostname }}/save-config" method="post">
 
 {% csrf_token %}
 
@@ -76,6 +76,14 @@ $( ".sub-navigation li" ).on("click", function() {
 <div class="config-inputs interfaces">
 
     <h3>Interfaces</h3>
+
+    <p>Add Loopback Interface:</p>
+
+    <input style="margin-bottom: 30; width: 90" placeholder="Number" id="loopbackNumber" type="number">
+
+    <button id="addLoopback" class="button1"><b>+ Add</b></button>
+
+    <br>
 
     {% for interface, interface_config in int_config.items %}
 
@@ -123,7 +131,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
                     <input type="radio" name="acl-direction" value="outbound">Outbound</input>
                     
-                    <button class="button1" style="margin-top: 10px;"><b>+ Add</b></button> 
+                    <button class="button1 assign-acl" style="margin-top: 10px;"><b>+ Add</b></button> 
 
                     <p>Inbound</p>
 
@@ -197,7 +205,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
                     <input type="radio" name="acl-direction" value="outbound">Outbound</input>
                     
-                    <button class="button1" style="margin-top: 10px;"><b>+ Add</b></button> 
+                    <button class="button1 assign-acl" style="margin-top: 10px;"><b>+ Add</b></button> 
 
                     <p>Inbound</p>
 
@@ -471,6 +479,8 @@ $( ".sub-navigation li" ).on("click", function() {
 
                     </div>
 
+                    <button class="button1 remove-acl standard" style="margin: 5">Remove ACL</button>
+
                 </div>
 
             </div>
@@ -506,6 +516,8 @@ $( ".sub-navigation li" ).on("click", function() {
                         </table>
 
                     </div>
+
+                <button class="button1 remove-acl extended" style="margin: 5">Remove ACL</button>
 
                 </div>
 
@@ -551,7 +563,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
                     </div>
 
-                    <button id="removeDHCPPool" class="button1" style="margin: 5">Remove DHCP Pool</button>
+                    <button class="button1 remove-dhcp-pool" style="margin: 5">Remove DHCP Pool</button>
 
                 </div>
 
@@ -585,11 +597,12 @@ $( ".sub-navigation li" ).on("click", function() {
 
     </a>
 
-    <button class="button1 submit-form">
+    <button class="button1 update-config">
 
         Update Configuration
 
     </button>
+
 
 </div>
 

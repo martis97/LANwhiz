@@ -1,4 +1,4 @@
-const newDropdown = function(name, form) {
+const newDropdown = function(name, form, dropdownType="") {
     return `
     <div class="dropdown">
         <h5 class="dropdown-title">${name}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>
@@ -10,13 +10,15 @@ const newDropdown = function(name, form) {
                     </tbody>
                 </table>
             </div>
+            <button class="button1 remove-${dropdownType}" style="margin: 5">Remove</button>
         </div>
     </div>`
 }
 
-const newCard = function(text) {
-    return `<div style='margin-right: 10px;' class='card'>${text}<span class="remove command">&times;</span></div>`
+const newCard = function(text, name="") {
+    return `<div style='margin-right: 10px;' class='card ${name}'>${text}<span class="remove ${name}">&times;</span></div>`
 }
+
 
 
 function displayConfigSection(sectionClass) {
@@ -57,7 +59,7 @@ function showGlobalCmds() {
 }
 
 function showACLCards() {
-    var interfaces = document.querySelectorAll(".interface,.line")
+    var interfaces = document.querySelectorAll(".interface, .line")
 
     interfaces.forEach(interface => {
         var $int = $(interface)
@@ -83,26 +85,45 @@ function showACLCards() {
         }
     })
 
-    $("div[id$=-acl]").on("click", ".card .remove", function() {
-        var intDropdown = $( this ).closest("div[class*=interface]")
-        var cardClass   = $( this ).parent().attr("class")
+    $(".dropdown div[id$=-acl]").on("click", ".card.acl .remove.acl", function() {
+        console.log(this)
+        const intDropdown  = $( this ).closest("div[class*=dropdown]")
+        const cardClass    = $( this ).parent().attr("class")
+        const direction    = cardClass.includes("in") ? "inbound" : "outbound"
+        const hidden       = intDropdown.find(`input[id$=${direction}_acl]`)
+        const cmds         = hidden.val() ? hidden.val().split(",") : []
+        const cardToRemove = $( this ).parent()
+        const cmdToRemove  = cardToRemove.text().slice(0, -1)
 
-        if (cardClass.includes("in")) {
-            var hidden = intDropdown.find("input[id$=inbound_acl]")
-        } else if (cardClass.includes("out")) {
-            var hidden = intDropdown.find("input[id$=outbound_acl]")
-        }
-
-        var cmds = hidden.val() ? hidden.val().split(",") : []
-        var cardToRemove = $( this ).parent()
-        var cmdToRemove = cardToRemove.text().slice(0 - 1)
         hidden.val(cmds.filter(e => e !== cmdToRemove).join(","))
         cardToRemove.remove()
+    })
+
+    $( ".button1.assign-acl" ).on("click", function(e) {
+        e.preventDefault()
+        const aclName = $( this ).parent().find("select").find(":selected").text()
+        const direction = $( this ).parent().find("input[name=acl-direction]:checked").val()
+
+        if (!direction) {
+            alert("Inbound or Outbound?")
+            return
+        }
+
+        const aclInput = $(this).parent().parent().find(`[id*=${direction}_acl]`)
+        const allAcls = aclInput.val() ? aclInput.val().split(",") : []
+        
+        if (!allAcls.includes(aclName)) {
+            const cardName = direction === "inbound" ? "acl in" : "acl out"
+            allAcls.push(aclName)
+            aclInput.val(allAcls.join(","))
+            $( this ).siblings( `[id*=${direction}-container]` ).append(newCard(aclName, cardName))
+        }
+
     })
 }
 
 function showOtherInterfaceCmds() {
-    var interfaces = document.querySelectorAll(".interface")
+    var interfaces = document.querySelectorAll(".interface, .line")
 
     interfaces.forEach(interface => {
         if (interface) {
@@ -120,7 +141,7 @@ function showOtherInterfaceCmds() {
     $("button[id$=addOtherCmd]").on("click", function(e) {
         e.preventDefault()
         var newCmdInput = $(this).parent().find("input")
-        var intDropdown = $(this).closest("div[class*=interface]")
+        var intDropdown = $(this).closest("div[class*=dropdown]")
         var hidden = intDropdown.find("input[id$=other_commands]")
 
         if (!newCmdInput.val()) return
@@ -133,8 +154,8 @@ function showOtherInterfaceCmds() {
         hidden.val(cmds.join(","))
     })
 
-    $("div[id$=-other-cmds]").on("click", ".card .remove", function() {
-        var intDropdown = $(this).closest("div[class*=interface]")
+    $( "div[id$=-other-cmds]" ).on("click", ".card .remove", function() {
+        var intDropdown = $(this).closest("div[class*=dropdown]")
         var hidden = intDropdown.find("input[id$=other_commands]")
         var cmds = hidden.val() ? hidden.val().split(",") : []
         var cardToRemove = $(this).parent()
@@ -149,12 +170,12 @@ function dropdown(section) {
     var arrow = section.find(".arrow")
 
     if (dropdownBottom.css("display") === "inline-flex") {
-        $(arrow).attr("class", "arrow down")
-        $(dropdownBottom).slideUp(600)
+        $( arrow ).attr("class", "arrow down")
+        $( dropdownBottom ).slideUp()
     } else {
-        $(arrow).attr("class", "arrow up")
-        $(dropdownBottom).slideDown(600)
-        $(dropdownBottom).css("display", "inline-flex")
+        $( arrow ).attr("class", "arrow up")
+        $( dropdownBottom ).slideDown()
+        $( dropdownBottom ).css("display", "inline-flex")
     }
 }
 
@@ -255,12 +276,15 @@ function showStaticRoutingCards() {
     $( ".static-routes" ).on("click", ".input-fields.static-route .remove", function() {
         const card = $( this ).parent()
         const routeToRemove = card.text().split(/Destination Network: |Subnet Mask: |Forward to: /).slice(1)
+        routeToRemove.map( (route, i) => {
+            routeToRemove[i] = route.split(/\s+/)[0]
+        })
         const currentRoutes = $routesInput.val() ? $routesInput.val().split(",") : []
         $routesInput.val(currentRoutes.filter(e => e !== routeToRemove.join("-")).join(","))
         card.remove()
     })
 
-    $( "[name=forward-type]" ).change(function() {
+    $( "[name=forward-type]" ).change( function() {
         const $interfacesSelect = $( "#forwardInterfaces" )
         const $networkInput = $( "#forwardNetwork" )
 
@@ -277,8 +301,8 @@ function showStaticRoutingCards() {
         e.preventDefault()
         const destNetwork = $( "#id_network" ).val()
         const subnetMask = $( "#id_subnet_mask" ).val()
-        var forwardTo = ""
         const currentRoutes = $routesInput.val() ? $routesInput.val().split(",") : []
+        var forwardTo = null
 
         if ($("[name=forward-type]:checked").val() === "interface") {
             forwardTo = $( "#forwardInterfaces" ).find(":selected").text()
@@ -291,7 +315,7 @@ function showStaticRoutingCards() {
             return
         }
         
-        const route = `${destNetwork}-${subnetMask}-${forwardTo}`
+        const route = [destNetwork, subnetMask, forwardTo].join("-")
 
         if (!currentRoutes.includes(route)) {
             $( ".static-routes" ).append(staticRoute(destNetwork, subnetMask, forwardTo))
@@ -307,7 +331,11 @@ function showDynamicRoutingCards() {
     const $passiveInts = $( "#id_passive_interfaces" )
     const $otherCmds = $( "#id_other_commands" )
     const card = function(name, text) {
-        return `<div style='margin-right: 10px;' class='card ${name}'><span class="remove">&times;</span>${text}</div>`
+        return `
+        <div style='margin-right: 10px;' class='card ${name}'>
+            <span class="remove">&times;</span>
+            ${text}
+        </div>`
     }
 
     $nets.val().split(",").forEach( net => {
@@ -358,7 +386,7 @@ function showDynamicRoutingCards() {
         const netsInput = $( "#id_advertise_networks" )
         var net = $( this ).parent().text()
 
-        netToRemove = net.slice(1).replace("Area:", "/area")
+        netToRemove = net.replace("Area:", "/area").split(/\s+/).slice(2, 4).join(" ")
         currentNets = netsInput.val().split(",")
         $nets.val(currentNets.filter(e => e !== netToRemove).join(","))
         $( this ).parent().remove()
@@ -377,8 +405,9 @@ function showDynamicRoutingCards() {
     })
 
     $( ".passive-ints-container" ).on("click", ".card .remove", function() {
-        const interface = $( this ).parent().text().slice(1)
-        const inputValue = $passiveInts.val() ? $passiveInts.val().split(",") : []
+        const interface = $( this ).parent().text().split(/\s+/).slice(2, 3)[0]
+        console.log(interface)
+        const inputValue = $passiveInts.val().split(",")
         $passiveInts.val(inputValue.filter(e => e !== interface).join(","))
         $( this ).parent().remove()
     })
@@ -396,8 +425,8 @@ function showDynamicRoutingCards() {
         }
     })
 
-    $( ".other-cmds-container" ).on("click", ".card .remove", () => {
-        const cmd = $( this ).parent().text().slice(1)
+    $( ".other-cmds-container" ).on("click", ".card.other-cmd .remove", function() {
+        const cmd = $( this ).parent().text().split(/\s+/)[2]
         const inputValue = $otherCmds.val() ? $otherCmds.val().split(",") : []
         $otherCmds.val(inputValue.filter(e => e !== cmd).join(","))
         $( this ).parent().remove()
@@ -406,7 +435,8 @@ function showDynamicRoutingCards() {
     $( "#newRoutingProtocol" ).on("click", e => {
         e.preventDefault()
         const protocol = $( "#routingProtocol" ).find(":selected").text()
-        if (!$(".dynamic-routes").children().text().includes(protocol)) {
+        
+        if (!$( ".dynamic-routes" ).children().text().includes(protocol)) {
             $.ajax({
                 url: "/ajax/new-routing-protocol",
                 data: {
@@ -414,24 +444,80 @@ function showDynamicRoutingCards() {
                 },
                 datatype: "json",
                 success: response => {
-                    $( "dynamic-routes" ).append(newDropdown(protocol, response.form))
+                    $( "dynamic-routes" ).append(newDropdown(protocol, response.form, "routing-protocol"))
                 }
             })
         }
     })
-
 }
 
-function AddACLInit() {
-   $( "#addACL" ).on("click", e => {
+
+function overlayInit() {
+    const overlay = $( "#overlay" ) 
+    const box = $( ".box" )
+    const hostname = $( "h2" ).text().split(" ")[2]
+    const newChange = function(name, value) {
+        return `
+        <div class="changes">
+            <h5><b>${name}:</b> ${value}</h5>
+        </div>`
+    }
+
+    $( ".update-config" ).on("click", function(e) {
+        e.preventDefault()
+
+        $.ajax({
+            type: "POST",
+            url: `/devices/${hostname}/diff-config`,
+            data: $( "#deviceConfig" ).serialize(),
+            success: resp => {
+                console.log(Object.entries(resp))
+
+                Object.entries(resp).forEach( ([area, value]) => {
+
+                    if (!Object.keys(value).length) return
+                    console.log(Object.entries(value))
+                    // box.append(newChange(area, )) 
+
+
+                    // Object.entries(value).forEach( ([name, value]) => {
+
+                    // })
+                })
+                
+                overlay.fadeIn()
+                box.fadeIn()
+            }
+        })
+    })
+}
+
+
+function ACLInit() {
+    const hostname = $( "h2" ).text().split(" ")[2]
+    const refreshACLSelects = () => {
+        const selects = $( ".available-acls" )
+        selects.html("")
+    
+        $( ".config-inputs.acl" ).find("h5").map( (_, aclName) => {
+            const acl = $( aclName ).text()
+            selects.append(`<option>${acl}</option>`)
+        })
+    }
+
+    refreshACLSelects()
+
+    $( "#addACL" ).on("click", e => {
         e.preventDefault()
         const aclName = $( "#newACL" ).val()
         const aclType = $( "[name=acl-type]:checked" ).val()
+        const hostname = $( "h2" ).text().split(" ")[2]
+
 
         if (!(aclName && aclType)) {
-            alert("Name or type not specified!")
+            alert("Name and type must be specified!")
             return
-        }
+        } 
 
         if (parseInt(aclName)) {
             const aclNum = parseInt(aclName)
@@ -440,23 +526,51 @@ function AddACLInit() {
                 alert("ACL number out of range!")
                 return
             }
+        } else if (aclName.match(/\s/)) {
+            alert("Names cannot contain spaces!")
+            return
         }
         
         $.ajax({
             url: "/ajax/new-acl",
             data: {
+                "hostname": hostname,
                 "acl_type": aclType,
                 "acl_name": aclName
             },
             datatype: "json",
             success: response => {
-                $( `#${response.acl_type}ACLs` ).append(newDropdown(aclName, response.form))
+                $( `#${response.acl_type}ACLs` ).append(newDropdown(aclName, response.form, `acl ${aclType}`))
+                refreshACLSelects()
             }
         })
-    }) 
-}
+    })
 
+    $(".remove-acl").on("click", function(e) {
+        e.preventDefault()
+        const aclType = this.className.split(" ")[2]
+        const aclName = $( this ).parent().parent().find(".dropdown-title").text()
+
+        $.ajax({
+            url: "/ajax/remove-acl",
+            data: {
+                "hostname": hostname,
+                "acl_type": aclType,
+                "acl_name": aclName
+            },
+            datatype: "json",
+            success: response => {
+                if (response.removed) {
+                    $(`h5:contains('${aclName}')`).parent().remove()
+                    refreshACLSelects()
+                }
+            }
+        })
+    })
+}
+ 
 function newDHCPPoolInit() {
+    const hostname = $( "h2" ).text().split(" ")[2]
     $( "#addDHCP" ).on("click", e => {
         e.preventDefault()
         const poolName = $( "#newDHCP" ).val()
@@ -464,31 +578,82 @@ function newDHCPPoolInit() {
         if (!poolName) {
             alert("Pool name not specified!")
             return
+        } else if (poolName.match(/\s/)) {
+            alert("Names cannot contain spaces!")
+            return
         }
 
         $.ajax({
-            url: "/ajax/new-dhcp-pool",
+            url: "/ajax/dhcp-pool",
             data: {
-                "hostname": $( "h2" ).text().split(" ")[2],
+                "hostname": hostname,
                 "pool_name": poolName
             },
             datatype: "json",
             success: response => {
-                $( "#DHCPPoolsContainer" ).append(newDropdown(poolName, response.form))
+                $( "#DHCPPoolsContainer" ).append(newDropdown(poolName, response.form, "dhcp-pool"))
+            }
+        })
+    })
+
+    $( "#DHCPPoolsContainer" ).on("click", ".remove-dhcp-pool", function(e) {
+        e.preventDefault()
+        const poolName = $( this ).parent().siblings(".dropdown-title").text()
+        $.ajax({
+            url: "/ajax/dhcp-pool",
+            data: {
+                "action": "remove",
+                "hostname": hostname,
+                "pool_name": poolName
+            },
+            datatype: "json",
+            success: response => {
+                $( this ).parent().parent().remove()
             }
         })
     })
 }
 
+function newLoopbackInterfaceInit() {
+    $( "#addLoopback" ).on("click", function(e) {
+        e.preventDefault()
+        const hostname = $( "h2" ).text().split(" ")[2]
+        const intNumber = $( "#loopbackNumber" ).val()
+        const container = $( ".interfaces" )
 
-$(document).ready(function() {
+        if (!intNumber) {
+            alert("Specify Interface Number!")
+            return
+        } else if (!intNumber.match(/^\d{1,3}$/)) {
+            alert("Maximum of 3 digits only!")
+            return
+        }
+        
+        $.ajax({
+            url: "/ajax/new-loopback-interface",
+            data: {
+                "hostname": hostname,
+                "number": intNumber
+            },
+             datatype: "json",
+             success: response => {
+                $( ".interfaces" ).append(newDropdown(`Loopback${intNumber}`, response.form, "interface"))
+             }
+        })
+    })
+}
+
+
+$( document ).ready( () => {
+    overlayInit()
     showDynamicRoutingCards()
     showStaticRoutingCards()
     showACLCards()
     showGlobalCmds()
     displayTerminal()
     showOtherInterfaceCmds()
-    AddACLInit()
+    newLoopbackInterfaceInit()
+    ACLInit()
     newDHCPPoolInit()
     displayConfigSection("access")
 })

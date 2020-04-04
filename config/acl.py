@@ -85,7 +85,7 @@ class AccessControlLists(BaseConfig):
         # if it contains CIDR, create command with wildcard mask
         elif contains_cidr.match(target):
             ip, cidr = target.split("/")
-            wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
+            wildcard = self.utils.prefix_to_wildcard_mask(int(cidr))
             acl_target = f"{ip} {wildcard}"
         # if only IP is provided, it's one host
         elif just_ip.match(target):

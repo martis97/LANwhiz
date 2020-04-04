@@ -11,7 +11,7 @@ class Interface(BaseConfig):
         """ Sends command to configure IPv4 address """
         if self.config.get("ipv4"):
             ip, cidr = self.config["ipv4"].split("/")
-            subnet_mask = Utilities.cidr_to_subnet_mask(int(cidr))
+            subnet_mask = Utilities.prefix_to_subnet_mask(int(cidr))
             ipv4_command = f"ip address {ip} {subnet_mask}"
             self.utils.send_command(ipv4_command)
 
@@ -31,8 +31,8 @@ class Interface(BaseConfig):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
         config = self.config.get("acl")
-        inbound = config.get("inbound") if config else []
-        outbound = config.get("outbound") if config else []
+        inbound = [acl for acl in config.get("inbound")]
+        outbound = [acl for acl in config.get("inbound")]
         for rule in outbound:
             acl_commands.append(f"ip access-group {rule} out")
         for rule in inbound:
@@ -89,7 +89,7 @@ class Line(BaseConfig):
             self.utils.send_command(f"password {self.config['password']}")
             self.utils.send_command("login")
 
-    def other_config(self):
+    def other_commands(self):
         """ Sends commands on interface config level """
         if self.config.get("other_commands"):
             for cmd in self.config["other_commands"]:

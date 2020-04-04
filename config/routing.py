@@ -36,7 +36,7 @@ class OSPF(BaseConfig):
         if self.config.get("advertise_networks"):
             for network in self.config["advertise_networks"]:
                 ip, cidr, area = network.split("/")
-                wildcard = self.utils.cidr_to_wildcard_mask(int(cidr))
+                wildcard = self.utils.prefix_to_wildcard_mask(int(cidr))
                 self.utils.send_command(f"network {ip} {wildcard} {area}")
     
     def passive_interfaces(self):

@@ -6,7 +6,6 @@
 
         <link rel="stylesheet" href="{% static "styles.css" %}">
         <link rel="stylesheet" href="{% static "node_modules/xterm/css/xterm.css" %}" />
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:900|Work+Sans:300" rel="stylesheet">
         <script src="{% static "node_modules/xterm-addon-fit/lib/xterm-addon-fit.js" %}"></script>
         <script src="{% static "node_modules/xterm/lib/xterm.js" %}"></script>
         <script src="{% static "jquery-3.4.1.min.js" %}"></script>
@@ -14,6 +13,14 @@
         <script src="{% static "node_modules/cli.js" %}"></script>
         
     </head>
+
+    <div style="opacity: 0.4" id="overlay"></div>
+    
+    <div class="box">
+    
+        <h5 style="cursor: default;"class="dropdown-title">Changes You're About To Make:</h5>
+    
+    </div>
 
     <body>
 
