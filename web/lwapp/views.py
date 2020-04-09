@@ -1,5 +1,6 @@
 import json
 from threading import Thread
+from datetime import datetime
 
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
@@ -57,6 +58,7 @@ def device_details(request, hostname):
     context = {
         "hostname": device_config["hostname"],
         "access_form": AccessForm(initial=access_form_initial), 
+        "last_modified": device_config["last_modified"],
         "global_commands": GlobalCmdsForm(initial={
             "global_commands": global_cmds
         }),
@@ -82,6 +84,7 @@ def device_details(request, hostname):
             context["ospf_nets_to_advertise"].append(f"{net_addr}/{prefix}")
 
     if device_config["config"].get("lines"):
+        
         for line, config in device_config["config"]["lines"].items():
             initial = FormInitials.line_config(config)
             context["line_config"][line] = LineConfigForm(prefix=line, initial=initial)
@@ -90,6 +93,7 @@ def device_details(request, hostname):
 
         if device_config["config"]["routing"].get("static"):
             static_routes = []
+            
             for route in device_config["config"]["routing"]["static"]:
                 static_routes.append("-".join(route.values()))
             context["static_routes"] = ",".join(static_routes)
@@ -99,8 +103,10 @@ def device_details(request, hostname):
             form_init = device_config["config"]["routing"]["ospf"]
             form_init["advertise_networks"] = ",".join(form_init.get("advertise_networks"))
             form_init["passive_interfaces"] = ",".join(form_init.get("passive_interfaces"))
+
             if form_init.get("other_commands"):
                 form_init["other_commands"] = ",".join(form_init["other_commands"])
+            
             context["dynamic_routing"].append(("OSPF", OSPFConfigForm(initial=form_init)))
 
     if device_config["config"].get("acl"):
@@ -109,8 +115,11 @@ def device_details(request, hostname):
             ("standard", StandardACLForm), 
             ("extended", ExtendedACLForm)
         )
+
         for acl_type, form in acl_types:
+        
             if acls.get(acl_type):
+        
                 for acl_id, meta in acls[acl_type].items():
                     context["acl"][acl_type].append(
                         (acl_id, form(prefix=acl_id, initial=meta))
@@ -118,27 +127,35 @@ def device_details(request, hostname):
     
     if device_config["config"].get("dhcp"):
         dhcp_pools = device_config["config"]["dhcp"]
-        for pool in dhcp_pools:
-            name = pool["pool_name"]
+        
+        for pool_name, config in dhcp_pools.items():
+            config["pool_name"] = pool_name
             context["dhcp_pools"].append(
-                (name, DHCPPoolForm(prefix=name, initial=pool))
+                (pool_name, DHCPPoolForm(prefix=pool_name, initial=config))
             )
 
 
     return render(request, 'device-details.html', context=context)
 
+def merge_config(current, new):
+    print("merge")
+    for k, v in new.items():
+        if isinstance(v, dict):
+            current[k] = merge_config(current.get(k, {}), v)
+        else:
+            current[k] = v
+    return current
 
 def diff_config(request, hostname):
-
     form_diff = FormDiff(request.POST)
     current = Utils.read_config(hostname)["config"]
     changes = {
         "global_commands": [],
-        "interfaces": form_diff.interface_config(current["interfaces"]),
-        "lines": form_diff.line_config(current["lines"]),
-        "routing": form_diff.routing(current["routing"]),
-        "acl": {},
-        "dhcp": {}
+        "interfaces": form_diff.interface_config(current.get("interfaces")),
+        "lines": form_diff.line_config(current.get("lines")),
+        "routing": form_diff.routing(current.get("routing")),
+        "acl": form_diff.acl(current.get("acl")),
+        "dhcp": form_diff.dhcp(current.get("dhcp"))
     }
 
     global_cmds = request.POST.get("global_commands").split(",")
@@ -149,8 +166,17 @@ def diff_config(request, hostname):
         )
 
     print(json.dumps(changes, indent=4))
+    # print(json.dumps(merge_config(current, changes), indent=4))
+    if request.GET.get("save"):
+        
+        response = {}
+    else:
+        response = {"changed": [
+            area.capitalize().replace("_", " ") \
+                for area, values in changes.items() if values
+        ]}
 
-    return JsonResponse(changes)
+    return JsonResponse(response)
 
 
 def handle_terminal(request, hostname):
@@ -209,12 +235,12 @@ def new_acl(request):
 
     if acl_type == "standard":
         acl_config = {
-            "action": "",
+            "action": None,
             "source": ""
         }
     elif acl_type == "extended":
         acl_config = {
-            "action": "",
+            "action": None,
             "protocol": "",
             "source": "",
             "destination": "",

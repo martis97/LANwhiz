@@ -9,10 +9,10 @@ class DHCPPool(BaseConfig):
         connection - Netmiko connection object
         config - DHCP Pool configuration
     """
-    def __init__(self, connection, config):
+    def __init__(self, connection, config, name):
         super().__init__(connection, config)
         self.utils.send_command(
-            f"ip dhcp pool {self.config['pool_name']}"
+            f"ip dhcp pool {name}"
         )
 
     def set_network(self):

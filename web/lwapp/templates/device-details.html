@@ -4,7 +4,8 @@
 
 {% load static %}
 
-<h2>Device - {{hostname}}</h2>
+<h2>Device - {{hostname}} <span class="changes-saved-notification">&check; Changes Saved</span></h2>
+<p>Last modified: {{ last_modified }}</p>
 
 <div class="sub-navigation">  
 
@@ -40,7 +41,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
 
 
-<form id="deviceConfig" action="/devices/{{ hostname }}/save-config" method="post">
+<form id="deviceConfig" method="post">
 
 {% csrf_token %}
 
@@ -589,7 +590,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
     <a href="/devices">
 
-        <button class="button1 back">
+        <button style="margin-left: 0;" class="button1 back">
 
             Back to Devices
 
@@ -597,7 +598,7 @@ $( ".sub-navigation li" ).on("click", function() {
 
     </a>
 
-    <button class="button1 update-config">
+    <button class="button1 diff-config">
 
         Update Configuration
 
@@ -605,6 +606,18 @@ $( ".sub-navigation li" ).on("click", function() {
 
 
 </div>
+
+<div style="opacity: 0.4" id="overlay"></div>
+    
+    <div class="box">
+    
+        <h5 style="cursor: default;"class="dropdown-title">Areas Modified:</h5>
+
+        <div id="boxInner"></div>
+
+        <button style="float: right;" class="button1 confirm-changes">Confirm Changes</button>
+    
+    </div>
 
 </form>
 

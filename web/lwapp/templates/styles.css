@@ -23,13 +23,12 @@ body {
     display: none;
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 40%;
     background-color: #314d91;
     border: 3px solid white;
     z-index: 1002;
     overflow: auto;
-    width: 500;
-    height: 400;
+    width: 700;
     margin-left: -200px;
     margin-top: -200px;
 }
@@ -110,10 +109,6 @@ p {
     padding-bottom: 50;
 }
 
-.config-inputs {
-    margin: 10 0;
-}
-
 .input-label {
     width: 140px;
     float: left;
@@ -153,6 +148,7 @@ select {
     color: white;
     font-size: 15px;
     cursor: pointer;
+    margin: 10 10 10 0;
 }
 
 .button1:hover {
@@ -305,4 +301,10 @@ ul {
 
 #terminal {
     width: 720;
+}
+
+.changes-saved-notification {
+    color: #00ff95;
+    display: none;
+    font-size: 16;
 }

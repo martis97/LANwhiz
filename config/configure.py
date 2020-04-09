@@ -84,8 +84,8 @@ class ConfigActions(BaseConfig):
 
     def dhcp(self):
         """ Configures DHCP on the device """
-        for pool in self.config["dhcp"]:
-            dhcp_pool = DHCPPool(self.connection, config=pool)            
+        for pool_name, pool in self.config["dhcp"].items():
+            dhcp_pool = DHCPPool(self.connection, config=pool, name=pool_name)            
             methods = [
                 method for method in dir(DHCPPool) if method[0] != "_"
             ]

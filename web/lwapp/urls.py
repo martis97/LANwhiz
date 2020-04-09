@@ -27,7 +27,7 @@ urlpatterns = [
     path("ajax/new-loopback-interface/", views.new_loopback_interface),
     path('devices/', views.devices, name='LANwhiz - Devices'),    
     path('devices/add/', views.add_device, name='LANwhiz - Add Device'),
-    path('devices/<str:hostname>/term', views.handle_terminal),
+    path('ajax/<str:hostname>/term', views.handle_terminal),
     path('devices/<str:hostname>/', views.device_details, name="LANwhiz - Device"),
     path('devices/<str:hostname>/diff-config', views.diff_config, name="LANwhiz - Device"),
     path('admin', admin.site.urls)

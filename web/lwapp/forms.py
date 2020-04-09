@@ -81,13 +81,14 @@ class NewStaticRouteForm(forms.Form):
 
 class StandardACLForm(forms.Form):
     action_choices = [
+        ("", "--Select Action--"),
         ("permit", "Permit"),
         ("deny", "Deny")
     ]
     action = forms.MultipleChoiceField(
-        required=False,
         widget=forms.Select,
-        choices=action_choices
+        choices=action_choices,
+        required=False
     )
     source = forms.CharField(
         label="Source:", 
@@ -98,13 +99,14 @@ class StandardACLForm(forms.Form):
 
 class ExtendedACLForm(forms.Form):
     action_choices = [
+        ("", "--Select Action--"),
         ("permit", "Permit"),
         ("deny", "Deny")
     ]
     action = forms.MultipleChoiceField(
-        required=False,
         widget=forms.Select,
-        choices=action_choices
+        choices=action_choices,
+        required=False
     )
 
     protocol_choices = [
@@ -113,7 +115,6 @@ class ExtendedACLForm(forms.Form):
         ("ip", "IP"),
     ]
     protocol = forms.MultipleChoiceField(
-        required=False,
         widget=forms.Select,
         choices=protocol_choices
     )
@@ -198,8 +199,8 @@ class FormInitials():
         return line_config_initial
 
 
-class FormDiff():
 
+class FormDiff():
     def __init__(self, post_data):
         self.post_data = post_data
 
@@ -217,22 +218,23 @@ class FormDiff():
                     new_value = form.cleaned_data.get(item, "empty")
                     if "acl" in item:
                         acl_type = item.split("_")[0]
-                        old_value = current[interface]["acl"][acl_type]
-                        new_value = new_value.split(",") if new_value else []
+                        new_acls = new_value.split(",") if new_value else []
+                        if changes.get("acl"):
+                            changes["acl"].update({acl_type: new_acls})
+                        else:
+                            changes["acl"] = {acl_type: new_acls}
                     elif "other_commands" == item:
-                        old_value = current[interface].get("other_commands")
                         new_value = new_value.split(",") if new_value else []
-                    else:
-                        old_value = current[interface].get(item, "empty") 
+
                     
                     if changes.get(interface):
-                        changes[interface].update({
-                            item: [old_value, new_value]
-                        })
+                        changes[interface].update(
+                            {item: new_value}
+                        )
                     else: 
-                        changes.update({
-                            interface: {item: [old_value, new_value]}
-                        })
+                        changes.update(
+                            {interface: {item: new_value}}
+                        )
 
         return changes
 
@@ -246,40 +248,120 @@ class FormDiff():
                 initial=initial
             )
             if form.is_valid():
+                acl_changes = {}
                 for item in form.changed_data:
-                    new_value = form.cleaned_data.get(item, "empty")
+                    new_value = form.cleaned_data.get(item)
                     if "acl" in item:
-                        acl_type = item.split("_")[0]
-                        old_value = current[line]["acl"][acl_type]
-                        new_value = new_value.split(",") if new_value else []
+                        acl_type, item = item.split("_")
+                        new_acls = new_value.split(",") if new_value else []
+                        acl_changes[acl_type] = new_acls
+                        continue
                     elif "other_commands" == item:
-                        old_value = current[line].get("other_commands")
                         new_value = new_value.split(",") if new_value else []
-                    else:
-                        old_value = current[line].get(item, "empty") 
                     
                     if changes.get(line):
                         changes[line].update({
-                            item: [old_value, new_value]
+                            item: new_value
                         })
                     else: 
                         changes.update({
-                            line: {item: [old_value, new_value]}
+                            line: {item: new_value}
                         })
+                if acl_changes:
+                    changes.update({"acl": acl_changes})
 
         return changes
     
     def routing(self, current):
+        if not current:
+            return {}
         changes = {}
         form_static_routes = self.post_data.get("static_routes").split(",")
         form_static_routes = [route.split("-") for route in form_static_routes]
-        new_static_routes = [{
+        form_static_routes = [{
             "network": net,
             "subnetmask": sm,
             "forward_to": forward_to
         } for net, sm, forward_to in form_static_routes]
 
-        if current["static"] != new_static_routes:
-            changes["static"] = [current["static"], new_static_routes]
+        list_items = (
+            "advertise_networks", 
+            "passive_interfaces", 
+            "other_commands"
+        )
+
+        if current["static"] != form_static_routes:
+            changes["static"] = form_static_routes
+
+        if current.get("ospf"):
+            
+            for item in list_items:
+                if current["ospf"].get(item):
+                    current["ospf"][item] = ",".join(current["ospf"][item])
+                else:
+                    current["ospf"][item] = []
+            
+            form = OSPFConfigForm(self.post_data, initial=current["ospf"])
+
+            if form.is_valid():
+                ospf_changes = {}
+                
+                for item in form.changed_data:
+                    new_value = form.cleaned_data.get(item)
+                  
+                    if item in list_items:
+                        new_value = new_value.split(",") if new_value else []
+                  
+                    ospf_changes.update({item: new_value})
+
+                if ospf_changes:
+                    changes["ospf"] = ospf_changes 
+
+        return changes
+    
+    def acl(self, current):
+        if not current:
+            return {}
+        changes = {}
+        acls = [["standard", StandardACLForm], ["extended", ExtendedACLForm]]
+
+        for acl_type, acl_form in acls:
+            for acl_id, config in current[acl_type].items():
+                form = acl_form(
+                    self.post_data,
+                    prefix=acl_id,
+                    initial=config
+                )
+                form.is_valid()
+                if form.changed_data:
+                    changes[acl_type] = {acl_id: {}}
+                    for item in form.changed_data:
+                        new_value = form.cleaned_data.get(item)
+                        if item == "action":
+                            new_value = new_value
+                            changes[acl_type][acl_id].update({item: new_value})
+                        
+        return changes
+
+    def dhcp(self, current):
+        if not current:
+            return {}
+        changes = {}
+
+        for pool_name, config in current.items():
+            form = DHCPPoolForm(
+                self.post_data,
+                prefix=pool_name,
+                initial=config
+            )
+            if form.is_valid():
+                for item in form.changed_data:
+                    if item == "pool_name": continue
+                    new_value = form.cleaned_data.get(item)
+                    new_value = new_value if new_value else ""
+                    if changes.get(pool_name):
+                        changes[pool_name].update({item: new_value})
+                    else:
+                        changes[pool_name] = {item: new_value}
 
         return changes

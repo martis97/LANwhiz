@@ -31,8 +31,7 @@ class Interface(BaseConfig):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
         config = self.config.get("acl")
-        inbound = [acl for acl in config.get("inbound")]
-        outbound = [acl for acl in config.get("inbound")]
+        inbound, outbound = [config.get(acl) for acl in ("inbound", "outbound")]
         for rule in outbound:
             acl_commands.append(f"ip access-group {rule} out")
         for rule in inbound:
@@ -74,8 +73,7 @@ class Line(BaseConfig):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
         config = self.config.get("acl")
-        inbound = config.get("inbound") if config else []
-        outbound = config.get("outbound") if config else []
+        inbound, outbound = [config.get(acl) for acl in ("inbound", "outbound")]
         for rule in outbound:
             acl_commands.append(f"access-class {rule} out")
         for rule in inbound:

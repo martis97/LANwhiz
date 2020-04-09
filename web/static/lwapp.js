@@ -185,7 +185,9 @@ function refreshACLSelects() {
 }
 
 function displayTerminal() {
-    term = new Terminal()
+    term = new Terminal({
+        cursorBlink: true
+    })
     term.open(document.getElementById('terminal'))
     var termURI = document.location.href + "term"
     var csrfToken = $('input[name=csrfmiddlewaretoken]').val()
@@ -202,20 +204,25 @@ function displayTerminal() {
     for (i in intro) term.writeln(intro[i])
 
 
-    $.post(termURI, {
-        csrfmiddlewaretoken: csrfToken
-    }, response => {
-        if ('error' in response) {
-            error = true
-            term.writeln("Error: " + response.error)
-        } else {
-            term.writeln("Connected!\n\n")
-            termPrompt = response.prompt
-            term.write(termPrompt)
+    $.ajax({
+        url: `/ajax/${$( "h2" ).text().split(" ")[2]}/term`,
+        data: {
+            "cmd": cmd
+        }, 
+        datatype: "json",
+        success: response => {
+            if ('error' in response) {
+                error = true
+                term.writeln("Error: " + response.error)
+            } else {
+                term.writeln("Connected!\n\n")
+                termPrompt = response.prompt
+                term.write(termPrompt)
+            }
         }
     })
 
-    cmd = ""
+    var cmd = ""
 
     term.onKey(e => {
         var printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey
@@ -223,17 +230,20 @@ function displayTerminal() {
 
         if (e.domEvent.keyCode === 13) {
             if (cmd) {
-                $.post(termURI, {
-                    csrfmiddlewaretoken: csrfToken,
-                    cmd: cmd
-                }, response => {
-                    termPrompt = response.prompt
-                    response = response.cmd_out
-                    term.writeln("")
-                    for (var i in response) term.writeln(response[i])
-                    cmd = ""
-
-                    term.write(termPrompt)
+                $.ajax({
+                    url: `/ajax/${$( "h2" ).text().split(" ")[2]}/term`,
+                    data: {
+                        "cmd": cmd
+                    }, 
+                    datatype: "json",
+                    success: response => {
+                        termPrompt = response.prompt
+                        response = response.cmd_out
+                        term.writeln("")
+                        for (var i in response) term.writeln(response[i])
+                        cmd = ""
+                        term.prompt()
+                    }
                 })
             } else {
                 term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
@@ -455,7 +465,9 @@ function showDynamicRoutingCards() {
 function overlayInit() {
     const overlay = $( "#overlay" ) 
     const box = $( ".box" )
+    const boxInner = $( "#boxInner" )
     const hostname = $( "h2" ).text().split(" ")[2]
+    const savedNotification = $(".changes-saved-notification")
     const newChange = function(name, value) {
         return `
         <div class="changes">
@@ -463,32 +475,50 @@ function overlayInit() {
         </div>`
     }
 
-    $( ".update-config" ).on("click", function(e) {
+    $( ".diff-config" ).on("click", e => {
         e.preventDefault()
-
         $.ajax({
             type: "POST",
             url: `/devices/${hostname}/diff-config`,
             data: $( "#deviceConfig" ).serialize(),
             success: resp => {
-                console.log(Object.entries(resp))
-
-                Object.entries(resp).forEach( ([area, value]) => {
-
-                    if (!Object.keys(value).length) return
-                    console.log(Object.entries(value))
-                    // box.append(newChange(area, )) 
-
-
-                    // Object.entries(value).forEach( ([name, value]) => {
-
-                    // })
+                if (!resp.changed.length) {
+                    alert("No changes have been made")
+                    return
+                }
+                boxInner.html("")
+                resp.changed.forEach(area => {
+                    boxInner.append(`<h5 class="dropdown-title" style="font-size: 19">${area}</h5>`)
                 })
-                
                 overlay.fadeIn()
                 box.fadeIn()
             }
         })
+    })
+
+    $( ".confirm-changes" ).on("click", e => {
+        e.preventDefault()
+        $.ajax({
+            type: "POST",
+            url: `/devices/${hostname}/diff-config?save=1`,
+            data: $( "#deviceConfig" ).serialize(),
+            success: resp => {
+                if (resp.error) {
+                    alert("Error occured while saving config")
+                    return
+                }
+
+            }
+        })
+        overlay.fadeOut()
+        box.fadeOut()
+        savedNotification.show()
+        savedNotification.fadeOut(5000)
+    })
+
+    overlay.on("click", () => {
+        overlay.fadeOut()
+        box.fadeOut()
     })
 }
 
