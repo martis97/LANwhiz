@@ -1,6 +1,7 @@
 import json
 from threading import Thread
-from datetime import datetime
+from time import strftime, localtime
+from copy import deepcopy
 
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
@@ -53,7 +54,7 @@ def device_details(request, hostname):
     if device_config["config"].get("global_commands"):
         global_cmds = ",".join(device_config["config"]["global_commands"])
     else:
-        global_cmds = ""
+        global_cmds = None
 
     context = {
         "hostname": device_config["hostname"],
@@ -106,6 +107,8 @@ def device_details(request, hostname):
 
             if form_init.get("other_commands"):
                 form_init["other_commands"] = ",".join(form_init["other_commands"])
+            else:
+                form_init["other_commands"] = ""
             
             context["dynamic_routing"].append(("OSPF", OSPFConfigForm(initial=form_init)))
 
@@ -129,7 +132,6 @@ def device_details(request, hostname):
         dhcp_pools = device_config["config"]["dhcp"]
         
         for pool_name, config in dhcp_pools.items():
-            config["pool_name"] = pool_name
             context["dhcp_pools"].append(
                 (pool_name, DHCPPoolForm(prefix=pool_name, initial=config))
             )
@@ -138,7 +140,6 @@ def device_details(request, hostname):
     return render(request, 'device-details.html', context=context)
 
 def merge_config(current, new):
-    print("merge")
     for k, v in new.items():
         if isinstance(v, dict):
             current[k] = merge_config(current.get(k, {}), v)
@@ -148,7 +149,10 @@ def merge_config(current, new):
 
 def diff_config(request, hostname):
     form_diff = FormDiff(request.POST)
-    current = Utils.read_config(hostname)["config"]
+    current_template = Utils.read_config(hostname)
+    new_template = deepcopy(current_template)
+    current = current_template["config"]
+    # print(current)
     changes = {
         "global_commands": [],
         "interfaces": form_diff.interface_config(current.get("interfaces")),
@@ -161,15 +165,22 @@ def diff_config(request, hostname):
     global_cmds = request.POST.get("global_commands").split(",")
 
     if set(global_cmds) != set(current["global_commands"]):
-        changes["global_commands"].append(
-           [current['global_commands'], global_cmds]
-        )
+        changes["global_commands"] = global_cmds
 
+    changes = {k:v for k, v in changes.items() if v}
+    # print(json.dumps(current, indent=4))
     print(json.dumps(changes, indent=4))
-    # print(json.dumps(merge_config(current, changes), indent=4))
+
     if request.GET.get("save"):
-        
-        response = {}
+        new_template["config"] = merge_config(current, changes)
+        new_template["last_modified"] = strftime("%d/%m/%Y %H:%M:%S", localtime())
+        Utils.write_config(hostname, new_template)
+
+        response = {
+            "saved": True,
+            "time_updated": new_template["last_modified"]
+        }
+
     else:
         response = {"changed": [
             area.capitalize().replace("_", " ") \
@@ -219,7 +230,7 @@ def add_device(request):
         new_device = Utils.add_new_device(*params)
         return redirect(f"/devices/{new_device['hostname']}")
     else:
-        return render(request, 'add-device.html')
+        return render(request, 'add-device.html', context={"form": AddDeviceForm()})
 
 
 def new_acl(request):
@@ -235,12 +246,12 @@ def new_acl(request):
 
     if acl_type == "standard":
         acl_config = {
-            "action": None,
+            "action": "",
             "source": ""
         }
     elif acl_type == "extended":
         acl_config = {
-            "action": None,
+            "action": "",
             "protocol": "",
             "source": "",
             "destination": "",
@@ -255,8 +266,7 @@ def new_acl(request):
             "extended": {}
         }
         config["config"]["acl"][acl_type][acl_name] = acl_config
-    
-    Utils.write_config(hostname, config)
+    print(json.dumps(config, indent=4))
 
     return JsonResponse({
         "acl_type": acl_type, 
@@ -309,26 +319,18 @@ def dhcp_pool(request):
     config = Utils.read_config(hostname)
 
     if request.GET.get("action") == "remove":
-
-        for i, pool in enumerate(config["config"]["dhcp"]):
-            if pool["pool_name"] == pool_name:
-                config["config"]["dhcp"].pop(i)
-
+        del config["config"]["dhcp"][pool_name]
         Utils.write_config(hostname, config)
 
         return JsonResponse({"removed": True})
 
     new_pool = {
-        "pool_name": pool_name,
         "network": "",
         "default_gateway": "",
         "dns": ""
     }
 
-    if config["config"].get("dhcp"): 
-        config["config"]["dhcp"].append(new_pool)
-    else:
-        config["config"]["dhcp"] = [new_pool]
+    config["config"]["dhcp"][pool_name] = new_pool
 
     Utils.write_config(hostname, config)    
 

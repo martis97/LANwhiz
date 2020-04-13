@@ -107,6 +107,12 @@ class Utilities(object):
                 f"Config for '{hostname}' "
                 "does not exist"
             )
+        if new_config["config"].get("routing"):
+            elems = ("advertise_networks", "passive_interfaces", "other_commands")
+            for elem in elems:
+                if new_config["config"]["routing"]["ospf"].get(elem):
+                    if isinstance(new_config["config"]["routing"]["ospf"][elem], str):
+                        new_config["config"]["routing"]["ospf"][elem] = new_config["config"]["routing"]["ospf"][elem].split(",")
         with open(f"{devices_path}{hostname}", "w") as config_file:
             config_file.write(json.dumps(new_config, indent=4))
                 

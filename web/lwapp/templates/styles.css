@@ -1,4 +1,7 @@
 /* BODY */
+html {
+    scroll-behavior: smooth;
+}
 
 body {
     color: white;
@@ -136,7 +139,7 @@ select {
 .form-table th {
     text-align: left;
     padding: 20px 10px 20px 0;
-    width: 160px;
+    width: 200px;
     color: white;
 }
 

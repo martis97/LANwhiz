@@ -5,32 +5,87 @@
 <h3>Devices</h3>
 
 <a href="/devices/add/">
+
     <button id="addDevice" class="button1">
         Add Device
     </button>
+
 </a>
 
 <div class="all-devices">
+
     <div class="routers">
+
         <h4>Routers</h4>
-        {% for router in routers %}
-            <a href="{{router}}">
-                <div class="card">
-                    {{router}}
-                </div>
-            </a>
-        {% endfor %}
+
+        {% if routers %}
+
+            {% for router in routers %}
+
+                <a href="{{router}}">
+
+                    <div class="card">
+
+                        {{ router }}
+
+                    </div>
+
+                </a>
+
+            {% endfor %}
+
+        {% else %}
+
+            <span><i style="border: none">No Routers found</i></span>
+
+        {% endif %}
+
+
+
     </div>
+
     <div class="switches">
+
         <h4>Switches</h4>
+
+        {% if switches %}
+
+            {% for switch in switches %}
+
+                <a href="{{switch}}">
+
+                    <div class="card">
+
+                        {{ switch }}
+
+                    </div>
+
+                </a>
+
+            {% endfor %}
+
+        {% else %}
+
+            <span><i style="border: none">No Switches found</i></span>
+
+        {% endif %}
+
         {% for switch in switches %}
+
             <a href="{{switch}}">
+
                 <div class="card">
+
                     {{switch}}
+
                 </div>
+
             </a>
+
         {% endfor %}
+
     </div>
+
 </div>
 
 {% endblock content %}

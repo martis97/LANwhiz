@@ -342,13 +342,11 @@ function showDynamicRoutingCards() {
     const $otherCmds = $( "#id_other_commands" )
     const card = function(name, text) {
         return `
-        <div style='margin-right: 10px;' class='card ${name}'>
-            <span class="remove">&times;</span>
-            ${text}
-        </div>`
+        <div style='margin-right: 10px;' value="${text}" class='card ${name}'><span class="remove">&times;</span>${text}</div>`
     }
 
     $nets.val().split(",").forEach( net => {
+        console.log(net)
         var netInfo = net.split("/")
         var area = netInfo[2].match(/\d+/g)[0]
         var cardText = `<p>${netInfo[0]}/${netInfo[1]}</p><br><p>Area: ${area}</p>`
@@ -436,7 +434,7 @@ function showDynamicRoutingCards() {
     })
 
     $( ".other-cmds-container" ).on("click", ".card.other-cmd .remove", function() {
-        const cmd = $( this ).parent().text().split(/\s+/)[2]
+        const cmd = $( this ).parent().text().slice(1)
         const inputValue = $otherCmds.val() ? $otherCmds.val().split(",") : []
         $otherCmds.val(inputValue.filter(e => e !== cmd).join(","))
         $( this ).parent().remove()
@@ -503,7 +501,10 @@ function overlayInit() {
             url: `/devices/${hostname}/diff-config?save=1`,
             data: $( "#deviceConfig" ).serialize(),
             success: resp => {
-                if (resp.error) {
+                if (resp.saved) {
+                    $( "#lastModifiedTimestamp" ).text(`Last modified: ${resp.time_updated}`)
+                }
+                else {
                     alert("Error occured while saving config")
                     return
                 }
@@ -512,6 +513,7 @@ function overlayInit() {
         })
         overlay.fadeOut()
         box.fadeOut()
+        $( document ).scrollTop(0)
         savedNotification.show()
         savedNotification.fadeOut(5000)
     })

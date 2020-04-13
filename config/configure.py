@@ -28,10 +28,9 @@ class ConfigActions(BaseConfig):
         configuration.
         """
         int_config = self.config["interfaces"]
-        for interface, config in int_config.items():
-            configure_interface = Interface(self.connection, config)
-            for cmd in (f"interface {interface}", "no shutdown"):
-                self.utils.send_command(cmd)
+        for int_name, config in int_config.items():
+            configure_interface = Interface(self.connection, config, int_name)
+            configure_interface.shutdown()
             configure_interface.ipv4()
             configure_interface.ipv6()
             configure_interface.description()

@@ -4,8 +4,15 @@ from LANwhiz.utils import Utilities
 
 
 class Interface(BaseConfig):
-    def __init__(self, connection, config):
+    def __init__(self, connection, config, name):
         super().__init__(connection, config)
+        self.utils.send_command(f"interface {name}")
+
+    def shutdown(self):
+        if self.config.get("shutdown"):
+            self.utils.send_command("shutdown")
+        else:
+            self.utils.send_command("no shutdown")
 
     def ipv4(self):
         """ Sends command to configure IPv4 address """

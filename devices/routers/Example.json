@@ -4,15 +4,16 @@
     "mgmt_port": 5000,
     "username": "admin",
     "password": "netautoconfig",
-    "last_modified": "2020-04-08 18:39:11",
+    "last_modified": "13/04/2020 18:36:20",
     "config": {
         "global_commands": [
-            "ipv6 unicast-routing",
             "no ip domain-lookup",
-            "service password-encryption"
+            "service password-encryption",
+            "ipv6 unicast-routing"
         ],
         "interfaces": {
             "GigabitEthernet1/0": {
+                "shutdown": false,
                 "ipv4": "192.168.5.1/24",
                 "ipv6": "2008:ACAB:B323:AADF::1:1/64",
                 "description": "Connection to LAN",
@@ -22,13 +23,13 @@
                     ],
                     "inbound": [
                         "1",
-                        "3",
-                        "5"
+                        "3"
                     ]
                 },
                 "nat": "inside",
                 "other_commands": [
-                    "ip ospf network point-to-point"
+                    "ip ospf network point-to-point",
+                    "another new cmd"
                 ]
             },
             "GigabitEthernet2/0": {
@@ -144,11 +145,6 @@
                     "network": "0.0.0.0",
                     "subnetmask": "0.0.0.0",
                     "forward_to": "GigabitEthernet1/0"
-                },
-                {
-                    "network": "10.1.1.0",
-                    "subnetmask": "255.255.255.0",
-                    "forward_to": "192.168.1.0"
                 }
             ],
             "ospf": {
@@ -157,33 +153,42 @@
                 "advertise_static": true,
                 "advertise_networks": [
                     "192.168.5.1/24/area 0",
-                    "192.168.1.1/24/area 0"
+                    "192.168.1.1/24/area 0",
+                    "192.168.1.0/24/area 3"
                 ],
                 "passive_interfaces": [
-                    "GigabitEthernet1/0"
+                    "GigabitEthernet1/0",
+                    "GigabitEthernet4/0"
+                ],
+                "other_commands": [
+                    "another new cmnd"
                 ]
             }
         },
         "acl": {
             "standard": {
                 "brand-new-acl": {
-                    "action": null,
-                    "source": ""
+                    "action": "permit",
+                    "source": "erastgh"
+                },
+                "aerg": {
+                    "action": "permit",
+                    "source": "serth"
                 }
             },
             "extended": {
                 "permit-established-tcp": {
                     "action": "deny",
-                    "protocol": "tcp",
-                    "source": "any",
-                    "destination": "any",
-                    "port": "established"
-                },
-                "permit-remaining-protocols": {
-                    "action": "permit",
                     "protocol": "ip",
                     "source": "any",
                     "destination": "any",
+                    "port": "establishaerged"
+                },
+                "permit-remaining-protocols": {
+                    "action": "permit",
+                    "protocol": "udp",
+                    "source": "any",
+                    "destination": "anyaerg",
                     "port": ""
                 }
             }
@@ -191,13 +196,18 @@
         "dhcp": {
             "LANwhiz_pool": {
                 "network": "192.168.5.0/24",
-                "default_gateway": "192.168.5.1",
-                "dns": "192.168.1.3"
+                "default_gateway": "192.168.5.1aerg",
+                "dns": "192.168.1.3areg"
+            },
+            "new_pool": {
+                "network": "192.168.0.0/24",
+                "default_gateway": "192.168.0.1",
+                "dns": "192.168.0.3aerg"
             },
             "aerg": {
-                "network": "",
-                "default_gateway": "",
-                "dns": ""
+                "network": "165165",
+                "default_gateway": "651",
+                "dns": "1"
             }
         }
     }
