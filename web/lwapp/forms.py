@@ -67,6 +67,11 @@ class GlobalCmdsForm(forms.Form):
 
 
 class LineConfigForm(forms.Form):
+    password = forms.CharField(
+        label="Password:", 
+        widget=forms.PasswordInput(render_value=True),
+        required=False
+    )
     synchronous_logging = forms.BooleanField(required=False)
     inbound_acl = forms.CharField(widget=forms.HiddenInput, required=False)
     outbound_acl = forms.CharField(widget=forms.HiddenInput, required=False)

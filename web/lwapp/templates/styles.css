@@ -39,8 +39,9 @@ body {
 
 /* LOGO */
 
-body img {
-    width: 350px
+.logo {
+    width: 200px;
+    float: left;
 }
 
 p {
@@ -50,6 +51,12 @@ p {
 .header {
     height: 100px;
     font-size: 20px;
+}
+
+.navigation ul {
+    float: left;
+    width: 50%;
+    margin: 10;
 }
 
 .navigation ul li {
@@ -76,6 +83,26 @@ p {
 
 
 /* MAIN CONTENT */
+
+.device-title {
+    float: left
+}
+
+.status {
+    float: left;
+    width: 20;
+    margin-top: 24;
+}
+
+.dot {
+    height: 16;
+    width: 16;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: none;
+    margin-top: 26.2;
+    margin-right: 4;
+}
 
 .main-content {
     background-color: #4f5870;

@@ -161,14 +161,20 @@ def diff_config(request, hostname):
         "acl": form_diff.acl(current.get("acl")),
         "dhcp": form_diff.dhcp(current.get("dhcp"))
     }
+    if request.POST.get("global_commands"):
+        global_cmds = request.POST.get("global_commands").split(",")
+    else:
+        global_cmds = []
 
-    global_cmds = request.POST.get("global_commands").split(",")
-
-    if set(global_cmds) != set(current["global_commands"]):
+    # if the device contains any global commands, compare them
+    if current.get("global_commands"):
+        if set(global_cmds) != set(current["global_commands"]):
+            changes["global_commands"] = global_cmds
+    # otherwise, apply the input from the UI
+    else:
         changes["global_commands"] = global_cmds
 
     changes = {k:v for k, v in changes.items() if v}
-    # print(json.dumps(current, indent=4))
     print(json.dumps(changes, indent=4))
 
     if request.GET.get("save"):
@@ -184,7 +190,7 @@ def diff_config(request, hostname):
     else:
         response = {"changed": [
             area.capitalize().replace("_", " ") \
-                for area, values in changes.items() if values
+                for area, values in changes.items() if values           
         ]}
 
     return JsonResponse(response)
@@ -210,7 +216,11 @@ def handle_terminal(request, hostname):
             return JsonResponse({"error": e.args[1]}, status=200)
 
     cmd = request.POST.get("cmd")
-    cmd_out = None if not cmd else Utils(connection).send_command(cmd, web=True)
+    print(cmd)
+    if cmd:
+        cmd_out = Utils(connection).send_command(cmd, web=True)
+    else:
+        cmd_out = None 
 
     response = {
         "prompt": connection.find_prompt(),
@@ -224,10 +234,10 @@ def add_device(request):
     """ Add Device page """    
 
     if request.POST:
-        params = [request.POST.get(param) for param in [
+        params = {param: request.POST.get(param) for param in [
             "mgmt_ip", "mgmt_port", "username", "password"
-        ]]
-        new_device = Utils.add_new_device(*params)
+        ]}
+        new_device = Utils.add_new_device(**params)
         return redirect(f"/devices/{new_device['hostname']}")
     else:
         return render(request, 'add-device.html', context={"form": AddDeviceForm()})
@@ -268,6 +278,8 @@ def new_acl(request):
         config["config"]["acl"][acl_type][acl_name] = acl_config
     print(json.dumps(config, indent=4))
 
+    Utils.write_config(hostname, config)
+
     return JsonResponse({
         "acl_type": acl_type, 
         "form": acl_types[acl_type].as_table()
@@ -291,12 +303,12 @@ def remove_acl(request):
 
 
 def new_routing_protocol(request):
-    protocol = request.GET.get("protocol")
+    protocol = request.GET.get("protocol").lower()
     hostname = request.GET.get("hostname")
     config = Utils.read_config(hostname)
 
     available_protocols = {
-        "OSPF": OSPFConfigForm().as_table()
+        "ospf": OSPFConfigForm().as_table()
     }
 
     config["config"]["routing"][protocol] = {

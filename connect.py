@@ -33,6 +33,7 @@ class Connect(object):
         Returns:
             Netmiko connection object
         """
+        port = int(port)
         cisco_device = {
             "ip": mgmt_ip,
             "port": port,

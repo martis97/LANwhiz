@@ -31,7 +31,7 @@ function showGlobalCmds() {
     var cmds = $("#globalCmds").val().split(",")
 
     cmds.forEach(function(cmd) {
-        container.append(newCard(cmd))
+        if (cmd) container.append(newCard(cmd))
     })
 
     $(".global-commands").on("click", ".card .remove", function() {
@@ -184,15 +184,102 @@ function refreshACLSelects() {
     var allACLs = $("#allACLs")
 }
 
+// function displayTerminal() {
+//     const statusDot = $( ".status.dot" ) 
+//     const term = new Terminal({
+//         cursorBlink: true
+//     })
+//     const hostname = $( "h2" ).text().split(" ")[2]
+//     term.open(document.getElementById('terminal'))
+//     var termURI = document.location.href + "term"
+//     var csrfToken = $('input[name=csrfmiddlewaretoken]').val()
+//     var termPrompt = ""
+//     var error = false
+
+//     var intro = [
+//         "LANwhiz CLI Interface",
+//         "\nUse for various 'show' commands and other bespoke configuration",
+//         "\nNOTE: Changing the config areas which are overseen by the program will",
+//         "require a config sync once finished.\n",
+//         "Connecting...\n"
+//     ]
+//     for (i in intro) term.writeln(intro[i])
+
+
+//     $.ajax({
+//         url: `/ajax/${hostname}/term`,
+//         data: {
+//             "cmd": cmd
+//         }, 
+//         datatype: "json",
+//         success: response => {
+//             if ('error' in response) {
+//                 error = true
+//                 term.writeln("Error: " + response.error)
+//                 statusDot.css("background-color", "#ff0000")
+//                 $( "#statusSpinner" ).hide()
+//             } else {
+//                 term.writeln("Connected!\n\n")
+//                 termPrompt = response.prompt
+//                 term.write(termPrompt)
+//                 $( "#statusSpinner" ).hide()
+//                 statusDot.css("background-color", "#00ff00")
+//             }
+//             statusDot.show()
+//         }
+//     })
+
+//     cmd = ""
+
+//     term.onKey(e => {
+//         var printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey
+//         if (!termPrompt || error) return
+
+//         if (e.domEvent.keyCode === 13) {
+//             if (cmd) {
+//                 $.ajax({
+//                     url: `/ajax/${hostname}/term`,
+//                     data: {
+//                         "cmd": cmd
+//                     }, 
+//                     datatype: "json",
+//                     success: response => {
+//                         console.log(response)
+//                         termPrompt = response.prompt
+//                         response = response.cmd_out
+//                         term.writeln("")
+//                         for (var i in response) term.writeln(response[i])
+//                         cmd = ""
+//                         term.write(termPrompt)
+//                     }
+//                 })
+//             } else {
+//                 term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
+//             }
+//         } else if (e.domEvent.keyCode === 8) {
+//             // Do not delete the prompt
+//             if (term._core.buffer.x > termPrompt.length) {
+//                 term.write('\b \b')
+//                 cmd = cmd.slice(NaN, -1)
+//             }
+//         } else if (printable) {
+//             term.write(e.key)
+//             cmd += e.key
+//         }
+//     })
+// }
+
 function displayTerminal() {
     term = new Terminal({
         cursorBlink: true
     })
-    term.open(document.getElementById('terminal'))
-    var termURI = document.location.href + "term"
-    var csrfToken = $('input[name=csrfmiddlewaretoken]').val()
-    var termPrompt = ""
-    var error = false
+    const statusDot = $( ".status.dot" ) 
+    term.open(document.getElementById('terminal'));
+    const hostname = $( "h2" ).text().split(" ")[2]
+    var termURI = `/ajax/${hostname}/term`
+    var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+    var termPrompt = "";
+    var error = false;
 
     var intro = [
         "LANwhiz CLI Interface",
@@ -200,50 +287,51 @@ function displayTerminal() {
         "\nNOTE: Changing the config areas which are overseen by the program will",
         "require a config sync once finished.\n",
         "Connecting...\n"
-    ]
-    for (i in intro) term.writeln(intro[i])
+    ];
+    for (i in intro) term.writeln(intro[i]);
 
+    cmd = "";
 
     $.ajax({
-        url: `/ajax/${$( "h2" ).text().split(" ")[2]}/term`,
+        url: `/ajax/${hostname}/term`,
         data: {
-            "cmd": cmd
+            "connect": 1
         }, 
         datatype: "json",
         success: response => {
             if ('error' in response) {
                 error = true
                 term.writeln("Error: " + response.error)
+                statusDot.css("background-color", "#ff0000")
+                $( "#statusSpinner" ).hide()
             } else {
                 term.writeln("Connected!\n\n")
                 termPrompt = response.prompt
                 term.write(termPrompt)
+                $( "#statusSpinner" ).hide()
+                statusDot.css("background-color", "#00ff00")
             }
+            statusDot.show()
         }
     })
 
-    var cmd = ""
-
     term.onKey(e => {
-        var printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey
-        if (!termPrompt || error) return
+        var printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey;
+        if (!termPrompt || error) return;
 
         if (e.domEvent.keyCode === 13) {
             if (cmd) {
-                $.ajax({
-                    url: `/ajax/${$( "h2" ).text().split(" ")[2]}/term`,
-                    data: {
-                        "cmd": cmd
-                    }, 
-                    datatype: "json",
-                    success: response => {
-                        termPrompt = response.prompt
-                        response = response.cmd_out
-                        term.writeln("")
-                        for (var i in response) term.writeln(response[i])
-                        cmd = ""
-                        term.prompt()
-                    }
+                $.post(termURI, {
+                    csrfmiddlewaretoken: csrfToken,
+                    cmd: cmd
+                }, response => {
+                    termPrompt = response.prompt
+                    response = response.cmd_out;
+                    term.writeln("");
+                    for (var i in response) term.writeln(response[i]);
+                    cmd = "";
+
+                    term.write(termPrompt)
                 })
             } else {
                 term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
@@ -251,14 +339,16 @@ function displayTerminal() {
         } else if (e.domEvent.keyCode === 8) {
             // Do not delete the prompt
             if (term._core.buffer.x > termPrompt.length) {
-                term.write('\b \b')
+                term.write('\b \b');
                 cmd = cmd.slice(NaN, -1)
             }
         } else if (printable) {
-            term.write(e.key)
-            cmd += e.key
+            term.write(e.key);
+            cmd += e.key;
         }
-    })
+
+    });
+
 }
 
 
@@ -344,7 +434,7 @@ function showDynamicRoutingCards() {
         return `
         <div style='margin-right: 10px;' value="${text}" class='card ${name}'><span class="remove">&times;</span>${text}</div>`
     }
-
+    if (!$nets.val()) return
     $nets.val().split(",").forEach( net => {
         console.log(net)
         var netInfo = net.split("/")
@@ -414,7 +504,6 @@ function showDynamicRoutingCards() {
 
     $( ".passive-ints-container" ).on("click", ".card .remove", function() {
         const interface = $( this ).parent().text().split(/\s+/).slice(2, 3)[0]
-        console.log(interface)
         const inputValue = $passiveInts.val().split(",")
         $passiveInts.val(inputValue.filter(e => e !== interface).join(","))
         $( this ).parent().remove()
@@ -439,8 +528,12 @@ function showDynamicRoutingCards() {
         $otherCmds.val(inputValue.filter(e => e !== cmd).join(","))
         $( this ).parent().remove()
     })
+}
 
-    $( "#newRoutingProtocol" ).on("click", e => {
+function newRoutingProtocolInit() {
+    const hostname = $( "h2" ).text().split(" ")[2]
+
+    $( "#newRoutingProtocol" ).on("click", function(e) {
         e.preventDefault()
         const protocol = $( "#routingProtocol" ).find(":selected").text()
         
@@ -448,17 +541,17 @@ function showDynamicRoutingCards() {
             $.ajax({
                 url: "/ajax/new-routing-protocol",
                 data: {
+                    "hostname": hostname,
                     "protocol": protocol
                 },
                 datatype: "json",
                 success: response => {
-                    $( "dynamic-routes" ).append(newDropdown(protocol, response.form, "routing-protocol"))
+                    $( ".dynamic-routes" ).append(newDropdown(protocol, response.form, "routing-protocol"))
                 }
             })
         }
     })
 }
-
 
 function overlayInit() {
     const overlay = $( "#overlay" ) 
@@ -687,5 +780,6 @@ $( document ).ready( () => {
     newLoopbackInterfaceInit()
     ACLInit()
     newDHCPPoolInit()
+    newRoutingProtocolInit()
     displayConfigSection("access")
 })

@@ -4,7 +4,19 @@
 
 {% load static %}
 
-<h2>Device - {{hostname}} <span class="changes-saved-notification">&check; Changes Saved</span></h2>
+<img class="status" id="statusSpinner" src="{% static "Rolling-1s-200px.svg" %}">
+
+<span class="status dot"></span>
+
+<h2 class="device-title">Device - {{hostname}} <span class="changes-saved-notification">&check; Changes Saved</span></h2>
+
+
+<br>
+
+<br>
+
+<br>
+
 <p id="lastModifiedTimestamp">Last modified: {{ last_modified }}</p>
 
 <div class="sub-navigation">  
@@ -186,6 +198,8 @@ $( ".sub-navigation li" ).on("click", function() {
 
                     <p>Other Commands</p>
 
+                    <hr>
+
                     <input id="{{ line }}-add-other-cmd" type="text">
 
                     <button id="{{ line }}-addOtherCmd" class="button1" style="margin-top: 10px;"><b>+ Add</b></button><br>
@@ -195,6 +209,8 @@ $( ".sub-navigation li" ).on("click", function() {
                 <div id="{{ line }}-acl" class="input-fields">
                     
                     <p style="margin-bottom: 15;">Access Control Lists</p>
+
+                    <hr>
 
                     <select class="available-acls">
 

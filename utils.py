@@ -1,6 +1,7 @@
 import json
 import re
 import os
+from time import strftime, localtime
 from pathlib import Path
 from netaddr import IPNetwork
 from time import sleep
@@ -29,6 +30,7 @@ class Utilities(object):
         if "sh" == command[:2]:
             self.connection.write_channel(f"{command}\r\n")
             sleep(2)
+            
             return self.connection.read_channel()
         else:
             response = self.connection.send_command(command, expect_string="")
@@ -212,12 +214,12 @@ class Utilities(object):
         return devices
 
     @staticmethod
-    def add_new_device(host, port, username=None, password=None):
+    def add_new_device(mgmt_ip, mgmt_port, username=None, password=None):
         """ Connect to device and create a JSON record of it """
         
         params = {
-            "mgmt_ip": host, 
-            "port": port,
+            "mgmt_ip": mgmt_ip, 
+            "port": int(mgmt_port),
             "username": username,
             "password": password
         }
@@ -237,11 +239,13 @@ class Utilities(object):
 
         new_config = {
             "hostname": hostname,
-            "mgmt_ip": host,
-            "mgmt_port": port,
+            "mgmt_ip": mgmt_ip,
+            "mgmt_port": mgmt_port,
             "username": username,
             "password": password,    # Use Salting/Hashing/Secure Storage
+            "last_modified": strftime("%d/%m/%Y %H:%M:%S", localtime()),
             "config": {
+                "global_commands": [],
                 "interfaces": {
                     interface: {
                         "ipv4": "",
@@ -251,9 +255,25 @@ class Utilities(object):
                             "outbound": [],
                             "inbound": []
                         },
-                        "nat": ""
+                        "nat": "",
+                        "bandwidth": None,
+                        "other_commands": []
                     } for interface in utils.get_interfaces()
-                }
+                },
+                "lines": {
+                    line: {
+                        "password": "",
+                        "acl": {
+                            "inbound": [],
+                            "outbound": []
+                        },
+                        "synchronous_logging": False,
+                        "other_commands": []
+                    } for line in ("console", "vty")
+                },
+                "routing":{},
+                "acl": {},
+                "dhcp": {}
             } 
         }
 
