@@ -29,4 +29,5 @@ class DHCPPool(BaseConfig):
     
     def set_dns(self):
         """ Define DNS addresses the pool will use """
-        self.utils.send_command(f"dns-server {self.config['dns']}")
+        if self.config.get("dns"):
+            self.utils.send_command(f"dns-server {self.config['dns']}")

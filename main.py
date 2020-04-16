@@ -11,10 +11,9 @@ from threading import Thread
 
 
 class LANwhizMain(object):
-    def __init__(self):
-        self.connect_to = Connect()
 
-    def configure_cisco_device(self, hostname):
+    @staticmethod
+    def configure_cisco_device(hostname):
         """ Connects to and configures a Cisco device """
 
         print(f"Starting configuration: {hostname}")
@@ -23,7 +22,7 @@ class LANwhizMain(object):
 
         # Get SSH/Telnet channel
         print(f"{hostname}: Connecting to Cisco Device..")
-        connection = self.connect_to.cisco_device(
+        connection = Connect().cisco_device(
             *list(device_config.values())[1:5]
         )
         print(f"{hostname}: Successfully connected")
@@ -36,7 +35,7 @@ class LANwhizMain(object):
 
         config_device = ConfigActions(
             device_config=device_config["config"], 
-            connection=None
+            connection=connection
         )
 
         # Ensuring initial commands are executed first
@@ -61,7 +60,9 @@ if __name__ == "__main__":
     
     # devices = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"]
     
-    devices = ["R1", "R2", "R3", "S1", "S2"]
+    # devices = ["R1", "R2", "R3", "S1", "S2"]
+
+    devices = ["R2"]
     
     for device in devices:
         thread = Thread(

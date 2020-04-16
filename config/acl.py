@@ -6,56 +6,59 @@ import re
 class AccessControlLists(BaseConfig):
     def __init__(self, connection, config):
         super().__init__(connection, config)
+        self.utils.ensure_global_config_mode()
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """
-        for identifier, config_data in self.config["standard"].items():
-            std_source = self._format_acl_target(config_data["source"])
-            # Numbered ACL            
-            if identifier.isnumeric():
-                assert 0 < int(identifier) <= 100, \
-                    f"Standard ACL '{identifier}' out of range"
-                self.utils.send_command(
-                    f"access-list {identifier} "
-                    f"{config_data['action']} {std_source}"
-                )
-            # Named ACL
-            else: 
-                acl_cmds = [
-                    f"ip access-list standard {identifier}",
-                    f"{config_data['action']} {std_source}"
-                ]
-                for cmd in acl_cmds:
-                    self.utils.send_command(cmd)
+        if self.config.get("standard"):
+            for identifier, config_data in self.config["standard"].items():
+                std_source = self._format_acl_target(config_data["source"])
+                # Numbered ACL            
+                if identifier.isnumeric():
+                    assert 0 < int(identifier) <= 100, \
+                        f"Standard ACL '{identifier}' out of range"
+                    self.utils.send_command(
+                        f"access-list {identifier} "
+                        f"{config_data['action']} {std_source}"
+                    )
+                # Named ACL
+                else: 
+                    acl_cmds = [
+                        f"ip access-list standard {identifier}",
+                        f"{config_data['action']} {std_source}"
+                    ]
+                    for cmd in acl_cmds:
+                        self.utils.send_command(cmd)
 
     def extended(self):
         """ Configures extended Access Control Lists on the device """
-        for identifier, config_data in self.config["extended"].items():
-            source = self._format_acl_target(config_data["source"])
-            dest = self._format_acl_target(config_data["destination"])
-            # Named ACL
-            if re.match(r"[A-Za-z0-9\_\-]+", identifier):
-                named_acl_cmds = [
-                    f"ip access-list extended {identifier}",
-                    f"{config_data['action']} {config_data['protocol']} "
-                    f"{source} {dest} {config_data['port']}"
-                ]
-                self.connection.send_config_set(named_acl_cmds)
-            # Numbered ACL
-            elif identifier.isnumeric():
-                assert 100 < int(identifier) <= 200, \
-                    f"Extended ACL '{identifier}' out of range"
-                self.utils.send_command(
-                    f"access-list {identifier} "
-                    f"{config_data['action']} {config_data['protocol']} "
-                    f"{source} {dest} {config_data['port']}"
-                )
-            else:
-                raise InvalidInputException(
-                    f"'{identifier}' is not a valid ACL name/number. "
-                    "Named ACLs are only allowed to contain letters, dash"
-                    " or an underscore.\n"
-                )
+        if self.config.get("extended"):
+            for identifier, config_data in self.config["extended"].items():
+                source = self._format_acl_target(config_data["source"])
+                dest = self._format_acl_target(config_data["destination"])
+                # Named ACL
+                if re.match(r"[A-Za-z0-9\_\-]+", identifier):
+                    named_acl_cmds = [
+                        f"ip access-list extended {identifier}",
+                        f"{config_data['action']} {config_data['protocol']} "
+                        f"{source} {dest} {config_data['port']}"
+                    ]
+                    self.connection.send_config_set(named_acl_cmds)
+                # Numbered ACL
+                elif identifier.isnumeric():
+                    assert 100 < int(identifier) <= 200, \
+                        f"Extended ACL '{identifier}' out of range"
+                    self.utils.send_command(
+                        f"access-list {identifier} "
+                        f"{config_data['action']} {config_data['protocol']} "
+                        f"{source} {dest} {config_data['port']}"
+                    )
+                else:
+                    raise InvalidInputException(
+                        f"'{identifier}' is not a valid ACL name/number. "
+                        "Named ACLs are only allowed to contain letters, dash"
+                        " or an underscore.\n"
+                    )
     
     def _format_acl_target(self, target):
         """ Forms a command subset where the source or destination 

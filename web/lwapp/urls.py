@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='LANwhiz - Home'),
-    path('action/', views.action),
+    path('ajax/capture_cmd_outputs/<str:hostname>/', views.capture_cmd_outputs),
     path('ajax/new-acl/', views.new_acl),
     path('ajax/remove-acl/', views.remove_acl),
     path('ajax/new-routing-protocol/', views.new_routing_protocol),

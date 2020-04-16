@@ -55,7 +55,6 @@ p {
 
 .navigation ul {
     float: left;
-    width: 50%;
     margin: 10;
 }
 
@@ -75,7 +74,7 @@ p {
 
 .navigation a {
     display: block;
-    width: 150px;
+    width: 230px;
     color: white;
     font-size: 25px;
     text-align: center;
@@ -247,6 +246,7 @@ h5.dropdown-title {
 .dropdown-bottom {
     display: none;
     flex-flow: wrap;
+    width: 100%;
 }
 
 i {
@@ -337,4 +337,10 @@ ul {
     color: #00ff95;
     display: none;
     font-size: 16;
+}
+
+.loading-spinner {
+    width: 30;
+    margin-top: 10;
+    float: left;
 }

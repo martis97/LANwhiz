@@ -3,12 +3,10 @@
 
 {% block content %}
 
-<h3>Home page</h3>
+<h3>Gather Command Outputs</h3>
 
 
 <div class="actions-container">
-
-    <h4>Gather Command Outputs</h4>
 
     <form id="output-capture" method="post">
 
@@ -37,34 +35,27 @@
 
         {% endfor %}
 
-        <input class="button1" type="submit" value="Capture" style="margin-top: 10px;">
-
+        <button class="button1 capture" style="float: left;">Capture</button><img style="display: none;" class="loading-spinner" id="cmdOutsSpinner" src="{% static "Rolling-1s-200px.svg" %}">
+    
     <img id="spinner" src="{% static "Rolling-1s-200px.svg" %}">
+    
+    <br>
+
+    <br>
+
+    <br>
+
+    <div id="outputs"></div>
+
+    <script>
+
+        $( "#outputs" ).on("click", "h5", function() {
+            dropdown( $( this ).parent() );
+        })
+
+    </script>
 
 </div>
 
-<script>
-
-    const dropdown = function(hostname) {
-        return `<h5 class="dropdown-title">${hostname}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>`
-    }
-    var csrfToken = $( 'input[name=csrfmiddlewaretoken]' ).val();
-    var actionURI = document.location.href + "action/";
-
-    const $outputCapture = $( "#output-capture" )
-
-    $outputCapture.submit( function(event) {
-        console.log("submited")
-        event.preventDefault();
-
-        $.post(actionURI, {
-            csrfmiddlewaretoken: csrfToken,
-            cmds: $outputCapture.serializeArray()
-        }, function(response) {
-            console.log(response)
-        })
-    })
-
-</script>
 
 {% endblock content %}

@@ -17,11 +17,10 @@ class Utilities(object):
     devices_path = f"{home_path}/devices/"
     supported_device_types = ("routers", "switches")
 
-    def __init__(self, connection=None):
+    def __init__(self, connection):
         self.connection = connection
         self.prompt = connection.find_prompt()
-        self.napalm_connection = self._get_napalm_connection() if connection else None
-        self.path = "C:/Users/User/Desktop/The vicious Snake/LANwhiz/cmds.txt"
+        self.napalm_connection = self._get_napalm_connection()
 
     def send_command(self, command, on_fail_reload=False, web=False):
         """ Helper function to send a command to device """
@@ -29,7 +28,14 @@ class Utilities(object):
         
         if "sh" == command[:2]:
             self.connection.write_channel(f"{command}\r\n")
-            sleep(2)
+            if "config" in command:
+                while "end\r\n" not in response:
+                    response += self.connection.read_channel()
+                    sleep(0.5)
+                    print(response)
+                return response
+            else:
+                sleep(2)
             
             return self.connection.read_channel()
         else:
@@ -248,6 +254,7 @@ class Utilities(object):
                 "global_commands": [],
                 "interfaces": {
                     interface: {
+                        "shutdown": True,
                         "ipv4": "",
                         "ipv6": "",
                         "description": "",

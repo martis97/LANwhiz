@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from LANwhiz.utils import Utilities as Utils
 from LANwhiz.connect import Connect
 from LANwhiz.web.lwapp.forms import *
+from LANwhiz.main import LANwhizMain
 
 connections = Connect()
 
@@ -187,6 +188,18 @@ def diff_config(request, hostname):
             "time_updated": new_template["last_modified"]
         }
 
+        thread = Thread(
+            target=LANwhizMain.configure_cisco_device, 
+            kwargs={"hostname": hostname}
+        )
+
+        try:
+            thread.start()
+        except Exception as e:
+            pass
+
+        
+
     else:
         response = {"changed": [
             area.capitalize().replace("_", " ") \
@@ -218,13 +231,16 @@ def handle_terminal(request, hostname):
     cmd = request.POST.get("cmd")
     print(cmd)
     if cmd:
-        cmd_out = Utils(connection).send_command(cmd, web=True)
+        cmd_out = Utils(connection).send_command(cmd, web=True).split("\n")
+        if len(cmd_out) > 1:
+            if not "Invalid input" in cmd_out[1]:
+                cmd_out = cmd_out[1:-1]
+            
     else:
         cmd_out = None 
-
     response = {
         "prompt": connection.find_prompt(),
-        "cmd_out": cmd_out.split("\n")[1:-1] if  cmd_out else None
+        "cmd_out": cmd_out if  cmd_out else None
     }
 
     return JsonResponse(response, status=200)
@@ -374,35 +390,17 @@ def new_loopback_interface(request):
     return JsonResponse({
         "form": InterfaceConfigForm(prefix=f"Loopback{number}").as_table()
     })
-
-def action(request):
-    post = [i[0] for i in list(dict(request.POST).values())[1:]]
-    cmds =  []
-    devices = []
-
-    for i, data in enumerate(post):
-        if data == "cmd":
-            cmds.append(post[i + 1])
-        elif data == "device":
-            devices.append(post[i + 1])
-    
-    for device in devices:
-        Thread(target=send_cmd_outputs, kwargs={
-            "device": device, 
-            "cmds": cmds
-        }).start()
-
-    return JsonResponse({"started": 1})
     
 
-def send_cmd_outputs(device, cmds):
+def capture_cmd_outputs(request, hostname):
     response = {
-        "device": device,
+        "device": hostname,
         "cmd_outs": {}
     }
-    connection = connections.active.get(device)
+    cmds = dict(request.POST)["cmds[]"]
+    connection = connections.active.get(hostname)
     if not connection:
-        config = Utils.read_config(device)
+        config = Utils.read_config(hostname)
         access = {
             "mgmt_ip": config["mgmt_ip"],
             "port": config["mgmt_port"],
@@ -412,7 +410,7 @@ def send_cmd_outputs(device, cmds):
         try:
             connection = connections.cisco_device(**access)
         except Exception:
-            JsonResponse({"error": f"Could not connect to {device}"}, status=200)
+            JsonResponse({"error": f"Could not connect to {hostname}"}, status=200)
 
     for cmd in cmds:
         response["cmd_outs"][cmd] = Utilities(connection).send_command(cmd)

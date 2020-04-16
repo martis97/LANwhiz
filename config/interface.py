@@ -38,7 +38,7 @@ class Interface(BaseConfig):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
         config = self.config.get("acl")
-        inbound, outbound = [config.get(acl) for acl in ("inbound", "outbound")]
+        inbound, outbound = [config.get(acl, "") for acl in ("inbound", "outbound")]
         for rule in outbound:
             acl_commands.append(f"ip access-group {rule} out")
         for rule in inbound:
@@ -74,13 +74,16 @@ class Line(BaseConfig):
 
     def synchronous_logging(self):
         """ Enables Synchronous Logging on a line interface """
-        self.utils.send_command("logging synchronous")
+        if self.config.get("logging synchronous"):
+            self.utils.send_command("logging synchronous")
+        else:
+            self.utils.send_command("no logging synchronous")
 
     def acl(self):
         """ Sends commands to configure ACLs on interfaces """
         acl_commands = []
-        config = self.config.get("acl")
-        inbound, outbound = [config.get(acl) for acl in ("inbound", "outbound")]
+        config = self.config.get("acl", {})
+        inbound, outbound = [config.get(acl, "") for acl in ("inbound", "outbound")]
         for rule in outbound:
             acl_commands.append(f"access-class {rule} out")
         for rule in inbound:

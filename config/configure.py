@@ -36,6 +36,7 @@ class ConfigActions(BaseConfig):
             configure_interface.description()
             configure_interface.acl()
             configure_interface.nat()
+            configure_interface.bandwidth()
             configure_interface.other_config()
 
     def lines(self):

@@ -184,91 +184,6 @@ function refreshACLSelects() {
     var allACLs = $("#allACLs")
 }
 
-// function displayTerminal() {
-//     const statusDot = $( ".status.dot" ) 
-//     const term = new Terminal({
-//         cursorBlink: true
-//     })
-//     const hostname = $( "h2" ).text().split(" ")[2]
-//     term.open(document.getElementById('terminal'))
-//     var termURI = document.location.href + "term"
-//     var csrfToken = $('input[name=csrfmiddlewaretoken]').val()
-//     var termPrompt = ""
-//     var error = false
-
-//     var intro = [
-//         "LANwhiz CLI Interface",
-//         "\nUse for various 'show' commands and other bespoke configuration",
-//         "\nNOTE: Changing the config areas which are overseen by the program will",
-//         "require a config sync once finished.\n",
-//         "Connecting...\n"
-//     ]
-//     for (i in intro) term.writeln(intro[i])
-
-
-//     $.ajax({
-//         url: `/ajax/${hostname}/term`,
-//         data: {
-//             "cmd": cmd
-//         }, 
-//         datatype: "json",
-//         success: response => {
-//             if ('error' in response) {
-//                 error = true
-//                 term.writeln("Error: " + response.error)
-//                 statusDot.css("background-color", "#ff0000")
-//                 $( "#statusSpinner" ).hide()
-//             } else {
-//                 term.writeln("Connected!\n\n")
-//                 termPrompt = response.prompt
-//                 term.write(termPrompt)
-//                 $( "#statusSpinner" ).hide()
-//                 statusDot.css("background-color", "#00ff00")
-//             }
-//             statusDot.show()
-//         }
-//     })
-
-//     cmd = ""
-
-//     term.onKey(e => {
-//         var printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey
-//         if (!termPrompt || error) return
-
-//         if (e.domEvent.keyCode === 13) {
-//             if (cmd) {
-//                 $.ajax({
-//                     url: `/ajax/${hostname}/term`,
-//                     data: {
-//                         "cmd": cmd
-//                     }, 
-//                     datatype: "json",
-//                     success: response => {
-//                         console.log(response)
-//                         termPrompt = response.prompt
-//                         response = response.cmd_out
-//                         term.writeln("")
-//                         for (var i in response) term.writeln(response[i])
-//                         cmd = ""
-//                         term.write(termPrompt)
-//                     }
-//                 })
-//             } else {
-//                 term.write("\n" + "\b".repeat(term._core.buffer.x) + termPrompt)
-//             }
-//         } else if (e.domEvent.keyCode === 8) {
-//             // Do not delete the prompt
-//             if (term._core.buffer.x > termPrompt.length) {
-//                 term.write('\b \b')
-//                 cmd = cmd.slice(NaN, -1)
-//             }
-//         } else if (printable) {
-//             term.write(e.key)
-//             cmd += e.key
-//         }
-//     })
-// }
-
 function displayTerminal() {
     term = new Terminal({
         cursorBlink: true
@@ -769,7 +684,76 @@ function newLoopbackInterfaceInit() {
 }
 
 
+const cmdsOutputDropdown = function(device, outputs) {
+    var content = ""
+
+    Object.entries(outputs).forEach(cmdOut => {
+        const [cmd, out] = cmdOut
+        console.log(cmd, out)
+        content += `<h5>${cmd}:</h5><ul>`
+        out.split("\n").slice(1, -1).forEach(line => {
+            content += `<li>${line}</li>`
+        })
+        content += "</ul><hr>"
+    })
+        
+    return `
+    <div class="dropdown cmd-out">
+        <h5 class="dropdown-title">${device}<span style="float: right; padding-right:15px;"><i class="arrow down"></span></i></h5>
+        <div class="dropdown-bottom">
+            <div class="input-fields">
+                ${content}
+            </div>
+        </div>
+    </div>` 
+}
+
+function cmdOutputs() {
+    const csrf = $( "[name=csrfmiddlewaretoken]" ).val()
+    var expectResponses = 0
+    const spinner = $( "#cmdOutsSpinner" )
+    $( ".capture" ).on("click", function(e) {
+        e.preventDefault()
+        const cmds = []
+        const devices = []
+        $( "[name=cmd]:checked" ).map( (_, cmd) => {
+            cmds.push($(cmd).val())
+        })
+
+        $( "[name=device]:checked" ).map( (_, device) => {
+            devices.push($( device ).val())
+        })
+
+        if (!cmds || !devices) {
+            alert("Specify the commands/devices!")
+            return
+        }
+        spinner.show()
+        expectResponses += devices.length
+        devices.forEach(device => {
+            $.ajax({
+                url: `/ajax/capture_cmd_outputs/${device}/`,
+                type: "POST",
+                data: {
+                    "csrfmiddlewaretoken": csrf,
+                    "cmds": cmds
+                },
+                datatype: "json",
+                success: response => {
+                    $( "#outputs" ).append(cmdsOutputDropdown(response.device, response.cmd_outs))
+                    expectResponses -= 1
+                    if (!expectResponses) {
+                        spinner.hide()
+                    }
+                }
+            })
+        })
+    })
+}
+
+
 $( document ).ready( () => {
+    cmdOutputs()
     overlayInit()
     showDynamicRoutingCards()
     showStaticRoutingCards()
