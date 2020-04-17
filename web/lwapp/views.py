@@ -13,7 +13,7 @@ from LANwhiz.main import LANwhizMain
 
 connections = Connect()
 
-def index(request):
+def output_capture(request):
     """ Index Page """
     
     devices = Utils.get_all_devices()
@@ -29,7 +29,7 @@ def index(request):
         "devices": devices["routers"] + devices["switches"]
     }
 
-    return render(request, 'index.html', context=context)
+    return render(request, 'output-capture.html', context=context)
 
 
 def devices(request):
@@ -197,8 +197,6 @@ def diff_config(request, hostname):
             thread.start()
         except Exception as e:
             pass
-
-        
 
     else:
         response = {"changed": [

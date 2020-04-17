@@ -3,8 +3,8 @@
     "mgmt_ip": "192.168.74.129",
     "mgmt_port": "5001",
     "username": "",
-    "password": "",
-    "last_modified": "16/04/2020 17:43:24",
+    "password": "cisco",
+    "last_modified": "17/04/2020 01:23:47",
     "config": {
         "global_commands": [],
         "interfaces": {
@@ -18,9 +18,7 @@
                 },
                 "nat": "",
                 "bandwidth": null,
-                "other_commands": [
-                    "ip ospf net po"
-                ]
+                "other_commands": []
             },
             "GigabitEthernet0/0": {
                 "ipv4": "24.24.24.1/24",
@@ -83,6 +81,17 @@
                 "nat": "",
                 "bandwidth": null,
                 "other_commands": []
+            },
+            "Loopback1": {
+                "ipv4": "10.1.1.1/22",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "other_commands": []
             }
         },
         "lines": {
@@ -106,11 +115,14 @@
             }
         },
         "routing": {},
-        "acl": {},
+        "acl": {
+            "standard": {},
+            "extended": {}
+        },
         "dhcp": {
             "new_pool": {
                 "network": "192.168.20.0/24",
-                "default_gateway": "192.168.20.1",
+                "default_gateway": "192.168.20.2",
                 "dns": ""
             }
         }

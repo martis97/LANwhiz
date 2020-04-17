@@ -18,7 +18,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='LANwhiz - Home'),
+    path('', views.output_capture, name='LANwhiz - Home'),
     path('ajax/capture_cmd_outputs/<str:hostname>/', views.capture_cmd_outputs),
     path('ajax/new-acl/', views.new_acl),
     path('ajax/remove-acl/', views.remove_acl),

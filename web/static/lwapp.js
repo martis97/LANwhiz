@@ -711,9 +711,20 @@ const cmdsOutputDropdown = function(device, outputs) {
 function cmdOutputs() {
     const csrf = $( "[name=csrfmiddlewaretoken]" ).val()
     var expectResponses = 0
+    const newCmdCheckbox = newCmd => {
+        return `
+        <input type="checkbox" name="cmd" value="${newCmd}">
+        
+        <label for="cmd">${newCmd}</label>
+        
+        <br>`
+    }
     const spinner = $( "#cmdOutsSpinner" )
+    const newCmdInput = $( "#newCommand" )
+
     $( ".capture" ).on("click", function(e) {
         e.preventDefault()
+        $( "#outputs" ).html("")
         const cmds = []
         const devices = []
         $( "[name=cmd]:checked" ).map( (_, cmd) => {
@@ -728,6 +739,7 @@ function cmdOutputs() {
             alert("Specify the commands/devices!")
             return
         }
+
         spinner.show()
         expectResponses += devices.length
         devices.forEach(device => {
@@ -749,7 +761,14 @@ function cmdOutputs() {
             })
         })
     })
-}
+
+    $( "#addNewCmd" ).on("click", e => {
+        e.preventDefault()
+        const cmdInput = $( "#newCommand" )
+        $( "#cmds" ).append(newCmdCheckbox(cmdInput.val()))
+        cmdInput.val("")
+    })
+} 
 
 
 $( document ).ready( () => {

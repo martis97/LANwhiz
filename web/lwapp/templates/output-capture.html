@@ -8,7 +8,7 @@
 
 <div class="actions-container">
 
-    <form id="output-capture" method="post">
+    <div id="cmds">
 
         {% csrf_token %}
 
@@ -21,6 +21,11 @@
             <br>
 
         {% endfor %}
+
+    </div>
+
+    <input id="newCommand" type="text" placeholder="Add a new command"><button id="addNewCmd" class="button1"><b>+ Add</b></button>
+
 
         <p>Of Devices:</p>
 
