@@ -11,8 +11,9 @@ class ConfigActions(BaseConfig):
 
     def default_commands(self):
         """ Sends pre-defined default commands to the console. """
-        for cmd in self.config["global_commands"]:
-            self.utils.send_command(cmd)
+        if self.config.get("global_commands"):
+            for cmd in self.config["global_commands"]:
+                self.utils.send_command(cmd)
 
     def superuser(self):
         details = self.config["superuser"]
@@ -28,8 +29,14 @@ class ConfigActions(BaseConfig):
         configuration.
         """
         int_config = self.config["interfaces"]
+        current = self.utils.get_structured_config()
         for int_name, config in int_config.items():
-            configure_interface = Interface(self.connection, config, int_name)
+            configure_interface = Interface(
+                self.connection, 
+                config,
+                int_name,
+                current.get(f"interface {int_name}", [])
+            )
             configure_interface.shutdown()
             configure_interface.ipv4()
             configure_interface.ipv6()
@@ -44,13 +51,11 @@ class ConfigActions(BaseConfig):
         configuration.
         """
         for line, line_config in self.config["lines"].items():
-            configure_line = Line(self.connection, line_config)
-            access_line = f"line {line}"
             if line == "console":
-                access_line += " 0"
+                line += " 0"
             elif line == "vty":
-                access_line += " 0 4"
-            self.utils.send_command(access_line)
+                line += " 0 4"
+            configure_line = Line(self.connection, line_config, line)
             configure_line.password()
             configure_line.acl()
             configure_line.synchronous_logging()
@@ -81,6 +86,8 @@ class ConfigActions(BaseConfig):
         for acl_type in ("standard", "extended"):
             if acl.config.get(acl_type):
                 getattr(acl, acl_type)()
+        
+        acl.cleanup()
 
     def dhcp(self):
         """ Configures DHCP on the device """

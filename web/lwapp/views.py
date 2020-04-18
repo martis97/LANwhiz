@@ -189,14 +189,14 @@ def diff_config(request, hostname):
         }
 
         thread = Thread(
-            target=LANwhizMain.configure_cisco_device, 
-            kwargs={"hostname": hostname}
+            target=LANwhizMain.update_cisco_device, 
+            kwargs={
+                "hostname": hostname,
+                "update": changes.keys()
+            }
         )
 
-        try:
-            thread.start()
-        except Exception as e:
-            pass
+        thread.start()
 
     else:
         response = {"changed": [
@@ -248,11 +248,17 @@ def add_device(request):
     """ Add Device page """    
 
     if request.POST:
-        params = {param: request.POST.get(param) for param in [
-            "mgmt_ip", "mgmt_port", "username", "password"
-        ]}
-        new_device = Utils.add_new_device(**params)
-        return redirect(f"/devices/{new_device['hostname']}")
+        form = AddDeviceForm(request.POST)
+        if form.is_valid():
+            params = {param: form.cleaned_data.get(param) for param in [
+                "mgmt_ip", "mgmt_port", "username", "password"
+            ]}
+            new_hostname = request.GET.get("new_hostname")
+            new_device = Utils.add_new_device(**params, new_hostname=new_hostname)
+            return redirect(f"/devices/{new_device['hostname']}")
+        else:
+            print(form.errors)
+            return JsonResponse({})
     else:
         return render(request, 'add-device.html', context={"form": AddDeviceForm()})
 

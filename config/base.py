@@ -6,4 +6,4 @@ class BaseConfig():
         self.connection = connection
         self.config = config
         self.utils = Utilities(connection)
-        self.utils.ensure_global_config_mode()
+        

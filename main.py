@@ -54,6 +54,29 @@ class LANwhizMain(object):
         print(f"{hostname}: Closing session..")
         connection.cleanup()
 
+    @staticmethod
+    def update_cisco_device(hostname, update):
+        device_config = Utilities.read_config(hostname)
+        connection = Connect().cisco_device(
+            *list(device_config.values())[1:5]
+        )
+
+        config_device = ConfigActions(
+            device_config=device_config["config"], 
+            connection=connection
+        )
+
+        for config_area in update:
+            print(f"{hostname}: Configuring: "
+                f"{config_area.replace('_', ' ').title()}..."
+            )
+            getattr(config_device, config_area)()
+            print("Done!")
+
+        print(f"{hostname}: Configuration Complete!")
+        print(f"{hostname}: Closing session..")
+        connection.cleanup()
+
 
 if __name__ == "__main__":
     lw = LANwhizMain()

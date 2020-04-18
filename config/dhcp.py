@@ -11,6 +11,7 @@ class DHCPPool(BaseConfig):
     """
     def __init__(self, connection, config, name):
         super().__init__(connection, config)
+        self.utils.ensure_global_config_mode()
         self.utils.send_command(
             f"ip dhcp pool {name}"
         )

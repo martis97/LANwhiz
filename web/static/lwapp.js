@@ -366,8 +366,9 @@ function showDynamicRoutingCards() {
         if (cmd) $( ".other-cmds-container" ).append( card( "other-cmd", `<p>${cmd}</p>` ) )
     } )
 
-    $( "#addOSPFNetwork" ).on("click", function(e) {
+    $( "#addOSPFNetwork" ).on("click", e => {
         e.preventDefault()
+        e.stopImmediatePropagation()
 
         const area = $( "[value=area0]" ).is(":checked") ? 0 : $( "#otherOspfArea" ).val()
 
@@ -774,7 +775,6 @@ function cmdOutputs() {
 $( document ).ready( () => {
     cmdOutputs()
     overlayInit()
-    showDynamicRoutingCards()
     showStaticRoutingCards()
     showACLCards()
     showGlobalCmds()
@@ -784,5 +784,6 @@ $( document ).ready( () => {
     ACLInit()
     newDHCPPoolInit()
     newRoutingProtocolInit()
+    showDynamicRoutingCards()
     displayConfigSection("access")
 })

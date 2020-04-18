@@ -1,31 +1,28 @@
 {
     "hostname": "R1",
     "mgmt_ip": "192.168.74.129",
-    "mgmt_port": "5000",
+    "mgmt_port": 5000,
     "username": "",
-    "password": "",
-    "last_modified": "14/04/2020 15:09:10",
+    "password": "cisco",
+    "last_modified": "17/04/2020 22:40:04",
     "config": {
-        "global_commands": [
-            "service password-encryption"
-        ],
+        "global_commands": [],
         "interfaces": {
             "Ethernet0/0": {
-                "ipv4": "192.168.0.1/24",
+                "shutdown": true,
+                "ipv4": "",
                 "ipv6": "",
-                "description": "Connection to LAN",
+                "description": "",
                 "acl": {
                     "outbound": [],
                     "inbound": []
                 },
-                "nat": "inside",
-                "bandwidth": 500,
-                "other_commands": [
-                    "ip ospf network po"
-                ],
-                "shutdown": true
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
             },
             "GigabitEthernet0/0": {
+                "shutdown": true,
                 "ipv4": "",
                 "ipv6": "",
                 "description": "",
@@ -38,9 +35,10 @@
                 "other_commands": []
             },
             "Ethernet1/0": {
-                "ipv4": "",
+                "shutdown": true,
+                "ipv4": "192.168.1.1/24",
                 "ipv6": "",
-                "description": "",
+                "description": "Connection to LAN",
                 "acl": {
                     "outbound": [],
                     "inbound": []
@@ -50,6 +48,7 @@
                 "other_commands": []
             },
             "Ethernet1/1": {
+                "shutdown": true,
                 "ipv4": "",
                 "ipv6": "",
                 "description": "",
@@ -62,20 +61,20 @@
                 "other_commands": []
             },
             "Ethernet1/2": {
-                "ipv4": "192.168.1.1/24",
+                "shutdown": true,
+                "ipv4": "",
                 "ipv6": "",
-                "description": "Connection to LAN 2",
+                "description": "",
                 "acl": {
                     "outbound": [],
                     "inbound": []
                 },
-                "nat": "inside",
+                "nat": "",
                 "bandwidth": null,
-                "other_commands": [
-                    "ip os net po"
-                ]
+                "other_commands": []
             },
             "Ethernet1/3": {
+                "shutdown": true,
                 "ipv4": "",
                 "ipv6": "",
                 "description": "",
@@ -90,58 +89,28 @@
         },
         "lines": {
             "console": {
-                "password": "cisco",
+                "password": "",
                 "acl": {
                     "inbound": [],
                     "outbound": []
                 },
-                "synchronous_logging": true,
+                "synchronous_logging": false,
                 "other_commands": []
             },
             "vty": {
-                "password": "cisco",
+                "password": "",
                 "acl": {
                     "inbound": [],
                     "outbound": []
                 },
-                "synchronous_logging": true,
-                "other_commands": [
-                    "transport input ssh"
-                ]
+                "synchronous_logging": false,
+                "other_commands": []
             }
         },
         "routing": {
-            "ospf": {
-                "instance_id": "",
-                "router_id": "",
-                "advertise_static": false,
-                "advertise_networks": [],
-                "passive_interfaces": []
-            }
+            "static": []
         },
-        "acl": {
-            "standard": {
-                "new-acl": {
-                    "action": "deny",
-                    "source": "192.168.0.1"
-                }
-            },
-            "extended": {
-                "new-acl-extended": {
-                    "action": "permit",
-                    "protocol": "tcp",
-                    "source": "any",
-                    "destination": "192.168.0.1/24",
-                    "port": "established"
-                }
-            }
-        },
-        "dhcp": {
-            "new_pool": {
-                "network": "192.168.0.0/24",
-                "default_gateway": "192.168.0.1",
-                "dns": "192.168.0.3"
-            }
-        }
+        "acl": {},
+        "dhcp": {}
     }
 }

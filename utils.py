@@ -26,9 +26,9 @@ class Utilities(object):
         """ Helper function to send a command to device """
         response = ""
         
-        if "sh" == command[:2]:
+        if "sh" == command[:2] and "|" not in command:
             self.connection.write_channel(f"{command}\r\n")
-            if "config" in command:
+            if re.match(r"^sh.*\s(run|start).*$", command):
                 while "end\r\n" not in response:
                     response += self.connection.read_channel()
                     sleep(0.5)
@@ -115,7 +115,7 @@ class Utilities(object):
                 f"Config for '{hostname}' "
                 "does not exist"
             )
-        if new_config["config"].get("routing"):
+        if new_config["config"]["routing"].get("ospf"):
             elems = ("advertise_networks", "passive_interfaces", "other_commands")
             for elem in elems:
                 if new_config["config"]["routing"]["ospf"].get(elem):
@@ -178,13 +178,18 @@ class Utilities(object):
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.send_command("conf t")
     
-    def get_structured_config(self, config_type="startup"):
+    def get_structured_config(self, config_type="running"):
         """ Use Napalm connection to retrieve config and use it to
         form a hierarchical dictionary.
         """
         struct_config = {
             "global_commands": [],
         }
+
+        # Dropping down to priv exec mode for config
+        if "(config" in self.connection.find_prompt():
+            self.send_command("end")
+
         device_config = self.napalm_connection.get_config()
         config = [
             line for line in device_config[config_type].split("\n") 
@@ -220,7 +225,13 @@ class Utilities(object):
         return devices
 
     @staticmethod
-    def add_new_device(mgmt_ip, mgmt_port, username=None, password=None):
+    def add_new_device(
+        mgmt_ip, 
+        mgmt_port, 
+        username=None, 
+        password=None, 
+        new_hostname=None
+    ):
         """ Connect to device and create a JSON record of it """
         
         params = {
@@ -241,7 +252,16 @@ class Utilities(object):
             print(f"Message: {e.args[0]}")
 
         utils = Utilities(connection)
-        hostname = connection.find_prompt().rstrip("#")
+
+        if new_hostname:
+            hostname = new_hostname
+            cmds = ["enable", "class", "conf t", f"hostname {hostname}", "quit"]
+            utils = Utilities(connection)
+
+            for cmd in cmds:
+                utils.send_command(cmd)
+        else:
+            hostname = connection.find_prompt().rstrip("#>")
 
         new_config = {
             "hostname": hostname,
@@ -278,7 +298,9 @@ class Utilities(object):
                         "other_commands": []
                     } for line in ("console", "vty")
                 },
-                "routing":{},
+                "routing":{
+                    "static": []
+                },
                 "acl": {},
                 "dhcp": {}
             } 

@@ -1,10 +1,10 @@
 {
-    "hostname": "R2",
+    "hostname": "R3",
     "mgmt_ip": "192.168.74.129",
-    "mgmt_port": 5001,
+    "mgmt_port": 5002,
     "username": "",
     "password": "",
-    "last_modified": "18/04/2020 00:25:48",
+    "last_modified": "18/04/2020 01:10:02",
     "config": {
         "global_commands": [],
         "interfaces": {
@@ -19,13 +19,15 @@
                 },
                 "nat": "",
                 "bandwidth": null,
-                "other_commands": []
+                "other_commands": [
+                    "aerg"
+                ]
             },
             "GigabitEthernet0/0": {
-                "shutdown": true,
-                "ipv4": "",
+                "shutdown": false,
+                "ipv4": "24.24.24.1/24",
                 "ipv6": "",
-                "description": "",
+                "description": "agwer",
                 "acl": {
                     "outbound": [],
                     "inbound": []
@@ -35,8 +37,8 @@
                 "other_commands": []
             },
             "Ethernet1/0": {
-                "shutdown": true,
-                "ipv4": "192.168.11.1/24",
+                "shutdown": false,
+                "ipv4": "192.168.20.1/24",
                 "ipv6": "",
                 "description": "Connection to R1",
                 "acl": {
@@ -45,7 +47,9 @@
                 },
                 "nat": "inside",
                 "bandwidth": 5000,
-                "other_commands": []
+                "other_commands": [
+                    "ip ospf network point"
+                ]
             },
             "Ethernet1/1": {
                 "shutdown": true,
@@ -85,17 +89,34 @@
                 "nat": "",
                 "bandwidth": null,
                 "other_commands": []
+            },
+            "Loopback15": {
+                "ipv4": "192.168.50.1/24",
+                "ipv6": "",
+                "description": "aerga",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "other_commands": []
             }
         },
         "lines": {
             "console": {
                 "password": "",
                 "acl": {
-                    "inbound": [],
-                    "outbound": []
+                    "inbound": [
+                        "aer"
+                    ],
+                    "outbound": [
+                        "aer"
+                    ]
                 },
                 "synchronous_logging": false,
-                "other_commands": []
+                "other_commands": [
+                    "aerg"
+                ]
             },
             "vty": {
                 "password": "",
@@ -108,13 +129,21 @@
             }
         },
         "routing": {
-            "static": []
+            "static": [],
+            "ospf": {
+                "instance_id": "",
+                "router_id": "",
+                "advertise_static": false,
+                "advertise_networks": [],
+                "passive_interfaces": [],
+                "other_commands": []
+            }
         },
         "acl": {
             "standard": {
-                "anothger": {
-                    "action": "deny",
-                    "source": "172.16.0.0"
+                "aer": {
+                    "action": "permit",
+                    "source": "172.16.0.1"
                 }
             },
             "extended": {}

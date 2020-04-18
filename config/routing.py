@@ -4,6 +4,7 @@ from LANwhiz.config.base import BaseConfig
 class StaticRoute(BaseConfig):
     def __init__(self, connection, config):
         super().__init__(connection, config)
+        self.utils.ensure_global_config_mode()
 
     def send_static_route_command(self):
         """ Configures a static route on a device """
@@ -16,6 +17,7 @@ class StaticRoute(BaseConfig):
 class OSPF(BaseConfig):
     def __init__(self, connection, config):
         super().__init__(connection, config)
+        self.utils.ensure_global_config_mode()
         self.utils.send_command(
             f"router ospf {self.config['instance_id']}"
         )

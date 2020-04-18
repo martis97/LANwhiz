@@ -315,13 +315,16 @@ class FormDiff():
         changes = {}
         
         # Slightly innefficient, but gets all static routes from form data
-        form_static_routes = self.post_data.get("static_routes").split(",")
-        form_static_routes = [route.split("-") for route in form_static_routes]
-        form_static_routes = [{
-            "network": net,
-            "subnetmask": sm,
-            "forward_to": forward_to
-        } for net, sm, forward_to in form_static_routes]
+        if self.post_data.get("static_routes"):
+            form_static_routes = self.post_data.get("static_routes").split(",")
+            form_static_routes = [route.split("-") for route in form_static_routes]
+            form_static_routes = [{
+                "network": net,
+                "subnetmask": sm,
+                "forward_to": forward_to
+            } for net, sm, forward_to in form_static_routes]
+        else:
+            form_static_routes = []
 
         list_items = (
             "advertise_networks", 

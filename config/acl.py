@@ -6,14 +6,21 @@ import re
 class AccessControlLists(BaseConfig):
     def __init__(self, connection, config):
         super().__init__(connection, config)
+        self.current = self.utils.get_structured_config()
+        self.current_acls = [acl for acl in self.current.keys() if "access-list" in acl]
+        self.current_acls_str = ",".join(self.current_acls)
         self.utils.ensure_global_config_mode()
 
     def standard(self):
         """ Configures standard Access Control Lists on the device """
         if self.config.get("standard"):
             for identifier, config_data in self.config["standard"].items():
+                if f"access-list {identifier}" in self.current_acls_str:
+                    for acl_cmd in self.current_acls:
+                        if f"access-list {identifier}" in acl_cmd:
+                            self.current_acls.remove(acl_cmd)
                 std_source = self._format_acl_target(config_data["source"])
-                # Numbered ACL            
+                # Numbered ACL
                 if identifier.isnumeric():
                     assert 0 < int(identifier) <= 100, \
                         f"Standard ACL '{identifier}' out of range"
@@ -59,6 +66,11 @@ class AccessControlLists(BaseConfig):
                         "Named ACLs are only allowed to contain letters, dash"
                         " or an underscore.\n"
                     )
+
+    def cleanup(self):
+        self.utils.ensure_global_config_mode()
+        for cmd in self.current_acls:
+            self.utils.send_command(f"no {cmd}")
     
     def _format_acl_target(self, target):
         """ Forms a command subset where the source or destination 
