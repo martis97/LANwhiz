@@ -1,7 +1,7 @@
 LANwhiz
 =======
 
-Configuration management and monitoring application for Cisco Devices
+Configuration Management and Information Gathering Application for Cisco Devices
 ---------------------------------------------------------------------
 * Works by defining JSON templates with config specifications 
 * Web application built in Django 2.1.5 
