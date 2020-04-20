@@ -349,22 +349,6 @@ function showDynamicRoutingCards() {
         return `
         <div style='margin-right: 10px;' value="${text}" class='card ${name}'><span class="remove">&times;</span>${text}</div>`
     }
-    if (!$nets.val()) return
-    $nets.val().split(",").forEach( net => {
-        console.log(net)
-        var netInfo = net.split("/")
-        var area = netInfo[2].match(/\d+/g)[0]
-        var cardText = `<p>${netInfo[0]}/${netInfo[1]}</p><br><p>Area: ${area}</p>`
-        $( ".networks-container" ).append( card( "network", cardText ) )
-    } )
-
-    $passiveInts.val().split(",").forEach( interface => {
-        if (interface) $( ".passive-ints-container" ).append( card( "passive-interface", `<p>${interface}</p>` ) )
-    } )
- 
-    $otherCmds.val().split(",").forEach( cmd => {
-        if (cmd) $( ".other-cmds-container" ).append( card( "other-cmd", `<p>${cmd}</p>` ) )
-    } )
 
     $( "#addOSPFNetwork" ).on("click", e => {
         e.preventDefault()
@@ -444,7 +428,25 @@ function showDynamicRoutingCards() {
         $otherCmds.val(inputValue.filter(e => e !== cmd).join(","))
         $( this ).parent().remove()
     })
+
+    if (!$nets.val()) return
+    $nets.val().split(",").forEach( net => {
+        console.log(net)
+        var netInfo = net.split("/")
+        var area = netInfo[2].match(/\d+/g)[0]
+        var cardText = `<p>${netInfo[0]}/${netInfo[1]}</p><br><p>Area: ${area}</p>`
+        $( ".networks-container" ).append( card( "network", cardText ) )
+    } )
+
+    $passiveInts.val().split(",").forEach( interface => {
+        if (interface) $( ".passive-ints-container" ).append( card( "passive-interface", `<p>${interface}</p>` ) )
+    } )
+ 
+    $otherCmds.val().split(",").forEach( cmd => {
+        if (cmd) $( ".other-cmds-container" ).append( card( "other-cmd", `<p>${cmd}</p>` ) )
+    } )
 }
+
 
 function newRoutingProtocolInit() {
     const hostname = $( "h2" ).text().split(" ")[2]
@@ -562,7 +564,7 @@ function ACLInit() {
 
         if (parseInt(aclName)) {
             const aclNum = parseInt(aclName)
-            if ((aclType === "standard" && !(1 <= aclNum && aclNum <= 100)) || 
+            if ((aclType === "standard" && !(1 > aclNum && aclNum <= 100)) || 
                 (aclType === "extended" && !(101 <= aclNum && aclNum <= 200))) {
                 alert("ACL number out of range!")
                 return

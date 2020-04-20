@@ -1,0 +1,277 @@
+{
+    "hostname": "Switch",
+    "mgmt_ip": "192.168.74.129",
+    "mgmt_port": 5003,
+    "username": "",
+    "password": "",
+    "last_modified": "18/04/2020 01:50:46",
+    "config": {
+        "global_commands": [],
+        "interfaces": {
+            "GigabitEthernet0/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet0/1": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet0/2": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet0/3": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet1/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet1/1": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet1/2": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet1/3": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet2/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet2/1": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet2/2": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet2/3": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet3/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet3/1": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet3/2": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet3/3": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            }
+        },
+        "lines": {
+            "console": {
+                "password": "",
+                "acl": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": false,
+                "other_commands": []
+            },
+            "vty": {
+                "password": "",
+                "acl": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": false,
+                "other_commands": []
+            }
+        },
+        "routing": {
+            "static": [],
+            "ospf": {
+                "instance_id": "",
+                "router_id": "",
+                "advertise_static": false,
+                "advertise_networks": [],
+                "passive_interfaces": []
+            }
+        },
+        "acl": {
+            "standard": {},
+            "extended": {
+                "sr6tuhjsr": {
+                    "action": "deny",
+                    "protocol": "tcp",
+                    "source": "192.168.10.1",
+                    "destination": "192.168.10.4",
+                    "port": "eq 22"
+                },
+                "105": {
+                    "action": "deny",
+                    "protocol": "tcp",
+                    "source": "any",
+                    "destination": "any",
+                    "port": "established"
+                }
+            }
+        },
+        "dhcp": {
+            "new_pool": {
+                "network": "192.163.10.0/24",
+                "default_gateway": "192.163.10.1",
+                "dns": ""
+            }
+        }
+    }
+}

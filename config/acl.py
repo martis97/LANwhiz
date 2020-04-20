@@ -15,7 +15,8 @@ class AccessControlLists(BaseConfig):
         """ Configures standard Access Control Lists on the device """
         if self.config.get("standard"):
             for identifier, config_data in self.config["standard"].items():
-                if f"access-list {identifier}" in self.current_acls_str:
+                substr = f"ip access-list (standard)* {identifier}"
+                if re.match(substr, self.current_acls_str):
                     for acl_cmd in self.current_acls:
                         if f"access-list {identifier}" in acl_cmd:
                             self.current_acls.remove(acl_cmd)
@@ -41,6 +42,11 @@ class AccessControlLists(BaseConfig):
         """ Configures extended Access Control Lists on the device """
         if self.config.get("extended"):
             for identifier, config_data in self.config["extended"].items():
+                substr = f"ip access-list (extended)* {identifier}"
+                if re.match(substr, self.current_acls_str):
+                    for acl_cmd in self.current_acls:
+                        if f"access-list {identifier}" in acl_cmd:
+                            self.current_acls.remove(acl_cmd)
                 source = self._format_acl_target(config_data["source"])
                 dest = self._format_acl_target(config_data["destination"])
                 # Named ACL
@@ -50,7 +56,8 @@ class AccessControlLists(BaseConfig):
                         f"{config_data['action']} {config_data['protocol']} "
                         f"{source} {dest} {config_data['port']}"
                     ]
-                    self.connection.send_config_set(named_acl_cmds)
+                    for cmd in named_acl_cmds:
+                        self.utils.send_command(cmd)
                 # Numbered ACL
                 elif identifier.isnumeric():
                     assert 100 < int(identifier) <= 200, \

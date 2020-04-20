@@ -227,7 +227,6 @@ def handle_terminal(request, hostname):
             return JsonResponse({"error": e.args[1]}, status=200)
 
     cmd = request.POST.get("cmd")
-    print(cmd)
     if cmd:
         cmd_out = Utils(connection).send_command(cmd, web=True).split("\n")
         if len(cmd_out) > 1:
