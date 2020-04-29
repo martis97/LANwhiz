@@ -87,7 +87,7 @@ class Utilities(object):
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
-            )   
+            )
 
     @staticmethod
     def write_config(hostname, new_config):
@@ -96,13 +96,8 @@ class Utilities(object):
         Args:
             hostname: Hostname of device to write configuration for
         """
-        path = Utilities.devices_path
-        devices_path = None
         hostname = hostname + ".json"
-        for device_type in Utilities.supported_device_types:
-            if hostname in os.listdir(f"{path}{device_type}"):
-                devices_path = f"{path}{device_type}/"
-        if not devices_path:
+        if not hostname in os.listdir(Utilities.devices_path):
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
@@ -114,7 +109,7 @@ class Utilities(object):
                     if isinstance(new_config["config"]["routing"]["ospf"][elem], str):
                         cfg = new_config["config"]["routing"]["ospf"][elem]
                         new_config["config"]["routing"]["ospf"][elem] = cfg.split(",")
-        with open(f"{devices_path}{hostname}", "w") as config_file:
+        with open(f"{Utilities.devices_path}{hostname}", "w") as config_file:
             config_file.write(json.dumps(new_config, indent=4))
                 
     @staticmethod
