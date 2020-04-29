@@ -46,7 +46,7 @@ class Connect(object):
             cisco_device["device_type"] += "_telnet"
 
         connection = Netmiko(**cisco_device)
-        hostname = connection.find_prompt().rstrip("#")
+        hostname = connection.find_prompt().rstrip("#>")
 
         self.active.update({hostname: connection})
 

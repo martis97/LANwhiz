@@ -16,7 +16,7 @@ connections = Connect()
 def output_capture(request):
     """ Index Page """
     
-    devices = Utils.get_all_devices()
+    devices = Utils.get_all_devices()["devices"]
 
     context = {
         "capture_output_cmds": [
@@ -26,7 +26,7 @@ def output_capture(request):
             "show running-config",
             "show startup-config"
         ],
-        "devices": devices["routers"] + devices["switches"]
+        "devices": devices
     }
 
     return render(request, 'output-capture.html', context=context)

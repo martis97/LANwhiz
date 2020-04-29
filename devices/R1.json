@@ -4,13 +4,13 @@
     "mgmt_port": 5000,
     "username": "",
     "password": "cisco",
-    "last_modified": "18/04/2020 02:21:06",
+    "last_modified": "29/04/2020 20:19:38",
     "config": {
         "global_commands": [],
         "interfaces": {
             "Ethernet0/0": {
                 "shutdown": true,
-                "ipv4": "",
+                "ipv4": "aerg",
                 "ipv6": "",
                 "description": "",
                 "acl": {
