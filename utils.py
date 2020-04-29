@@ -15,7 +15,6 @@ class Utilities(object):
     """ Utilities class """
     home_path = Path(__file__).parent
     devices_path = f"{home_path}/devices/"
-    supported_device_types = ("routers", "switches")
 
     def __init__(self, connection):
         self.connection = connection
@@ -32,7 +31,6 @@ class Utilities(object):
                 while "end\r\n" not in response:
                     response += self.connection.read_channel()
                     sleep(0.5)
-                    print(response)
                 return response
             else:
                 sleep(2)
@@ -81,21 +79,15 @@ class Utilities(object):
             Dictionary of all configuration specifications for a 
             particular device.
         """
-        path = Utilities.devices_path
-        devices_path = None
         hostname = hostname + ".json"
-        for device_type in Utilities.supported_device_types:
-            if hostname in os.listdir(f"{path}{device_type}"):
-                devices_path = f"{path}{device_type}/"
-        if not devices_path:
+        if hostname in os.listdir(Utilities.devices_path):
+            with open(f"{Utilities.devices_path}{hostname}", "r") as config_file:
+                return json.loads(config_file.read())
+        else:
             raise DeviceNotFoundException(
                 f"Config for '{hostname}' "
                 "does not exist"
-            )
-        with open(f"{devices_path}{hostname}", "r") as config_file:
-                config = json.loads(config_file.read())
-                
-        return config
+            )   
 
     @staticmethod
     def write_config(hostname, new_config):
@@ -120,7 +112,8 @@ class Utilities(object):
             for elem in elems:
                 if new_config["config"]["routing"]["ospf"].get(elem):
                     if isinstance(new_config["config"]["routing"]["ospf"][elem], str):
-                        new_config["config"]["routing"]["ospf"][elem] = new_config["config"]["routing"]["ospf"][elem].split(",")
+                        cfg = new_config["config"]["routing"]["ospf"][elem]
+                        new_config["config"]["routing"]["ospf"][elem] = cfg.split(",")
         with open(f"{devices_path}{hostname}", "w") as config_file:
             config_file.write(json.dumps(new_config, indent=4))
                 
@@ -214,15 +207,8 @@ class Utilities(object):
     @staticmethod
     def get_all_devices():
         """ Gets all device records from ./devices """
-        home_path = Utilities.devices_path
-        devices = {}
-        for device_type in Utilities.supported_device_types:
-            devices_dir = os.listdir(f"{home_path}{device_type}")
-            devices[device_type] = [
-                device.rstrip(".json") for device in devices_dir
-            ]
-
-        return devices
+        devices_dir = os.listdir(Utilities.devices_path)
+        return  {"devices": [device.rstrip(".json") for device in devices_dir]}
 
     @staticmethod
     def add_new_device(

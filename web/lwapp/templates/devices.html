@@ -12,21 +12,25 @@
 
 </a>
 
+<br>
+
+<br>
+
+<br>
+
 <div class="all-devices">
 
     <div class="routers">
 
-        <h4>Routers</h4>
+        {% if devices %}
 
-        {% if routers %}
+            {% for device in devices %}
 
-            {% for router in routers %}
-
-                <a href="{{router}}">
+                <a href="{{device}}">
 
                     <div class="card">
 
-                        {{ router }}
+                        {{ device }}
 
                     </div>
 
@@ -36,53 +40,11 @@
 
         {% else %}
 
-            <span><i style="border: none">No Routers found</i></span>
+            <span><i style="border: none">No Devices found. Start by adding your first device by clicking "Add Device"!</i></span>
 
         {% endif %}
 
 
-
-    </div>
-
-    <div class="switches">
-
-        <h4>Switches</h4>
-
-        {% if switches %}
-
-            {% for switch in switches %}
-
-                <a href="{{switch}}">
-
-                    <div class="card">
-
-                        {{ switch }}
-
-                    </div>
-
-                </a>
-
-            {% endfor %}
-
-        {% else %}
-
-            <span><i style="border: none">No Switches found</i></span>
-
-        {% endif %}
-
-        {% for switch in switches %}
-
-            <a href="{{switch}}">
-
-                <div class="card">
-
-                    {{switch}}
-
-                </div>
-
-            </a>
-
-        {% endfor %}
 
     </div>
 
