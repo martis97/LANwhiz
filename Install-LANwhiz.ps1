@@ -2,7 +2,7 @@
 $VerbosePreference = "Continue"
 
 function Install-LANwhiz {
-    
+
     #section Python Version
     Write-Verbose -Message  "Checking Python version.."
     $pythonVersion = (python --version).split(" ")[1]
@@ -31,6 +31,8 @@ function Install-LANwhiz {
         $env:PYTHONPATH = "$env:PYTHONPATH" + "$parentPath;"
     }
     #section PYTHONPATH
+
+    Write-Verbose -Message "Happy Automating!"
 }
 
 Install-LANwhiz
