@@ -74,10 +74,6 @@ class AccessControlLists(BaseConfig):
                         " or an underscore.\n"
                     )
 
-    def cleanup(self):
-        self.utils.ensure_global_config_mode()
-        for cmd in self.current_acls:
-            self.utils.send_command(f"no {cmd}")
     
     def _format_acl_target(self, target):
         """ Forms a command subset where the source or destination 

@@ -1,4 +1,5 @@
 import json
+import re
 from threading import Thread
 from time import strftime, localtime
 from copy import deepcopy
@@ -81,9 +82,13 @@ def device_details(request, hostname):
         initial = FormInitials.interface_config(config)
         context["int_config"][interface] = InterfaceConfigForm(prefix=interface, initial=initial)
 
-        if config.get("ipv4"): 
-            net_addr, prefix = Utils.get_network_address(config["ipv4"])
-            context["ospf_nets_to_advertise"].append(f"{net_addr}/{prefix}")
+        if config.get("ipv4"):
+            pattern = re.compile(
+                r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b\/\d{1,2}"
+            )
+            if re.match(pattern, config["ipv4"]):
+                net_addr, prefix = Utils.get_network_address(config["ipv4"])
+                context["ospf_nets_to_advertise"].append(f"{net_addr}/{prefix}")
 
     if device_config["config"].get("lines"):
         

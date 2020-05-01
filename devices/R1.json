@@ -4,13 +4,13 @@
     "mgmt_port": 5000,
     "username": "",
     "password": "cisco",
-    "last_modified": "29/04/2020 20:19:38",
+    "last_modified": "01/05/2020 12:11:15",
     "config": {
         "global_commands": [],
         "interfaces": {
             "Ethernet0/0": {
                 "shutdown": true,
-                "ipv4": "aerg",
+                "ipv4": "",
                 "ipv6": "",
                 "description": "",
                 "acl": {
@@ -19,7 +19,9 @@
                 },
                 "nat": "",
                 "bandwidth": null,
-                "other_commands": []
+                "other_commands": [
+                    "faer"
+                ]
             },
             "GigabitEthernet0/0": {
                 "shutdown": true,
@@ -30,7 +32,7 @@
                     "outbound": [],
                     "inbound": []
                 },
-                "nat": "",
+                "nat": "inside",
                 "bandwidth": null,
                 "other_commands": []
             },
@@ -141,6 +143,12 @@
             },
             "extended": {}
         },
-        "dhcp": {}
+        "dhcp": {
+            "new_pool": {
+                "network": "",
+                "default_gateway": "",
+                "dns": ""
+            }
+        }
     }
 }
