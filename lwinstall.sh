@@ -4,7 +4,7 @@ pythonexists=`apt list | grep python3`
 
 if [ "$pythonexists" = "" ]; then
     echo "Install Python 3 to use LANwhiz"
-    exit 1
+    return 1
 fi
 
 # Install Reqiored Python libs
