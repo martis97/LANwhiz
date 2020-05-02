@@ -171,7 +171,7 @@ class Utilities(object):
             self.send_command("conf t")
 
     def ensure_privileged_exec_mode(self):
-        if re.match(r"\>$", self.connection.find_prompt()):
+        if re.match(r"^.+>$", self.connection.find_prompt()):
             if self.send_command("enable"):
                 self.send_command("class")
         else:
