@@ -1,0 +1,80 @@
+{
+    "hostname": "R1",
+    "mgmt_ip": "192.168.74.129",
+    "mgmt_port": 5000,
+    "username": "",
+    "password": "cisco",
+    "last_modified": "18/04/2020 02:21:06",
+    "config": {
+        "global_commands": [],
+        "interfaces": {
+            "Ethernet0/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+        "lines": {
+            "console": {
+                "password": "",
+                "acl": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": false,
+                "other_commands": []
+            },
+            "vty": {
+                "password": "",
+                "acl": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": false,
+                "other_commands": []
+            }
+        },
+        "routing": {
+            "static": [
+                {
+                    "network": "10.10.10.0",
+                    "subnetmask": "255.255.255.0",
+                    "forward_to": "Ethernet0/0"
+                }
+            ],
+            "ospf": {
+                "instance_id": 1,
+                "router_id": "1.1.1.1",
+                "advertise_static": false,
+                "advertise_networks": [
+                    "192.168.1.0/24/area 0"
+                ],
+                "passive_interfaces": [
+                    "Ethernet1/0",
+                    "GigabitEthernet0/0",
+                    "Ethernet1/1"
+                ],
+                "other_commands": [
+                    "area 10 stub"
+                ]
+            }
+        },
+        "acl": {
+            "standard": {
+                "standard-acl": {
+                    "action": "deny",
+                    "source": "192.168.21.0/24"
+                }
+            },
+            "extended": {}
+        },
+        "dhcp": {}
+    }
+}

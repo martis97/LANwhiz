@@ -165,6 +165,10 @@ class Utilities(object):
             self.send_command("conf t")
         elif re.match(r"^[A-Za-z0-9\-]+\#$", prompt):
             self.send_command("conf t")
+        elif re.match(r".+\>$", prompt):
+            self.send_command("enable")
+            self.send_command("class")
+            self.send_command("conf t")
     
     def get_structured_config(self, config_type="running"):
         """ Use Napalm connection to retrieve config and use it to
