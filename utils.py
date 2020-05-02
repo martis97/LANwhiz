@@ -171,10 +171,11 @@ class Utilities(object):
             self.send_command("conf t")
 
     def ensure_privileged_exec_mode(self):
-        if re.match(r"^.+>$", self.connection.find_prompt()):
+        prompt = self.connection.find_prompt()
+        if re.match(r"^.+>$", prompt):
             if self.send_command("enable"):
                 self.send_command("class")
-        else:
+        elif re.match(r"^.+\(config.+\)\#$", prompt):
             self.send_command("end")
     
     def get_structured_config(self, config_type="running"):
