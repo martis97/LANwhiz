@@ -91,16 +91,13 @@ def device_details(request, hostname):
                 context["ospf_nets_to_advertise"].append(f"{net_addr}/{prefix}")
 
     if device_config["config"].get("lines"):
-        
         for line, config in device_config["config"]["lines"].items():
             initial = FormInitials.line_config(config)
             context["line_config"][line] = LineConfigForm(prefix=line, initial=initial)
 
     if device_config["config"].get("routing"):
-
         if device_config["config"]["routing"].get("static"):
             static_routes = []
-            
             for route in device_config["config"]["routing"]["static"]:
                 static_routes.append("-".join(route.values()))
             context["static_routes"] = ",".join(static_routes)
@@ -241,7 +238,7 @@ def handle_terminal(request, hostname):
     else:
         cmd_out = None 
     response = {
-        "prompt": connection.find_prompt(),
+        "prompt": cmd_out[-1],
         "cmd_out": cmd_out if  cmd_out else None
     }
 
