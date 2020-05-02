@@ -28,7 +28,7 @@ function Install-LANwhiz {
 
     if (!$currentPaths.contains($parentPath)) {
         Write-Verbose -Message "Adding Parent Directory to PYTHONPATH.."
-        $env:PYTHONPATH = "$env:PYTHONPATH" + "$parentPath;"
+        $env:PYTHONPATH = "$env:PYTHONPATH$parentPath;"
     }
     #section PYTHONPATH
 

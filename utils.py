@@ -169,6 +169,13 @@ class Utilities(object):
             self.send_command("enable")
             self.send_command("class")
             self.send_command("conf t")
+
+    def ensure_privileged_exec_mode(self):
+        if re.match(r"\>$", self.connection.find_prompt()):
+            if self.send_command("enable"):
+                self.send_command("class")
+        else:
+            self.send_command("end")
     
     def get_structured_config(self, config_type="running"):
         """ Use Napalm connection to retrieve config and use it to
@@ -312,7 +319,7 @@ class Utilities(object):
     def merge_config(current, new):
         for k, v in new.items():
             if isinstance(v, dict):
-                current[k] = merge_config(current.get(k, {}), v)
+                current[k] = Utilities.merge_config(current.get(k, {}), v)
             else:
                 current[k] = v
         return current

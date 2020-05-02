@@ -411,8 +411,11 @@ def capture_cmd_outputs(request, hostname):
         except Exception:
             JsonResponse({"error": f"Could not connect to {hostname}"}, status=200)
 
+    utils = Utilities(connection)
+    utils.ensure_privileged_exec_mode()
+
     for cmd in cmds:
-        response["cmd_outs"][cmd] = Utilities(connection).send_command(cmd)
+        response["cmd_outs"][cmd] = utils.send_command(cmd)
     
     return JsonResponse(response, status=200)
 
