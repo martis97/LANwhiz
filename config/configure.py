@@ -11,6 +11,7 @@ class ConfigActions(BaseConfig):
 
     def global_commands(self):
         """ Sends pre-defined default commands to the console. """
+        self.utils.ensure_global_config_mode()
         if self.config.get("global_commands"):
             for cmd in self.config["global_commands"]:
                 self.utils.send_command(cmd)
