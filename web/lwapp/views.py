@@ -234,12 +234,15 @@ def handle_terminal(request, hostname):
         if len(cmd_out) > 1:
             if not "Invalid input" in cmd_out[1]:
                 cmd_out = cmd_out[1:-1]
+                prompt = cmd_out[-1]
             
     else:
-        cmd_out = None 
+        cmd_out = None
+        prompt = connection.find_prompt()
+
     response = {
-        "prompt": cmd_out[-1],
-        "cmd_out": cmd_out if  cmd_out else None
+        "prompt": prompt,
+        "cmd_out": cmd_out 
     }
 
     return JsonResponse(response, status=200)
