@@ -142,13 +142,6 @@ def device_details(request, hostname):
 
     return render(request, 'device-details.html', context=context)
 
-def merge_config(current, new):
-    for k, v in new.items():
-        if isinstance(v, dict):
-            current[k] = merge_config(current.get(k, {}), v)
-        else:
-            current[k] = v
-    return current
 
 def diff_config(request, hostname):
     form_diff = FormDiff(request.POST)
@@ -181,7 +174,7 @@ def diff_config(request, hostname):
     print(json.dumps(changes, indent=4))
 
     if request.GET.get("save"):
-        new_template["config"] = merge_config(current, changes)
+        new_template["config"] = Utils.merge_config(current, changes)
         new_template["last_modified"] = strftime("%d/%m/%Y %H:%M:%S", localtime())
         Utils.write_config(hostname, new_template)
 

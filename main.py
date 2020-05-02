@@ -13,6 +13,30 @@ from threading import Thread
 class LANwhizMain(object):
 
     @staticmethod
+    def update_cisco_device(hostname, update):
+        device_config = Utilities.read_config(hostname)
+        connection = Connect().cisco_device(
+            *list(device_config.values())[1:5]
+        )
+
+        # Get an instance of ConfigActions with spec and connection passed in
+        config_device = ConfigActions(
+            device_config=device_config["config"], 
+            connection=connection
+        )
+
+        for config_area in update:
+            print(f"{hostname}: Configuring: "
+                f"{config_area.replace('_', ' ').title()}..."
+            )
+            getattr(config_device, config_area)()
+            print("Done!")
+
+        print(f"{hostname}: Configuration Complete!")
+        print(f"{hostname}: Closing session..")
+        connection.cleanup()
+
+    @staticmethod
     def configure_cisco_device(hostname):
         """ Connects to and configures a Cisco device """
 
@@ -40,33 +64,10 @@ class LANwhizMain(object):
 
         # Ensuring initial commands are executed first
         print(f"{hostname}: Configuring Global commands... ")
-        config_device.default_commands()
+        config_device.global_commands()
         print("Done!")
 
         for config_area in methods:
-            print(f"{hostname}: Configuring: "
-                f"{config_area.replace('_', ' ').title()}..."
-            )
-            getattr(config_device, config_area)()
-            print("Done!")
-
-        print(f"{hostname}: Configuration Complete!")
-        print(f"{hostname}: Closing session..")
-        connection.cleanup()
-
-    @staticmethod
-    def update_cisco_device(hostname, update):
-        device_config = Utilities.read_config(hostname)
-        connection = Connect().cisco_device(
-            *list(device_config.values())[1:5]
-        )
-
-        config_device = ConfigActions(
-            device_config=device_config["config"], 
-            connection=connection
-        )
-
-        for config_area in update:
             print(f"{hostname}: Configuring: "
                 f"{config_area.replace('_', ' ').title()}..."
             )

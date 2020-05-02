@@ -9,7 +9,7 @@ class ConfigActions(BaseConfig):
     def __init__(self, *, connection, device_config):
         super().__init__(connection, device_config)
 
-    def default_commands(self):
+    def global_commands(self):
         """ Sends pre-defined default commands to the console. """
         if self.config.get("global_commands"):
             for cmd in self.config["global_commands"]:
@@ -87,7 +87,6 @@ class ConfigActions(BaseConfig):
             if acl.config.get(acl_type):
                 getattr(acl, acl_type)()
         
-        acl.cleanup()
 
     def dhcp(self):
         """ Configures DHCP on the device """

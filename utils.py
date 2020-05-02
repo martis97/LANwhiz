@@ -304,4 +304,13 @@ class Utilities(object):
 
         return str(IPNetwork(f"{ip}/{subnetmask}").network), prefix
 
+    @staticmethod
+    def merge_config(current, new):
+        for k, v in new.items():
+            if isinstance(v, dict):
+                current[k] = merge_config(current.get(k, {}), v)
+            else:
+                current[k] = v
+        return current
+
     
