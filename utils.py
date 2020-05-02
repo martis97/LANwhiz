@@ -288,7 +288,7 @@ class Utilities(object):
         }
 
         with open(
-            f"{utils.devices_path}routers/{hostname}.json", "w"
+            f"{utils.devices_path}/{hostname}.json", "w"
         ) as config_file:
             config_file.write(json.dumps(new_config, indent=4))
 
