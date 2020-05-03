@@ -289,7 +289,7 @@ class Utilities(object):
                         },
                         "synchronous_logging": False,
                         "other_commands": []
-                    } for line in ("console", "vty")
+                    } for line in ("con", "vty")
                 },
                 "routing":{
                     "static": []

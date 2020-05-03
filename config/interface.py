@@ -97,8 +97,9 @@ class Interface(BaseConfig):
 class Line(BaseConfig):
     def __init__(self, connection, config, name):
         super().__init__(connection, config)
-        self.utils.send_command(f"line {name}")
         self.current = self.utils.get_structured_config()[f"line {name}"]
+        self.utils.ensure_global_config_mode()
+        self.utils.send_command(f"line {name}")
 
     def synchronous_logging(self):
         """ Enables Synchronous Logging on a line interface """

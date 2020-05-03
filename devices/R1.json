@@ -1,0 +1,159 @@
+{
+    "hostname": "R1",
+    "mgmt_ip": "192.168.74.129",
+    "mgmt_port": 5000,
+    "username": "",
+    "password": "",
+    "last_modified": "03/05/2020 12:49:52",
+    "config": {
+        "global_commands": [],
+        "interfaces": {
+            "Ethernet0/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "GigabitEthernet0/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "Ethernet1/0": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "Ethernet1/1": {
+                "shutdown": false,
+                "ipv4": "192.168.2.1/24",
+                "ipv6": "",
+                "description": "Connection to LAN",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": 5000,
+                "other_commands": [
+                    "ip ospf network point-to-point"
+                ]
+            },
+            "Ethernet1/2": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "Ethernet1/3": {
+                "shutdown": true,
+                "ipv4": "",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "bandwidth": null,
+                "other_commands": []
+            },
+            "Loopback0": {
+                "ipv4": "192.168.5.1/24",
+                "ipv6": "",
+                "description": "",
+                "acl": {
+                    "outbound": [],
+                    "inbound": []
+                },
+                "nat": "",
+                "other_commands": []
+            }
+        },
+        "lines": {
+            "con": {
+                "password": "",
+                "acl": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": false,
+                "other_commands": []
+            },
+            "vty": {
+                "password": "class",
+                "acl": {
+                    "inbound": [],
+                    "outbound": []
+                },
+                "synchronous_logging": false,
+                "other_commands": []
+            }
+        },
+        "routing": {
+            "static": [
+                {
+                    "network": "0.0.0.0",
+                    "subnetmask": "0.0.0.0",
+                    "forward_to": "Ethernet1/1"
+                }
+            ],
+            "ospf": {
+                "instance_id": 10,
+                "router_id": "1.1.1.1",
+                "advertise_static": false,
+                "advertise_networks": [
+                    "192.168.2.0/24/area 0",
+                    "192.168.5.0/24/area 0"
+                ],
+                "passive_interfaces": [
+                    "Loopback0"
+                ],
+                "other_commands": []
+            }
+        },
+        "acl": {
+            "standard": {},
+            "extended": {
+                "101": {
+                    "action": "permit",
+                    "protocol": "tcp",
+                    "source": "any",
+                    "destination": "any",
+                    "port": "established"
+                }
+            }
+        },
+        "dhcp": {}
+    }
+}

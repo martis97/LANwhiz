@@ -52,7 +52,7 @@ class ConfigActions(BaseConfig):
         configuration.
         """
         for line, line_config in self.config["lines"].items():
-            if line == "console":
+            if line == "con":
                 line += " 0"
             elif line == "vty":
                 line += " 0 4"

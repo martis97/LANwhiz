@@ -564,7 +564,7 @@ function ACLInit() {
 
         if (parseInt(aclName)) {
             const aclNum = parseInt(aclName)
-            if ((aclType === "standard" && !(1 > aclNum && aclNum <= 100)) || 
+            if ((aclType === "standard" && !(1 >= aclNum && aclNum <= 100)) || 
                 (aclType === "extended" && !(101 <= aclNum && aclNum <= 200))) {
                 alert("ACL number out of range!")
                 return
